@@ -466,19 +466,7 @@ class Gameinfo {
 	// instantiates the game info with an RPC response
 	function Gameinfo($rpc_infos = null) {
 		if ($rpc_infos) {
-      $this->mode = $rpc_infos['GameMode'];
-      if($this->mode == 0) {
-        $this->scriptInfo = $rpc_infos['ScriptName'];
-        
-        if($this->scriptInfo == '<in-development>') {
-          $this->mode = 'Royal';
-          // Todo
-        } else {
-          $this->mode = str_ireplace('shootmania\\', '', $this->scriptInfo);
-          $this->mode = str_replace('Arena', '', $this->scriptInfo);
-          $this->mode = str_replace('.Script.txt', '', $this->scriptInfo);
-        }
-      }
+			$this->mode = $rpc_infos['GameMode'];
 	/*		$this->numchall = $rpc_infos['NbChallenge'];
 			if ($rpc_infos['RoundsUseNewRules'])
 				$this->rndslimit = $rpc_infos['RoundsPointsLimitNewRules'];
