@@ -416,6 +416,7 @@ class Server {
  */
 class Gameinfo {
 	var $mode;
+  var $type;
 	var $numchall;
 	var $rndslimit;
 	var $timelimit;
@@ -432,6 +433,7 @@ class Gameinfo {
 	const LAPS = 4;
 	const CUP  = 5;
 	const STNT = 6;
+  
 
 	// returns current game mode as string
 	function getMode() {
@@ -463,10 +465,26 @@ class Gameinfo {
 		}
 	}
 
+  function getType() {
+		return $this->type;
+  }
+
 	// instantiates the game info with an RPC response
 	function Gameinfo($rpc_infos = null) {
 		if ($rpc_infos) {
-			$this->mode = $rpc_infos['GameMode'];
+      $this->mode = $rpc_infos['GameMode'];
+      if($this->mode == 0) {
+        $this->type = $rpc_infos['ScriptName'];
+        
+        if($this->scriptInfo == '<in-development>') {
+          $this->type = 'Royal';
+          // Todo
+        } else {
+          $this->type = str_ireplace('shootmania\\', '', $this->scriptInfo);
+          $this->type = str_replace('Arena', '', $this->type);
+          $this->type = str_replace('.Script.txt', '', $this->type);
+        }
+      }
 	/*		$this->numchall = $rpc_infos['NbChallenge'];
 			if ($rpc_infos['RoundsUseNewRules'])
 				$this->rndslimit = $rpc_infos['RoundsPointsLimitNewRules'];
