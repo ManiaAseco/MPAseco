@@ -5,14 +5,15 @@
  * Chat plugin.
  * Displays player statistics & personal settings.
  * Updated by Xymph
- *
- * Dependencies: requires chat.records2.php
+ *  
+ * edited for SM 20.07.2012 by kremsy and the MPAseco-Team
+ *  
  */
 
 Aseco::addChatCommand('stats', 'Displays statistics of current player');
 Aseco::addChatCommand('settings', 'Displays your personal settings');
 
-// calls function get_recs() from chat.records2.php
+
 function chat_stats($aseco, $command) {
 	global $rasp, $feature_ranks, $maxrecs;
 
@@ -66,18 +67,7 @@ function chat_stats($aseco, $command) {
 	$laston = mysql_fetch_row($result);
 	mysql_free_result($result);
 
-	$records = 0;
-	if ($list = get_recs($target->id)) {  // from chat.records2.php
-		// sort for best records
-		asort($list);
-		// count total ranked records
-		foreach ($list as $name => $rec) {
-			// stop upon unranked record
-			if ($rec > $maxrecs) break;
-			// count ranked record
-			$records++;
-		}
-	}
+
 
 	$header = 'Stats for: ' . $target->nickname . '$z / {#login}' . $target->login;
 	$stats = array();
@@ -100,7 +90,6 @@ if ($feature_ranks) {
 	// add clickable button
 	if ($aseco->settings['clickable_lists'])
 		$value = array($value, 5);  // action id
-	$stats[] = array('Records', $value);
 	$value = '{#black}' . ($target->getWins() > $target->wins ? $target->getWins() : $target->wins);
 	// add clickable button
 	if ($aseco->settings['clickable_lists'])
@@ -156,12 +145,7 @@ function chat_settings($aseco, $command) {
 	$header = 'Settings for: ' . $target->nickname . '$z / {#login}' . $target->login;
 	$settings = array();
 
-	// collect available settings
-	if ($cps) {
-		$settings[] = array('Local CPS', '{#black}' . $cps['cps']);
-		$settings[] = array('Dedimania CPS', '{#black}' . $cps['dedicps']);
-		$settings[] = array();
-	}
+
 
 	$settings[] = array('Window Style', '{#black}' . $style);
 	$settings[] = array('Panel Background', '{#black}' . $panelbg);
@@ -171,7 +155,6 @@ function chat_settings($aseco, $command) {
 		if ($aseco->isAnyAdmin($target))
 			$settings[] = array('Admin Panel', '{#black}' . substr($panels['admin'], 5));
 		$settings[] = array('Donate Panel', '{#black}' . substr($panels['donate'], 6));
-		$settings[] = array('Records Panel', '{#black}' . substr($panels['records'], 7));
 		$settings[] = array('Vote Panel', '{#black}' . substr($panels['vote'], 4));
 	}
 

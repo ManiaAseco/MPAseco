@@ -3,15 +3,17 @@
 
 /**
  * Chat plugin.
- * Displays server/XAseco2 info & plugins/nations lists.
+ * Displays server/MPASeco info & plugins/nations lists.
  * Created by Xymph
  *
+ * edited for SM 20.07.2012 by kremsy and the MPAseco-Team
+ *  
  * Dependencies: none
  */
 require_once('includes/manialinks.inc.php');  // provides ManiaLinks windows
 
 Aseco::addChatCommand('server', 'Displays info about this server');
-Aseco::addChatCommand('xaseco2', 'Displays info about this XASECO2');
+Aseco::addChatCommand('mpaseco', 'Displays info about this MPAseco');
 Aseco::addChatCommand('plugins', 'Displays list of active plugins');
 Aseco::addChatCommand('nations', 'Displays top 10 most visiting nations');
 
@@ -102,7 +104,6 @@ case 6:
 }
 	$stats[] = array('Max Players', '{#black}' . $aseco->server->maxplay);
 	$stats[] = array('Max Specs', '{#black}' . $aseco->server->maxspec);
-	$stats[] = array('Recs/Map', '{#black}' . $maxrecs);
 if ($feature_votes) {
 	$stats[] = array('Voting info', '{#black}/helpvote');
 } else {
@@ -125,7 +126,7 @@ if ($admin_contact) {
 	display_manialink($login, $header, array('Icons128x32_1', 'Settings', 0.01), $stats, array(1.0, 0.3, 0.7), 'OK');
 }  // chat_server
 
-function chat_xaseco2($aseco, $command) {
+function chat_mpaseco($aseco, $command) {
 	global $admin_contact;  // from rasp.settings.php
 
 	$player = $command['author'];
@@ -138,11 +139,11 @@ function chat_xaseco2($aseco, $command) {
 	// prepare Welcome message
 	$welcome = formatText($aseco->getChatMessage('WELCOME'),
 	                      stripColors($player->nickname),
-	                      $aseco->server->name, XASECO2_VERSION);
+	                      $aseco->server->name, MPASECO_VERSION);
 
-	$header = 'XASECO2 info: ' . $aseco->server->name;
+	$header = 'MPASECO info: ' . $aseco->server->name;
 	$info = array();
-	$info[] = array('Version', '{#black}' . XASECO2_VERSION);
+	$info[] = array('Version', '{#black}' . SMASECO_VERSION);
 	$field = 'Welcome';
 	$welcome = preg_split('/{br}/', $aseco->formatColors($welcome));
 	foreach ($welcome as $line) {
@@ -153,13 +154,16 @@ function chat_xaseco2($aseco, $command) {
 	$info[] = array('Uptime', '{#black}' . $updays . ' day' . ($updays == 1 ? ' ' : 's ') . formatTimeH($uptime * 1000, false));
 	$info[] = array('Websites', '{#black}$l[' . XASECO_ORG . ']' . XASECO_ORG . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_TMN . ']' . XASECO_TMN . '$l');
-	$info[] = array('', '{#black}$l[' . XASECO_TMF . ']' . XASECO_TMF . '$l');
-	$info[] = array('', '{#black}$l[' . XASECO_TM2 . ']' . XASECO_TM2 . '$l');
-	$info[] = array('Credits', '{#black}Main author: Xymph');
-	if (isset($aseco->masteradmin_list['TMLOGIN'])) {
+	$info[] = array('', '{#black}$l[' . XASECO_TMF . ']' . XASECO_TMF . '$l');  
+	$info[] = array('', '{#black}$l[' . XASECO_TM2 . ']' . XASECO_TM2 . '$l'); 
+  $info[] = array('', '{#black}$l[' . MPASECO_SM . ']' . MPASECO_SM . '$l');
+	$info[] = array('Credits', '{#black}Main author TMN:  Flo');    
+	$info[] = array('', '{#black}Main author TMF/TM2: Xmyph');  	
+	$info[] = array('', '{#black}Main author SM/QM:  kremsy');
+	if (isset($aseco->masteradmin_list['MPLOGIN'])) {
 		// count non-LAN logins
 		$count = 0;
-		foreach ($aseco->masteradmin_list['TMLOGIN'] as $lgn) {
+		foreach ($aseco->masteradmin_list['MPLOGIN'] as $lgn) {
 			if ($lgn != '' && !isLANLogin($lgn)) {
 				$count++;
 			}
@@ -168,7 +172,7 @@ function chat_xaseco2($aseco, $command) {
 			$field = 'Masteradmin';
 			if ($count > 1)
 				$field .= 's';
-			foreach ($aseco->masteradmin_list['TMLOGIN'] as $lgn) {
+			foreach ($aseco->masteradmin_list['MPLOGIN'] as $lgn) {
 				// skip any LAN logins
 				if ($lgn != '' && !isLANLogin($lgn)) {
 					$info[] = array($field, '{#black}' . $aseco->getPlayerNick($lgn) . '$z');
