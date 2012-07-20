@@ -906,7 +906,7 @@ class Aseco {
 		$this->console_text('  Game   : {1} - {2} - {3}', $this->server->game,
 		                    /*$this->server->packmask*/0, $this->server->gameinfo->getMode());
 		$this->console_text('  Version: {1} / {2}', $this->server->version, $this->server->build);
-		$this->console_text('  Author : kremsy');
+		$this->console_text('  Author : kremsy Prev. Authors Xymph / Flo');
 		$this->console_text('###############################################################################');
 
 		// format the text of the message
@@ -2268,6 +2268,6 @@ ini_set('memory_limit', '50M');
 setlocale(LC_NUMERIC, 'C');
 
 // create an instance of MPAseco and run it
-$aseco = new Aseco(false);
+$aseco = new Aseco(true);
 $aseco->run('config.xml');
 ?>
