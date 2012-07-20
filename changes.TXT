@@ -1,0 +1,48 @@
+19.07 -> 20.07.
+plugin.localdatabase.php
+plugin.panels.php
+plugins.mxinfo.php
+includes/mxinfofetcher
+includes/rasp.funcs.php
+
+newinstall
+rasp.xml
+plugins.xml
+localdatabase.xml
+config.xml
+adminops.xml
+
+includes/*
+
+mxinfo funktioniert noch nicht mit uid
+
+
+
+GBXChallengeFetcher Object
+(
+    [filename] => /home/smesc3/UserData/Maps/ShootMania/Elite/$fff$sElite - $f20So$f31la$f42rF$f53la$f64re.Map.Gbx
+    [parsexml] => 
+    [tnimage] => 
+    [uid] => 0TsolhrmTzlR43CtotyiHr_Tec
+    [version] => 6
+    [name] => read error
+    [author] => read error
+    [azone] => 
+    [type] => Script
+    [envir] => read error
+    [mood] => read error
+    [pub] => read error
+    [authortm] => 4294967295
+    [goldtm] => 4294967295
+    [silvertm] => 4294967295
+    [bronzetm] => 4294967295
+    [cost] => 6179
+    [multi] => 
+    [unknown] => 0
+    [unknown2] => 0
+    [unknown4] => 1
+    [unknown5] => 1
+    [ascore] => 4294967295
+    [editor] => 
+    [password] => 
+    [xml] => <header type="map" exever="3.1.0" exebuild="2012-06-20_17_52" lightmap="5">

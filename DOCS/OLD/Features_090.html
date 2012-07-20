@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>TrackMania² Canyon - XASECO2 initial release 0.90</TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<META NAME="author" CONTENT="Frans P. de Vries">
+<META NAME="generator" CONTENT="vi :)">
+<style type="text/css">
+body { width: 960px; margin-left: 30px; font-family: Arial,Helvetica,sans-serif; font-size: 15px; }
+li,div { padding: 3px; }
+code,pre { font-size: 14px; }
+pre { width: 90%; margin: 3px 0px; padding: 3px 0px 3px 12px; background-color: #F0F0F0; }
+</style>
+<META NAME="keywords" CONTENT="TrackMania, 2, Canyon, Forever, United, Nations, ManiaPlanet, racing, games, XASECO2, XASECO, plugins, records, jukebox, Nadeo">
+<META NAME="description" CONTENT="Information on the XASECO2 system for TrackMania² Canyon, a racing game by Nadeo">
+</HEAD>
+
+<BODY TEXT="#000000" LINK="#ff0000" VLINK="#0000ff" ALINK="#00ff00" BGCOLOR="#ffffff">
+
+<P ALIGN="center">
+<A TARGET="_blank" HREF="http://www.trackmania2.com/"><IMG SRC="banner.png" ALT="TrackMania² Canyon" TITLE="TrackMania² Canyon" BORDER="0" WIDTH="660" HEIGHT="200"></A>
+<HR>
+
+<H3>Changes in the v0.90 release of XASECO2 compared to XASECO v1.14:</H3>
+
+<UL>
+<LI>the local database and its connection now use UTF-8 as default character set
+
+<LI>updated the <i>GBXDataFetcher class</i> to handle TM²C beta Maps and Replays
+
+<LI>all records, checkpoint and finish times are now displayed in thousands of a second
+
+<LI>the styles/ directory contains a new set of TM²C-compatible window style templates (see <i>/style list</i>)
+
+<LI>the panels/ directory contains a new set of TM²C-compatible panel templates (see <i>/admin panel list</i>, <i>/recpanel list</i> and <i>/votepanel list</i>)
+
+<LI>implemented several security enhancements to prevent unauthorised use of chat commands
+
+<LI>in multi-page windows all pages are filled up with empty rows to the same number of rows as the first page to ease browsing
+
+<LI>the player stats panel during the scoreboard is defined by the panels/StatsCanyon.xml template
+
+<LI>the positions of the arrow button (to open the system message log) and of the player stats panel have been changed so they don't overlap with standard GUI elements
+
+<LI>all references (command names and descriptions, variables, comments, etc) to Track(s) are replaced by Map(s), most notably:
+<UL>
+<LI>the plugin.track.php plugin is now called plugin.map.php
+<LI>the <i>/track</i> command is renamed into <i>/map</i>
+<LI>the <i>/admin readtracklist</i> and <i>writetracklist</i> commands changed to <i>/admin readmaplist</i> and <i>writemaplist</i>, respectively
+<LI>the following config.xml options were renamed:
+<UL>
+<LI>&lt;lists_colortracks&gt; to &lt;lists_colormaps&gt;
+<LI>&lt;show_curtrack&gt; to &lt;show_curmap&gt;
+<LI>&lt;default_tracklist&gt; to &lt;default_maplist&gt; (and its value to maplist.txt)
+<LI>&lt;writetracklist_random&gt; to &lt;writemaplist_random&gt;
+<LI>&lt;trackhist_file&gt; to &lt;maphist_file&gt; (and its value to maphist.txt)
+</UL>
+<LI>the musicserver.xml option &lt;override_track&gt; changed to &lt;override_map&gt;
+</UL>
+
+<LI>the <i>/admin acdl</i> command is renamed to <i>/admin amdl</i> (allow map download)
+
+<LI>all references to Coppers are replaced by Planets
+
+<LI>the plain TMN-style look for windows has been removed along with the <i>/style off</i> option
+
+<LI>this release <u>requires</u> the latest server <b>build 2011-09-05</b>
+</UL>
+
+<H3>Notes on plugin-related changes in the v0.90 release of XASECO2:</H3>
+
+<UL>
+<LI>all references (the database table, columns in various tables, objects, variables, comments, etc) to Challenge(s) are replaced by Map(s)
+
+<LI>all database columns are now CamelCased for consistency
+
+<LI>the following events were renamed:
+<UL>
+<LI>onNewChallenge =&gt; onBeginMap
+<LI>onNewChallenge2 =&gt; onBeginMap2
+<LI>onEndRace =&gt; onEndMap
+<LI>onEndRace1 =&gt; onEndMap1
+<LI>onRestartChallenge =&gt; onRestartMap
+<LI>onRestartChallenge2 =&gt; onRestartMap2
+<LI>onTracklistChanged =&gt; onMaplistChanged
+</UL>
+
+<LI>the game modes ($aseco->server->gameinfo->mode) are numbered internally as per the dedicated server numbering (see the description of SetGameMode)
+
+<LI>new <b>onRulesScriptCallback event</b> for handling the new MP RulesScriptCallback callback
+
+<LI>deprecated *Challenge* method calls have been replaced with their *Map* equivalents
+</UL>
+
+<H3>Features not yet available in the v0.90 release of XASECO2:</H3>
+
+<UL>
+<LI>the Dedimania world records system is not yet available for TM²C, so the corresponding plugins are not included
+
+<LI>MX (Mania Exchange) support will follow in a future release due to time constraints, so the pertaining plugin and classes are not included, and <i>/add</i>, <i>/admin add</i> and <i>/xlist</i> are disabled
+
+<LI>planet transactions are not yet possible so the donate plugin and its panels are not included, and <i>/admin pay</i> doesn't work either
+
+<LI>plugin.matchsave.php has only been partially edited for the aforementioned naming changes, and plugin.rasp_irc.php not at all
+</UL>
+
+<BR>
+<HR>
+<ADDRESS>
+Copyright &copy; 2007-2012 &ndash; Frans P. de Vries <A HREF="mailto:tm&#64;&#103;&#97;&#109;&#101;&#114;&#115;&#46;&#111;&#114;&#103;">&lt;tm&#64;&#103;&#97;&#109;&#101;&#114;&#115;&#46;&#111;&#114;&#103;&gt;</A>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+Last updated 05-Sep-2011
+</ADDRESS>
+</BODY>
+</HTML>

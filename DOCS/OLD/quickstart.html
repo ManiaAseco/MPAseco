@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>TrackMania² Canyon - TM² &amp; XASECO2 quick start guide</TITLE>
+<!--#include virtual="headers.html"-->
+<META NAME="keywords" CONTENT="TrackMania, 2, Canyon, Forever, United, Nations, ManiaPlanet, racing, games, XASECO2, XASECO, plugins, records, jukebox, Nadeo">
+<META NAME="description" CONTENT="Information on setting up a dedicated server and the XASECO2 system for TrackMania² Canyon, a racing game by Nadeo">
+</HEAD>
+
+<BODY TEXT="#000000" LINK="#ff0000" VLINK="#0000ff" ALINK="#00ff00" BGCOLOR="#ffffff">
+
+<P ALIGN="center">
+<A TARGET="_blank" HREF="http://www.trackmania2.com/"><IMG SRC="banner.png" ALT="TrackMania² Canyon" TITLE="TrackMania² Canyon" BORDER="0" WIDTH="660" HEIGHT="200"></A>
+<HR>
+
+<H3>Quick Start Guide:</H3>
+
+This is step-by-step guide to setting up a TrackMania² Canyon (TM2) dedicated server with XASECO2 for those lost in or confused by the <A HREF="/tm2/#resources">available readme's and tutorials</A>, and those just too lazy to read them. ;-)
+
+<P>
+It's initially written for Linux but should largely apply to Windows too, and your system needs to have a working MySQL 4.x or 5.x and PHP 5.x setup.  To manage the database, enter the MySQL commands in the mysql command prompt, PhpMyAdmin or another tool of your choice.  You need to run the TM2 server and XASECO2 on the same machine, running them on separate machines is beyond the scope of this guide.
+
+<P>
+First, the dedicated server:
+
+<OL>
+
+<LI>On Linux:
+    <OL type="a">
+    <LI>The TM2 server and XASECO2 should run under a user account rather than root, so create a user e.g. "<b>tm2</b>" with home directory "<b>/home/tm2</b>".
+    <LI>Login as (or switch to) user "tm2" so that all files created down the road receive the correct ownership and permissions.
+    <LI>The TM2 server zip doesn't have a top-level directory, so create one first to keep all the server files together, e.g.:<br>
+	<div>
+        &nbsp;&nbsp;&nbsp;<b><CODE>mkdir TM2</CODE></b><br>
+        &nbsp;&nbsp;&nbsp;<b><CODE>cd TM2</CODE></b><br>
+	</div>
+    </OL>
+
+<LI>On Windows:
+    <OL type="a">
+    <LI>The TM2 server and XASECO2 can run under a user account rather than administrator, so create a user e.g. "<b>TM2</b>".
+    <LI>Switch to that user.
+    <LI>Change to your (My) Documents directory.
+    </OL>
+
+<LI>Download and unzip the latest TM2 server (<A TARGET="_blank" HREF="http://forum.maniaplanet.com/viewtopic.php?p=76984#p76984">ManiaPlanetDedicated_2011-10-12.zip</A>) into the TM2/ directory.
+
+<LI>Log into the <A TARGET="_blank" HREF="http://player.maniaplanet.com/">MP Player Page</A> using your player login and password, and create a dedicated server login and password (different from your player password).
+
+<LI>Edit <b>TM2/UserData/Config/dedicated_cfg.txt</b>:
+    <OL type="a">
+    <LI>In the &lt;authorization_levels&gt; section, change all three <b>passwords</b>, but do <u>not</u> change the names (SuperAdmin, Admin, User).
+    <LI>In the &lt;masterserver_account&gt; section, enter the server <b>&lt;login&gt;</b> obtained above with its own <b>&lt;password&gt;</b>, and your account's validation key (usually five characters) in <b>&lt;validation_key&gt;</b> so that your server is able to use planets.
+    <LI>This validation key is given in the mail you should have received after creating your player account with the game, but a new one can be generated <A href="https://mp02.maniaplanet.com/player/html/index.php?view=validation-code" target="_blank">via the player page</A>.  Additionally, you must make an initial donation from your player login to your server login via the in-game message system, so that there are sufficient planets in the account to pay Nadeo tax on the first transaction.
+    <LI>In the &lt;server_options&gt; section, give your server a <b>&lt;name&gt;</b> and configure the other options to your liking.
+    <LI>In the &lt;system_config&gt; section, set <b>&lt;connection_uploadrate&gt;</b> and <b>&lt;connection_downloadrate&gt;</b> to values closest to your connection's speed (in Kbps), and remember the three port numbers (default: 2350 for the server, 3450 for P2P and 5000 for XMLRPC; these can be changed to other free port numbers, but it's recommended to keep the defaults at least until your server comes online successfully).
+    </OL>
+
+<LI>Choose and edit a match settings file, e.g. TM2/UserData/Maps/MatchSettings/CanyonA.txt, to your liking (see the <A TARGET="_blank" HREF="/tmf/docs/readme_dedicated.html">server readme</A> for details).
+
+<LI>On your firewall/router, open the server port 2350 and the P2P port 3450 for both UDP and TCP traffic, but <u>not</u> the XMLRPC port 5000.  For the Dedimania system in XASECO2 port <b>8002</b> needs to be open as well. For more information on this, <A target="_blank" HREF="http://www.portforward.com/">PortForward.com</A> may be useful.
+
+<LI>A standard startup script called RunSrv.sh is included in the zip, so review/edit it if needed:<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>#!/bin/sh</CODE></b><br>
+    &nbsp;&nbsp;&nbsp;<b><CODE>./ManiaPlanetServer /game_settings=MatchSettings/CanyonA.txt /dedicated_cfg=dedicated_cfg.txt /title=TMCanyon</CODE></b><br>
+    </div>
+    or use a corresponding RunSrv.bat:<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>ManiaplanetServer.exe /game_settings=MatchSettings/CanyonA.txt /dedicated_cfg=dedicated_cfg.txt /title=TMCanyon</CODE></b>
+    </div>
+
+<LI>Start the server:<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>cd ~/TM2/</CODE></b><br>
+    &nbsp;&nbsp;&nbsp;<b><CODE>./RunSrv.sh</CODE></b> (or <CODE>RunSrv.bat</CODE>)<br>
+    </div>
+    You should see output like the following:<br>
+<PRE>
+Starting ManiaPlanet Date=2011-10-12-xx_xx Svn=41570 GameVersion=3.0.0...
+Initializing...
+Configuration file : dedicated_cfg.txt
+Loading system configuration...
+...system configuration loaded
+Loading cache...
+...OK
+Listening for xml-rpc commands on port 5000.
+Trackmania server daemon started with pid=14180 (parent=14176).
+</PRE>
+    If you get a Segmentation Fault here, your kernel/distro may be too old, or the server cannot create files/directories due to ownership/permission problems (perhaps you forgot step 1b?).
+
+<LI>The first time the server starts, it creates several files in UserData/Config/ (including blacklist.txt and guestlist.txt), as well as the Logs/ directory and an extensive directory hierarchy under UserData/.  The files in the Logs/ directory are useful to monitor your server's activity.
+
+<LI>Start your TM2 client and check in the Internet server browser that the server is running in your zone with your chosen server name and some official tracks.
+
+<LI>Join your server, and have a friend join from elsewhere on the Internet, to verify that the server is accessible.
+
+<LI>To start &amp; stop your TM2 server on Linux more easily, you can use this <A TARGET="_blank" HREF="http://server.xaseco.org/initd.php">start-up script</A>.
+
+<LI>Collect your own tracks in UserData/Maps/My Challenges/, copy and edit a new match settings file in UserData/Maps/MatchSettings/ that lists those tracks, use that file in RunSrv.sh (or RunSrv.bat), and restart your server.  It should now be running your track selection.  Congratulations. :-)
+
+</OL>
+
+<A NAME="xaseco2"></A>
+Secondly, the XASECO2 system:
+
+<OL>
+
+<LI>Create the XASECO2 database in MySQL (default "xaseco2" but any other name is okay too):<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>CREATE DATABASE xaseco2;</CODE></b><br>
+    </div>
+    Also create a separate user (e.g. "<b>tm2</b>") in MySQL with a <b>password</b>, and grant this user all rights to the "<b>xaseco2</b>" database.  The basic MySQL commands are:<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>CREATE USER 'tm2'@'localhost';</CODE></b><br>
+    &nbsp;&nbsp;&nbsp;<b><CODE>SET PASSWORD FOR 'tm2'@'localhost' = password('password');</CODE></b><br>
+    &nbsp;&nbsp;&nbsp;<b><CODE>GRANT all ON xaseco2.* TO 'tm2'@'localhost';</CODE></b>
+    </div>
+
+<LI>Login as (or switch to) user "tm2" so that all files created down the road receive the correct ownership and permissions.
+
+<LI>Download and unzip XASECO2 (<A HREF="/tm2/#download">latest version</A>) into the "/home/tm2/" directory too, the default path will be <b>xaseco2/</b> so that future releases can be unpacked into the same directory tree.<br>
+    In the zip file, all *.XML and config files are located inside the <b>newinstall/</b> directory.  Go into the newinstall/ directory and move all *.XML files into the main directory, next to xaseco2.php, and move all *.PHP files into the includes/ directory.
+
+<LI>Setting up the database tables in MySQL is done automatically the first time XASECO2 runs, but if you prefer you can do it manually in advance:<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>USE xaseco2;</CODE></b><br>
+    &nbsp;&nbsp;&nbsp;<b><CODE>SOURCE /home/tm2/xaseco2/DOCS/xaseco2.sql;</CODE></b>
+    </div>
+
+<LI>Edit <b>xaseco2/localdatabase.xml</b>:
+    <OL type="a">
+    <LI>Replace YOUR_MYSQL_LOGIN with the MySQL user you created above, e.g. <b>tm2</b>.
+    <LI>Replace YOUR_MYSQL_PASSWORD with the MySQL password you set above.
+    <LI>Use the same database name as you created above, e.g. <b>xaseco2</b>.
+    <LI>localhost is your own machine, so the server option is okay.
+    </OL>
+
+<LI>Edit <b>xaseco2/config.xml</b>:
+    <OL type="a">
+    <LI>In the &lt;masteradmins&gt; section, uncomment and replace YOUR_MASTERADMIN_LOGIN with your player login, and add further logins for other players you want to grant all XASECO2 admin rights.
+    <LI>In the &lt;tmserver&gt; section, replace YOUR_SUPERADMIN_PASSWORD with the password you chose for SuperAdmin in dedicated_cfg.txt (TM2 step 5a above) but do <u>not</u> change the SuperAdmin login itself.
+    <LI>The &lt;port&gt; field should contain the same XMLRPC port number you chose in dedicated_cfg.txt (TM2 step 5e above), default 5000.
+    <LI>IP 127.0.0.1 is your own machine again, so that option is okay too.
+    </OL>
+
+<LI>Edit <b>xaseco2/adminops.xml</b>:
+    <OL type="a">
+    <LI>In the &lt;admins&gt; section, uncomment and replace YOUR_ADMIN_LOGIN with an admin's login, and add further logins for other players you want to grant partial XASECO2 admin rights.  Or leave the &lt;tmlogin&gt; entry commented out if there are none.
+    <LI>In the &lt;operators&gt; section, uncomment and replace YOUR_OPERATOR_LOGIN with an operator's login, and add further logins for other players you want to grant XASECO2 operator rights.  Or leave the &lt;tmlogin&gt; entry commented out if there are none.
+    </OL>
+
+<LI>Edit <b>xaseco2/dedimania.xml</b> if you want to use the Dedimania world records system:
+    <OL type="a">
+    <LI>In the &lt;masterserver_account&gt; section, replace YOUR_SERVER_LOGIN with the &lt;login&gt; value from your dedicated_cfg.txt file.
+    <LI>Also, replace YOUR_DEDIMANIA_CODE with the DedimaniaCode that you can generate after <a target="_blank" href="http://dedimania.net/tm2stats/?do=register">registering your server</a> with the Dedimania system.
+    <LI>To disable Dedimania support, remove or comment out the chat.dedimania.php and plugin.dedimania.php entries in plugins.xml.
+    </OL>
+
+<LI>Start the XASECO2 system:<br>
+    <div>
+    &nbsp;&nbsp;&nbsp;<b><CODE>cd ~/xaseco2/</CODE></b><br>
+    &nbsp;&nbsp;&nbsp;<b><CODE>./XAseco2.sh</CODE></b> (or <CODE>XAseco2.bat</CODE>)<br>
+    </div>
+    You won't see output, but logfile.txt should contain something like the following:<br>
+<PRE>
+[XAseco2] PHP Version is 5.3.x on Linux
+[XAseco2] Load settings [config.xml]
+[XAseco2] Load default style [styles/NavBlueBlur.xml]
+[XAseco2] Load default panel background [panels/PanelBGNavBlueBlur.xml]
+[XAseco2] Load admin/ops lists [adminops.xml]
+[XAseco2] Load banned IPs list [bannedips.xml]
+[XAseco2] Load plugins list [plugins.xml]
+[XAseco2] Load plugin [plugin.localdatabase.php]
+[...snip plugins...]
+[XAseco2] Load plugin [jfreu.plugin.php]
+[XAseco2] Load plugin [mistral.idlekick.php]
+[09/xx,xx:33:22] Try to connect to MP dedicated server on 127.0.0.1:5006 timeout 180s
+[09/xx,xx:33:22] Try to authenticate with login 'SuperAdmin' and password 'PASSWORD'
+[09/xx,xx:33:22] Connection established successfully !
+[09/xx,xx:33:22] [LocalDB] Load config file [localdatabase.xml]
+[09/xx,xx:33:22] [LocalDB] Try to connect to MySQL server on 'localhost' with database 'xaseco2'
+[09/xx,xx:33:22] [LocalDB] MySQL Server Version is 5.1.56-log
+[09/xx,xx:33:22] [LocalDB] Checking database structure...
+[09/xx,xx:33:22] [LocalDB] ...Structure OK!
+[09/xx,xx:33:22] [RASP] Loading config file [rasp.xml]
+[09/xx,xx:33:22] [RASP] Checking database structure...
+[09/xx,xx:33:22] [RASP] ...Structure OK!
+[09/xx,xx:33:22] [RASP] Cleaning up unused data
+[09/xx,xx:33:22] Load default admin panel [panels/AdminRightCorner.xml]
+[09/xx,xx:33:22] Load default donate panel [panels/DonateBelowCPList.xml]
+[09/xx,xx:33:22] Load default records panel [panels/RecordsRightCorner.xml]
+[09/xx,xx:33:22] Load default vote panel [panels/VoteBottomCenter.xml]
+[09/xx,xx:33:22] ************* (Dedimania) *************
+[09/xx,xx:33:22] * Dataserver connection on Dedimania ...
+[09/xx,xx:33:22] * Try connection on http://dedimania.net:8082/Dedimania ...
+[09/xx,xx:33:22] Webaccess (dedimania.net:8082/Dedimania.8083): send: deflate, receive: deflate
+[09/xx,xx:33:22] * Connection and status ok! (Dedimania.8083)
+[09/xx,xx:33:22] ------------- (Dedimania) -------------
+[09/xx,xx:33:22] Load stats panel [panels/StatsCanyon.xml]
+[09/xx,xx:33:22] Load music server config [musicserver.xml]
+[09/xx,xx:33:22] Load auto timelimit config [autotime.xml]
+###############################################################################
+  XASECO2 v1.00 running on 127.0.0.1:5000
+  Name   : YOUR SERVER NAME - YOUR_SERVER_LOGIN
+  Game   : ManiaPlanet - Canyon - TimeAttack
+  Version: 3.0.0 / 2011-10-12-xx_xx
+  Author : Xymph
+###############################################################################
+Begin Race
+[09/xx,xx:33:23] track changed [none] >> [Spirit of Canyon]
+[09/xx,xx:33:23] currently no record on Spirit of Canyon
+</PRE>
+    If you get an RPC Permission Error here, there is an XMLRPC port mismatch or the dedicated server isn't running (anymore).
+
+<LI>To start &amp; stop your XASECO2 on Linux more easily, you can use this <A TARGET="_blank" HREF="http://www.xaseco.org/initd.php">start-up script</A>.
+
+<LI>Edit the <A HREF="/tmn/#config">configuration options</A> to your liking, and restart XASECO2.  It should now be ready to manage tracks, receive players, and record... er... records. Congratulations. :-)
+</OL>
+
+Finally, to run another server on the same machine:
+
+<OL>
+
+<LI>Basically follow the same steps above, but use a second user account (e.g. "tm2b"), another new server login/password in dedicated_cfg.txt, a separate server name, a second set of ports (e.g. 2351, 3451 and 5001), a new database (e.g. "xaseco2b"), optionally a second MySQL account (e.g. "tm2b"), and the corresponding updates in localdatabase.xml and config.xml.
+
+<LI>Don't use symbolic links in the UserData/ directory tree (e.g. to symlink the tracks from the first server to the second one), as the TM2 server will crash without an error message.
+
+</OL>
+And for the last time, read the <A HREF="/tm2/#resources">readme's and tutorials</A> completely for a more thorough understanding of the entire setup.
+<br><br>
+
+<HR>
+<ADDRESS>
+<!--#include virtual="copyright.html"-->
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+Last updated 22-Jan-2012
+</ADDRESS>
+</BODY>
+</HTML>
