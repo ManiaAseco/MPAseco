@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>TrackMania² Canyon - XASECO2 release notes 1.00</TITLE>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<META NAME="author" CONTENT="Frans P. de Vries">
+<META NAME="generator" CONTENT="vi :)">
+<style type="text/css">
+body { width: 960px; margin-left: 30px; font-family: Arial,Helvetica,sans-serif; font-size: 15px; }
+li,div { padding: 3px; }
+code,pre { font-size: 14px; }
+pre { width: 90%; margin: 3px 0px; padding: 3px 0px 3px 12px; background-color: #F0F0F0; }
+</style>
+<META NAME="keywords" CONTENT="TrackMania, 2, Canyon, Forever, United, Nations, ManiaPlanet, racing, games, XASECO2, XASECO, plugins, records, jukebox, Nadeo">
+<META NAME="description" CONTENT="Information on the XASECO2 system for TrackMania² Canyon, a racing game by Nadeo">
+</HEAD>
+
+<BODY TEXT="#000000" LINK="#ff0000" VLINK="#0000ff" ALINK="#00ff00" BGCOLOR="#ffffff">
+
+<P ALIGN="center">
+<A TARGET="_blank" HREF="http://www.trackmania2.com/"><IMG SRC="banner.png" ALT="TrackMania² Canyon" TITLE="TrackMania² Canyon" BORDER="0" WIDTH="660" HEIGHT="200"></A>
+<HR>
+
+<H3>New features and other changes in the v1.00 release of XASECO2:</H3>
+
+<UL>
+<LI>new <b>/mxrecs</b> command as well as MX World Record at the start of a new track, based on the updated <i>MXInfoFetcher class</i> and analogue to TMX support in XASECO, so see the <a href="/tmn/Features_093.html">relevant release notes</a> for details
+
+<LI>new support for the Dedimania MaxRank system:
+<UL>
+<LI>the default MaxRank is 30, meaning that players normally cannot attain a record outside the top-30
+<LI>when a server MaxRank has been upgraded (still to be fully implemented by Slig) then all players on that server can attain records up to that larger rank
+<LI>when a player's MaxRank has been upgraded (ditto) then that player can attain records up to his/her rank, or the server MaxRank if that is still larger
+<LI><i>/dedirecs</i> and <i>/dedisectms</i> show all known records for a track, including those outside the top-30
+<LI><i>/dedilast</i> and <i>/dedirange</i> also operate on the last known record, even if that is outside the top-30
+<LI>the <i>/dedistats</i> output includes the Server MaxRank and your player MaxRank
+</UL>
+
+<LI>the <i>/jukebox</i>, <i>/add</i>, <i>/admin add</i> and <i>/admin addlocal</i> commands now check the chosen track against the server settings and ignore it if it doesn't match
+
+<LI>improved error checking and handling in the Dedimania system
+
+<LI>added a dynamic idle period to the main loop in order to reduce the CPU load if system usage allows it (thanks oliverde8)
+
+<LI>the game mode values are now available as constants Gameinfo::SCPT (0), RNDS (1), TA (2), TEAM (3), LAPS (4), CUP (5), STNT (6)
+
+<LI>updated the <i>MXInfoFetcher</i> and <i>MXInfoSearcher classes</i> to include the URLs for downloading replays
+
+<LI>removed the obsolete onChallengeListModified event
+</UL>
+
+<H3>Bug fixes in the v1.00 release of XASECO2:</H3>
+
+<UL>
+<LI><i>/dedisectms</i> shows no sector values and generates PHP warnings (ugly oops) &ndash; fixed
+
+<LI>the <i>/dedisectms</i> header shows the maximum number of local records instead of Dedimania ones &ndash; fixed
+
+<LI><i>/dedipb</i> causes PHP warnings for a player without Dedimania record on a track with fewer than the maximum number of records &ndash; fixed
+</UL>
+
+<HR>
+
+<H3>New features and other changes in the v0.98 release of XASECO2:</H3>
+
+<UL>
+<LI>the return of <b>Dedimania world records</b> support, largely analogous to that in XASECO, so see the <a href="/tmn/Features_095.html">relevant release notes</a> for details &ndash; to recap:
+<UL>
+<LI>Dedimania is the online World Records database in operation since 2006 for all TrackMania games with the official site at <A TARGET="_blank" HREF="http://www.dedimania.com/SITE/">http://www.dedimania.com/SITE/</A> and its TM² records database at <A TARGET="_blank" HREF="http://www.dedimania.com/tm2stats/?do=stat">http://www.dedimania.com/tm2stats/?do=stat</A>
+<LI>it maintains by default 30 records for each track in TimeAttack and Rounds modes, with the best single lap in Laps mode attributed to TA mode, and Team and Cup mode merged with Rounds mode &ndash; Stunts and Script mode are currently unsupported
+<LI>for TM² a track needs to contain at least one checkpoint (besides the finish) and have an author time of at least 10 seconds, while finish times below 8 seconds are also ignored &ndash; in Rounds mode submissions with a non-default number of laps (RoundForcedLaps != 0) are not allowed
+<LI>the <b>plugin.dedimania.php</b> plugin (together with several include files) handles all communication with the central Dedimania server, while the <b>chat.dedimania.php</b> plugin provides over a dozen chat commands (see <i>/dedihelp</i>)
+<LI>the Dedimania system requires plugin.checkpoints.php (the checkpoints tracking plugin) to be included in plugins.xml, <u>before</u> plugin.dedimania.php
+<LI>the Dedimania system communicates with the central Dedimania server over <b>port 8082</b>, so you must open that port on your firewall/router
+<LI>the <b>dedimania.xml</b> configuration file defines various parameters and settings, including server login and the Dedimania registration code, which can be <A TARGET="_blank" HREF="http://dedimania.net/tm2stats/?do=register">obtained here</A>
+<LI>a major feature of the new Dedimania API is that the validation replay of the best player's time on the current map is checked and submitted to the central Dedimania server, and if that time would be a new #1 world record then the same happens with the corresponding ghost replay
+<LI>the ghost replays are stored in the GReplays/ subdirectory of UserData/Replays/, and if new dedimania.xml setting <b><CODE>&lt;keep_best_vreplays&gt;</CODE></b> is True then the validation replays are stored in the adjacent VReplays/ subdirectory as well
+<LI>if a replay cannot be obtained from the dedicated server, or if it fails a check, then that player's time is skipped and the above process repeats for the next best time
+<LI>an <b>onDedimaniaRecord event</b> is issued to indicate a new/improved/secured Dedimania record, including its position &ndash; note that a Dedimania record is not official until confirmed after the end of a map 
+<LI>see also the XASECO <A HREF="/tmn/Features_098.html">v0.98</A> and <A HREF="/tmn/Features_106.html">v1.06</A> release notes on <i>/dedicps</i>, <i>/cps</i> and the checkpoints panel
+<LI>many thanks as always to Slig for his generous help in building this system
+</UL>
+
+<LI>forgotten in the previous release: the map name is now hyperlinked to the corresponding MX page (if available) in the <i>/map</i>, <i>/playtime</i>, <i>/newrecs</i> and <i>/liverecs</i> messages as well as the local record reports before and after each map, and the total playtime message at the end of each map in Rounds/Team/Cup mode
+
+<LI>added more logging, including transaction IDs, of planet transactions
+
+<LI>renamed internal event onChallengeListModified to <b>onMapListModified</b> &ndash; the old event is still issued but deprecated, and will be removed in the next release, so plugins using it should update soon
+
+<LI>this release <u>requires</u> the latest server <b>build 2011-10-12</b>
+</UL>
+
+<H3>Bug fixes in the v0.98 release of XASECO2:</H3>
+
+<UL>
+<LI>in Laps mode, the checkpoints panel isn't updated on the first passage through the finish when a previous best lap time is already known &ndash; fixed
+</UL>
+
+<HR>
+
+<H3>New features and other changes in the v0.95 release of XASECO2:</H3>
+
+<UL>
+<LI>all references (command names, classes, variables, comments, etc) to TrackMania eXchange / TMX / tmx are replaced by Mania Exchange / MX / mx
+
+<LI>new <b>MX information</b> support (based on the new <b>MXInfoFetcher class</b>) with the <b>/mxinfo</b> command, analogue to TMX info support in XASECO, so see the <a href="/tmn/Features_093.html">relevant release notes</a> for details
+
+<LI>new <b>MX search</b> support (based on the new <b>MXInfoSearcher class</b>) with the <b>/xlist</b> command, analogue to TMX search support in XASECO, so see the <a href="/tmn/Features_101.html">pertaining release notes</a> for details
+
+<LI>the <i>/add</i> (if enabled) and <i>/admin add</i> commands now work to add maps from MX, analogue to adding maps from TMX in XASECO
+
+<LI>notes on MX support:
+<UL>
+<LI>the TMX section parameter in the above chat commands is no longer relevant, and has been removed
+<LI>the <i>/xlist</i> command now returns at most 100 maps, rather than 500 from TMX in XASECO
+<LI>MX does not yet offer support for replays and solo records, so the <b>/mxrecs</b> command and the MX World Record at the start of a new track are still disabled
+</UL>
+</UL>
+
+<H3>Bug fixes in the v0.95 release of XASECO2:</H3>
+
+<UL>
+<LI>UTF-8 characters in (master)admin/operator titles in adminops.xml are not processed correctly &ndash; fixed (thanks TheBigG)
+
+<LI>the Auto TimeLimit plugin doesn't work in TimeAttack mode &ndash; fixed (thanks Pesky)
+</UL>
+
+<HR>
+
+<H3>New features and other changes in the v0.93 release of XASECO2:</H3>
+
+<UL>
+<LI>the donate plugin has now been ported and tested:
+<UL>
+<LI>the <i>/donate</i> and <i>/admin pay</i> commands are available
+<LI>the panels/ directory contains a new set of TM²C-compatible donate panel templates (see <i>/donpanel list</i>)
+<LI>the <i>/admin pay</i> confirmation dialog resembles the <i>/donate</i> dialog
+<LI>remember that the server's planets amount (seen with <i>/admin planets</i>) doesn't update immediately after a transaction
+<LI><b>important</b>: as in TMUF, the <A HREF="https://mp02.maniaplanet.com/player/html/index.php?view=validation-code" target="_blank">validation key belonging to your player login</A> needs to be entered in the &lt;validation_key&gt; field in dedicated_cfg.txt, <u>and</u> you must make an initial donation from your player login to your server login via the in-game message system, so that there are sufficient planets in the account to pay Nadeo tax on the first transaction
+</UL>
+
+<LI>new window style <b>Card</b>, which resembles the game's scoreboard style fairly closely, and is therefore now the configured default
+
+<LI>new <b>panel background</b> support with the following features:
+<UL>
+<LI>the background for the admin, donate, records and vote panels, as well as the player stats panel at the scoreboard, is now customizable
+<LI>a new 'PanelBG' column has been added to the local database table 'players_extra' for storing each player's selected background
+<LI>the new column will be added automatically the first time this release is run, but it is also defined in the DOCS/xaseco2.sql file as usual
+<LI>the distribution's <i>panels/</i> subdirectory can contain up to 30 panel background templates; their filenames must start with 'PanelBG'
+<LI>there are nine standard templates in several colors, with some in transparent and blurred variants
+<LI>the default panel background is configurable via new config.xml setting <b><CODE>&lt;panel_bg&gt;</CODE></b> (default: NavBlueBlur)
+<LI>new <b>/admin panelbg &lt;xxx&gt;</b> command to select another default panel background for newly connecting players (requires panel background name)
+<LI>the new <b>/panelbg</b> command allows players to select an individual panel background with the following options:
+<UL>
+<LI><b>help</b>: Displays help information
+<LI><b>list</b>: Displays available backgrounds
+<LI><b>default</b>: Resets background to server default
+<LI><b>&lt;xxx&gt;</b>: Selects panel background &lt;xxx&gt;, which can be a style name or the sequence number from <i>/panelbg list</i>
+<LI>in the <i>/panelbg list</i> overview a player can also click a background name to dynamically select a new background (or refresh the current one if its .xml file was updated)
+</UL>
+<LI>a player's selected panel background is listed in his/her <i>/settings</i> output
+<LI>the configured default panel background is Card, to match with the new default window style
+<LI>the current default background is used for the CPS (checkpoints) panel and the system message window as those cannot be individually customized
+</UL>
+
+<LI>the button to open the system message log is now a Txt icon in a new position to fit with the released game's chat window
+
+<LI>updated the <i>GBXDataFetcher class</i> to handle TM²C release Maps
+
+<LI>a fatal error is now reported if no masteradmin is configured in config.xml
+
+<LI>added an <b>updatepanels.php</b> script to the DOCS/ directory to allow updating all players' panels of a given type to a new template
+</UL>
+
+<H3>Bug fixes in the v0.93 release of XASECO2:</H3>
+
+<UL>
+<LI>the <i>/settings</i> output is missing the window style entry &ndash; fixed
+<LI><i>/server</i> doesn't take the adminops.xml setting &lt;server_planets&gt; into account &ndash; fixed
+</UL>
+
+<HR>
+
+<H2><A HREF="Features_090.html">Initial release notes</A></H2>
+
+<HR>
+<ADDRESS>
+Copyright &copy; 2007-2012 &ndash; Frans P. de Vries <A HREF="mailto:tm&#64;&#103;&#97;&#109;&#101;&#114;&#115;&#46;&#111;&#114;&#103;">&lt;tm&#64;&#103;&#97;&#109;&#101;&#114;&#115;&#46;&#111;&#114;&#103;&gt;</A>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+Last updated 07-Jan-2012
+</ADDRESS>
+</BODY>
+</HTML>
