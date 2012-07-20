@@ -476,11 +476,11 @@ class Gameinfo {
       if($this->mode == 0) {
         $this->type = $rpc_infos['ScriptName'];
         
-        if($this->scriptInfo == '<in-development>') {
+        if($this->type == '<in-development>') {
           $this->type = 'Royal';
           // Todo
         } else {
-          $this->type = str_ireplace('shootmania\\', '', $this->scriptInfo);
+          $this->type = str_ireplace('shootmania\\', '', $this->type);
           $this->type = str_replace('Arena', '', $this->type);
           $this->type = str_replace('.Script.txt', '', $this->type);
         }
