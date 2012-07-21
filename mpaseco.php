@@ -23,7 +23,7 @@
  * @license             http://www.gnu.org/copyleft/gpl.html GNU GPL
  *
  * Project further developed for SM and QM from July 2012 - ? 
- *  by kremsy and his Team <server@esc-clan.net> check out www.mania-server.net
+ *  by kremsy and his MPAseco-Team <server@esc-clan.net> www.mania-server.net
  * Authored & copyright Aug 2011 - Jan 2012 by Xymph <tm@gamers.org>
  * Derived from XAseco (formerly ASECO/RASP) by Xymph, Flo and others
  */
@@ -976,11 +976,11 @@ class Aseco {
 						$this->releaseEvent('onStatusChangeTo' . $this->currstatus, $call[1]);
 						break;
 
-					case 'ManiaPlanet.BeginMap':  // [0]=Challenge, [1]=WarmUp, [2]=MatchContinuation
-						$this->beginMap($call[1]);
+					case 'ManiaPlanet.BeginMap':  // [0]=Challenge
+  					$this->beginMap($call[1]);
 						break;
 
-					case 'ManiaPlanet.EndMap':  // [0]=Rankings[], [1]=Challenge, [2]=WasWarmUp, [3]=MatchContinuesOnNextChallenge, [4]=RestartChallenge
+					case 'ManiaPlanet.EndMap':  // [0]=Challenge
             $this->endMap($call[1]);
 						break;
 
@@ -1228,10 +1228,12 @@ class Aseco {
 		// request information about the new map
 		// ... and callback to function newMap()
 
-		// if new map, check WarmUp state
+	
+  	// if new map, check WarmUp state
+  /*
 		if ($race)
 			$this->warmup_phase = $race[1];
-
+      */
 		if (!$race) {
 			$this->addCall('GetCurrentMapInfo', array(), '', 'newMap');
 		} else {
@@ -1326,6 +1328,7 @@ class Aseco {
 		// check for RestartChallenge flag
 	//	$this->console(print_r($race));
 //		$this->console($race[4]." Race4");
+   /*
 		if ($race[4]) {
 			$this->restarting = 1;
 			// check whether changing game mode or any player has a time/score,
@@ -1348,16 +1351,19 @@ class Aseco {
 				$this->releaseEvent('onRestartMap', $race);
 				return;
 			}
-		}
+		}      */
 		// log if not a restart
 		if ($this->restarting == 0)
 			$this->console_text('End Map');
 
 		// get rankings and call endMapRanking as soon as we have them
 		// $this->addCall('GetCurrentRanking', array(2, 0), false, 'endMapRanking');
-		if (!$this->server->isrelay)
-			$this->endMapRanking($race[0]);
+/*		if (!$this->server->isrelay)
+			$this->endMapRanking($race[0]);*/  
+      
+      //$race[0] is not ranking anymore but challengeinfo
 
+      $race[1]=$race[0];   //to make it compatible with other Plugins
 		// throw prefix 'end map' event (chat-based votes)
 		$this->releaseEvent('onEndMap1', $race);
 		// throw main 'end map' event
@@ -2268,6 +2274,6 @@ ini_set('memory_limit', '50M');
 setlocale(LC_NUMERIC, 'C');
 
 // create an instance of MPAseco and run it
-$aseco = new Aseco(true);
+$aseco = new Aseco(false);
 $aseco->run('config.xml');
 ?>
