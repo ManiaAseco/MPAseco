@@ -1018,8 +1018,8 @@ class Aseco {
 
 					// new MP callbacks:
 
-					case 'ManiaPlanet.RulesScriptCallback':  // [0]=Param1, [1]=Param2
-						$this->releaseEvent('onRulesScriptCallback', $call[1]);
+					case 'ManiaPlanet.ModeScriptCallback':  // [0]=Param1, [1]=Param2
+						$this->releaseEvent('onModeScriptCallback', $call[1]);
 						break;
 
 					default:
