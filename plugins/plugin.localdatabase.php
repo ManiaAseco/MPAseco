@@ -394,7 +394,7 @@ function ldb_getPanels($aseco, $login) {
 		$panels['admin'] = $panel[0];
 		$panels['donate'] = $panel[1];
 		//$panels['records'] = $panel[2];
-		$panels['vote'] = $panel[3];
+		$panels['vote'] = $panel[2];
 		return $panels;
 	}
 }  // ldb_getPanels
