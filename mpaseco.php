@@ -64,7 +64,7 @@ define('MPASECO_SM', 'http://www.mania-server.net/mpaseco/sm/');
 
 // required official dedicated server build
 define('MP_BUILD', '2012-07-19-xx_xx');
-define('API_VERSION', '2012-07-19');
+define('API_VERSION', '2012-06-19');
 
 // check current operating system
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
