@@ -480,8 +480,8 @@ class Gameinfo {
         if($this->type == '<in-development>') {
           global $aseco;
           
-          $this->Aseco->client->query('GetCurrentMapInfo', array());
-          $challenge = $this->Aseco->client->getResponse();
+          $aseco->client->query('GetCurrentMapInfo', array());
+          $challenge = $aseco->client->getResponse();
           $this->type = $challenge['ScriptName'];
         }
         
