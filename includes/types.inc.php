@@ -476,14 +476,18 @@ class Gameinfo {
       if($this->mode == 0) {
         $this->type = $rpc_infos['ScriptName'];
         
+        // XXX: Temporary fix
         if($this->type == '<in-development>') {
-          $this->type = 'Royal';
-          // Todo
-        } else {
-          $this->type = str_ireplace('shootmania\\', '', $this->type);
-          $this->type = str_replace('Arena', '', $this->type);
-          $this->type = str_replace('.Script.txt', '', $this->type);
+          global $aseco;
+          
+          $this->Aseco->client->query('GetCurrentMapInfo', array());
+          $challenge = $this->Aseco->client->getResponse();
+          $this->type = $challenge['ScriptName'];
         }
+        
+        $this->type = str_ireplace('shootmania\\', '', $this->type);
+        $this->type = str_replace('Arena', '', $this->type);
+        $this->type = str_replace('.Script.txt', '', $this->type);
       }
 	/*		$this->numchall = $rpc_infos['NbChallenge'];
 			if ($rpc_infos['RoundsUseNewRules'])
