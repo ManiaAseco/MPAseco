@@ -52,6 +52,11 @@ class GBXChallengeFetcher {
 	       $xml, $parsedxml, $xmlver, $exever, $exebld, $lightmap, $nblaps,
 	       $songfile, $songurl, $modname, $modfile, $modurl, $thumbnail, $comment;
 
+
+  const IMAGE_FLIP_HORIZONTAL = 1;
+  const IMAGE_FLIP_VERTICAL = 2;
+  const IMAGE_FLIP_BOTH = 3;
+
 	/**
 	 * Fetches a hell of a lot of data about a GBX challenge
 	 *
@@ -121,15 +126,15 @@ class GBXChallengeFetcher {
 		$src_height = $height;
 
 		switch ((int)$mode) {
-		case IMAGE_FLIP_HORIZONTAL:
+		case self::IMAGE_FLIP_HORIZONTAL:
 			$src_y      =  $height;
 			$src_height = -$height;
 			break;
-		case IMAGE_FLIP_VERTICAL:
+		case self::IMAGE_FLIP_VERTICAL:
 			$src_x      =  $width;
 			$src_width  = -$width;
 			break;
-		case IMAGE_FLIP_BOTH:
+		case self::IMAGE_FLIP_BOTH:
 			$src_x      =  $width;
 			$src_y      =  $height;
 			$src_width  = -$width;
@@ -196,7 +201,6 @@ class GBXChallengeFetcher {
 		// start of Times/info block:
 		// 0x25 (TM v2), 0x2D (TMPowerUp v3), 0x35 (TMO/TMS/TMN v4), 0x3D (TMU/TMF v5), 0x45 (TM2C v6)
 		// get count of Times/info entries (well... sorta)
-    $blk[1] = ftell($handle);
     
 		$data = fread($handle, 1);
 		// TM v2 tracks use 3, TMPowerUp v3 tracks use 4; actual count is 2 more
@@ -288,7 +292,7 @@ class GBXChallengeFetcher {
 
 		// start of Strings block in version 2 (0x3A, TM)
 		// start of Version? block in versions >= 3
-    $blk[2] = ftell($handle);
+
 		fseek($handle, 0x04, SEEK_CUR);
 		// 00 03 00 00 (TM v2)
 		// 01 03 00 00 (TMPowerUp v3; TMO v4, exever="0.1.3.3-5"; TMS v4, exever="0.1.4.0")
@@ -310,7 +314,7 @@ class GBXChallengeFetcher {
     
     
     /**  Shootmania fixes (removed some "if(version >=")  **/
-    $blk[3] = ftell($handle);
+
 		fseek($handle, 0x05, SEEK_CUR);  // 00 and 00 00 00 80
 		$this->uid = $this->ReadGBXString($handle);
     
@@ -421,7 +425,7 @@ class GBXChallengeFetcher {
 						$tmp = tempnam(sys_get_temp_dir(), 'gbxflip');
 						if (@file_put_contents($tmp, $this->thumbnail)) {
 							if ($tn = @imagecreatefromjpeg($tmp)) {
-								$tn = $this->imageFlip($tn, IMAGE_FLIP_HORIZONTAL);
+								$tn = $this->imageFlip($tn, self::IMAGE_FLIP_HORIZONTAL);
 								if (@imagejpeg($tn, $tmp)) {
 									if ($tn = @file_get_contents($tmp)) {
 										$this->thumbnail = $tn;
@@ -618,7 +622,7 @@ class GBXReplayFetcher {
 		$r = unpack('Vversion', $data);
 		$this->version = $r['version'];
 		// check for unsupported versions
-		if ($this->version < 1 || $this->version > 2) {
+		if ($this->version < 1 || $this->version > 3) {
 			fclose($handle);
 			return false;
 		}
@@ -629,7 +633,7 @@ class GBXReplayFetcher {
 			$r = unpack('Nmark'.$i . '/Vlen'.$i, $data);
 			$len[$i] = $r['len'.$i];
 		}
-		if ($this->version == 2) {  // clear high-bit
+		if ($this->version >= 2) {  // clear high-bit
 			$len[2] &= 0x7FFFFFFF;
 		}
 
