@@ -16,12 +16,14 @@
        <!-- Define name of the Matchsettings -->              
        <matchsettings>SMStormMelee.txt</matchsettings>              
   </script>  
-    <!--  Change to TimeAttack is currently not possible
   <script>
+       <!-- Define Shortname (optional) -->  
        <shortname>timeattack</shortname>  
+       <!-- Define name of the Script -->   
        <name>TimeAttack.Script.txt</name>              
+       <!-- Define name of the Matchsettings -->     
        <matchsettings>SMStormTimeAttack.txt</matchsettings>              
-  </script>   -->  
+  </script>   
    <script>
        <!-- Define Shortname (optional) -->  
        <shortname>siege</shortname>
@@ -44,6 +46,6 @@
        <!-- Define name of the Script -->   
        <name>BattleWaves.Script.txt</name>  
        <!-- Define name of the Matchsettings -->              
-       <matchsettings>SMStormBattleWaves.txt</matchsettings>              
+       <matchsettings>SMStormBattle.txt</matchsettings>              
   </script>      
 </mpscripts>
