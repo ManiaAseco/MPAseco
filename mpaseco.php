@@ -1295,7 +1295,10 @@ class Aseco {
 		if (is_string($map_item->gbx->parsedxml))
 			trigger_error($map_item->gbx->parsedxml, E_USER_WARNING);
 		$map_item->mx = findMXdata($map_item->uid, true);
-
+    
+    // titleuid (is not in the GetMapInfos method..)
+    $map_item->titleuid = $map_item->gbx->titleuid;
+    
 		// throw main 'begin map' event
 		$this->releaseEvent('onBeginMap', $map_item);
 

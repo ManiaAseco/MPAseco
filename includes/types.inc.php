@@ -289,8 +289,12 @@ class Map {
 	var $nbchecks;
 	var $score;
 	var $starttime;
+  var $maptype;
+  var $mapstyle;
+  var $titleuid;
 	var $gbx;
 	var $mx;
+
 
 	// instantiates the map with an RPC response
 	function Map($rpc_infos = null) {
@@ -311,6 +315,8 @@ class Map {
 			$this->forcedlaps = 0;
 			$this->nblaps = $rpc_infos['NbLaps'];
 			$this->nbchecks = $rpc_infos['NbCheckpoints'];
+      $this->maptype = $rpc_infos['MapType'];
+      $this->mapstyle = $rpc_infos['MapStyle'];
 		} else {
 			// set defaults
 			$this->name = 'undefined';
