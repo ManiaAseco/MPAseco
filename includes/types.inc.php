@@ -477,7 +477,7 @@ class Gameinfo {
         $this->type = $rpc_infos['ScriptName'];
         
         // XXX: Temporary fix
-        if($this->type != '<in-development>') {
+        if($this->type == '<in-development>') {
           global $aseco;
           
           if(isset($aseco->server->map->gbx)) {
