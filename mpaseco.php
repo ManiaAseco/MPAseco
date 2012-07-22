@@ -176,6 +176,7 @@ class Aseco {
 	var $currsecond;  // server time changes
 	var $prevsecond;
 	var $uptime;  // MPAseco start-up time
+  public $smrankings; // XXX: Temporary rankings
 
 
 	/**
@@ -1371,6 +1372,8 @@ class Aseco {
 		$this->releaseEvent('onEndMap1', $race);
 		// throw main 'end map' event
 		$this->releaseEvent('onEndMap', $race);
+    
+    $this->smrankings = array(); // XXX: Temporary rankings
 	}  // endMap
 
 

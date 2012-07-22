@@ -24,12 +24,29 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onPlayerRespawn', $params);
     break;
     case 'beginRound':
-      $aseco->releaseEvent('onBeginRound', $params);
+      updateRankings($params);
+      $aseco->releaseEvent('onBeginRound', $aseco->smrankings);
     break;
     case 'endRound':
-      $aseco->releaseEvent('onEndRound', $params);
+      updateRankings($params);
+      $aseco->releaseEvent('onEndRound', $aseco->smrankings);
+    break;
+    case 'endMap':
+    case 'beginMap':
+    //not needed atm
     break;
   }
 }
 
+function updateRankings($data) {
+  global $aseco;
+  $scores = explode(';', $data);
+  foreach($scores as $player) {
+    if (strpos($player, ':') !== false) {
+      $tmp = explode(':', $player);
+      $aseco->smrankings[$tmp[0]] = $tmp[1];
+    }
+  }
+  array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);
+}
 ?>
