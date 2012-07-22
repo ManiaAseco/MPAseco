@@ -477,12 +477,19 @@ class Gameinfo {
         $this->type = $rpc_infos['ScriptName'];
         
         // XXX: Temporary fix
-        if($this->type == '<in-development>') {
+        if($this->type != '<in-development>') {
           global $aseco;
           
-          $aseco->client->query('GetCurrentMapInfo', array());
-          $challenge = $aseco->client->getResponse();
-          $this->type = $challenge['ScriptName'];
+          if(isset($aseco->server->map->gbx)) {
+            $this->type = $aseco->server->map->gbx->maptype;
+          } else {
+            $aseco->client->query('GetCurrentMapInfo', array());
+            $challenge = $aseco->client->getResponse();
+            $map = new map($challenge);
+            $map->gbx = new GBXChallengeFetcher($aseco->server->mapdir . $map->filename, true);
+            
+            $this->type = $map->gbx->maptype;
+          }
         }
         
         $this->type = str_ireplace('shootmania\\', '', $this->type);

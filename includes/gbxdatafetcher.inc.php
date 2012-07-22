@@ -50,7 +50,7 @@ class GBXChallengeFetcher {
 	       $pub, $authortm, $goldtm, $silvertm, $bronzetm, $cost, $multi,
 	       $unknown, $unknown2, $unknown4, $unknown5, $ascore, $editor, $password,
 	       $xml, $parsedxml, $xmlver, $exever, $exebld, $lightmap, $nblaps,
-	       $songfile, $songurl, $modname, $modfile, $modurl, $thumbnail, $comment;
+	       $songfile, $songurl, $modname, $modfile, $modurl, $thumbnail, $comment, $maptype, $mapstyle;
 
 
   const IMAGE_FLIP_HORIZONTAL = 1;
