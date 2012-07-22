@@ -4,10 +4,16 @@
 /**
  * MXInfoSearcher - Search info for TM2/SM/QM maps from ManiaExchange
  * Created by Xymph <tm@gamers.org> based on:
+ * http://api.mania-exchange.com/
  * http://tm.mania-exchange.com/api
+ * http://sm.mania-exchange.com/api
  * http://tm.mania-exchange.com/threads/view/218
  * Derived from TMXInfoSearcher
  *
+ * v1.3: Added MXInfo $maptype (TM2/SM)
+ * v1.2: Updated to use MX API v2.0 and add/fix support for SM; added MXInfo
+ *       $trkvalue (TM2, equals deprecated $lbrating), $unlimiter (TM2/SM),
+ *       $rating/$ratingex/$ratingcnt (SM)
  * v1.1: Added URLs to downloadable replays
  * v1.0: Initial release
  */
@@ -89,15 +95,19 @@ class MXInfoSearcher implements Iterator {
 	private function getRecent() {
 
 		// get 10 most recent maps
-		$url = 'http://' . $this->prefix . '.mania-exchange.com/api/tracks/get_latest_tracks/';
+		if ($this->prefix == 'tm')
+			$dir = 'tracks';
+		else // 'sm' || 'qm'
+			$dir = 'maps';
+		$url = 'http://api.mania-exchange.com/' . $this->prefix . '/' . $dir . '/list/latest';
 		$file = $this->get_file($url);
 		if ($file === false) {
 			$this->error = 'Connection or response error on ' . $url;
 			return array();
-		} else if ($file === -1) {
+		} elseif ($file === -1) {
 			$this->error = 'Timed out while reading data from ' . $url;
 			return array();
-		} else if ($file == '') {
+		} elseif ($file == '') {
 			$this->error = 'No data returned from ' . $url;
 			return array();
 		}
@@ -136,10 +146,10 @@ class MXInfoSearcher implements Iterator {
 			if ($file === false) {
 				$this->error = 'Connection or response error on ' . $url;
 				return array();
-			} else if ($file === -1) {
+			} elseif ($file === -1) {
 				$this->error = 'Timed out while reading data from ' . $url;
 				return array();
-			} else if ($file == '') {
+			} elseif ($file == '') {
 				$this->error = 'No data returned from ' . $url;
 				return array();
 			}
@@ -177,6 +187,7 @@ class MXInfoSearcher implements Iterator {
 
 		fwrite($fp, 'GET ' . $url['path'] . $query . " HTTP/1.0\r\n" .
 		            'Host: ' . $url['host'] . "\r\n" .
+		            'Content-Type: application/json' . "\r\n" .
 		            'User-Agent: MXInfoSearcher (' . PHP_OS . ")\r\n\r\n");
 		stream_set_timeout($fp, 2);
 		$res = '';
@@ -203,9 +214,10 @@ class MXInfo {
 
 	public $section, $prefix, $id,
 		$name, $userid, $author, $uploaded, $updated,
-		$type, $style, $envir, $mood, $dispcost, $lightmap, $modname,
-		$exever, $exebld, $routes, $length, $laps, $diffic, $lbrating,
-		$replaytyp, $replayid, $replaycnt, $acomment, $awards, $comments,
+		$type, $maptype, $style, $envir, $mood, $dispcost, $lightmap, $modname,
+		$exever, $exebld, $routes, $length, $unlimiter, $laps, $diffic,
+		$lbrating, $trkvalue, $replaytyp, $replayid, $replaycnt,
+		$acomment, $awards, $comments, $rating, $ratingex, $ratingcnt,
 		$pageurl, $replayurl, $imageurl, $thumburl, $dloadurl;
 
 	/**
@@ -224,14 +236,20 @@ class MXInfo {
 		$this->section  = $section;
 		$this->prefix   = $prefix;
 		if ($mx) {
-			$this->id        = $mx->TrackID;
+			if ($this->prefix == 'tm')
+				$dir = 'tracks';
+			else // 'sm' || 'qm'
+				$dir = 'maps';
+
+			$this->id        = ($this->prefix == 'tm') ? $mx->TrackID : $mx->MapID;
 			$this->name      = $mx->Name;
 			$this->userid    = $mx->UserID;
 			$this->author    = $mx->Username;
 			$this->uploaded  = $mx->UploadedAt;
 			$this->updated   = $mx->UpdatedAt;
 			$this->type      = $mx->TypeName;
-			$this->style     = $mx->StyleName;
+			$this->maptype   = isset($mx->MapType) ? $mx->MapType : '';
+			$this->style     = isset($mx->StyleName) ? $mx->StyleName : '';
 			$this->envir     = $mx->EnvironmentName;
 			$this->mood      = $mx->Mood;
 			$this->dispcost  = $mx->DisplayCost;
@@ -239,29 +257,39 @@ class MXInfo {
 			$this->modname   = isset($mx->ModName) ? $mx->ModName : '';
 			$this->exever    = $mx->ExeVersion;
 			$this->exebld    = $mx->ExeBuild;
-			$this->routes    = $mx->RouteName;
-			$this->length    = $mx->LengthName;
-			$this->laps      = $mx->Laps;
+			$this->routes    = isset($mx->RouteName) ? $mx->RouteName : '';
+			$this->length    = isset($mx->LengthName) ? $mx->LengthName : '';
+			$this->unlimiter = isset($mx->UnlimiterRequired) ? $mx->UnlimiterRequired : false;
+			$this->laps      = isset($mx->Laps) ? $mx->Laps : 0;
 			$this->diffic    = $mx->DifficultyName;
-			$this->lbrating  = isset($mx->LBRating) ? $mx->LBRating : '0';
-			$this->replaytyp = $mx->ReplayTypeName;
-			$this->replayid  = $mx->ReplayWRID;
-			$this->replaycnt = $mx->ReplayCount;
+			$this->lbrating  = isset($mx->LBRating) ? $mx->LBRating : 0;
+			$this->trkvalue  = isset($mx->TrackValue) ? $mx->TrackValue : 0;
+			$this->replaytyp = isset($mx->ReplayTypeName) ? $mx->ReplayTypeName : '';
+			$this->replayid  = isset($mx->ReplayWRID) ? $mx->ReplayWRID : 0;
+			$this->replaycnt = isset($mx->ReplayCount) ? $mx->ReplayCount : 0;
 			$this->acomment  = $mx->Comments;
-			$this->awards    = $mx->AwardCount;
+			$this->awards    = isset($mx->AwardCount) ? $mx->AwardCount : 0;
 			$this->comments  = $mx->CommentCount;
+			$this->rating    = isset($mx->Rating) ? $mx->Rating : 0.0;
+			$this->ratingex  = isset($mx->RatingExact) ? $mx->RatingExact : 0.0;
+			$this->ratingcnt = isset($mx->RatingCount) ? $mx->RatingCount : 0;
+
+			if ($this->trkvalue == 0 && $this->lbrating > 0)
+				$this->trkvalue = $this->lbrating;
+			elseif ($this->lbrating == 0 && $this->trkvalue > 0)
+				$this->lbrating = $this->trkvalue;
 
 			$search = array(chr(31), '[b]', '[/b]', '[i]', '[/i]', '[u]', '[/u]', '[url]', '[/url]');
 			$replace = array('<br/>', '<b>', '</b>', '<i>', '</i>', '<u>', '</u>', '<i>', '</i>');
 			$this->acomment  = str_ireplace($search, $replace, $this->acomment);
 			$this->acomment  = preg_replace('/\[url=.*\]/', '<i>', $this->acomment);
 
-			$this->pageurl   = 'http://' . $this->prefix . '.mania-exchange.com/tracks/view/' . $this->id;
-			$this->imageurl  = 'http://' . $this->prefix . '.mania-exchange.com/tracks/screenshot/normal/' . $this->id;
-			$this->thumburl  = 'http://' . $this->prefix . '.mania-exchange.com/tracks/screenshot/small/' . $this->id;
-			$this->dloadurl  = 'http://' . $this->prefix . '.mania-exchange.com/tracks/download/' . $this->id;
+			$this->pageurl   = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/view/' . $this->id;
+			$this->imageurl  = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/screenshot/normal/' . $this->id;
+			$this->thumburl  = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/screenshot/small/' . $this->id;
+			$this->dloadurl  = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/download/' . $this->id;
 
-			if ($this->replayid > 0) {
+			if ($this->prefix == 'tm' && $this->replayid > 0) {
 				$this->replayurl = 'http://' . $this->prefix . '.mania-exchange.com/replays/download/' . $this->replayid;
 			} else {
 				$this->replayurl = '';
