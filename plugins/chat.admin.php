@@ -5,7 +5,7 @@
  * Chat plugin.
  * Provides regular admin commands.
  * Updated by Xymph
- * edited for SM 22.07.2012 by kremsy (www.mania-server.net) 
+ * edited for MPAseco 22.07.2012 by kremsy 
  *  
  * Dependencies: requires plugin.rasp_jukebox.php, plugin.rasp_votes.php, plugin.uptodate.php, scripts.xml
  *               uses plugin.autotime.php, plugin.donate.php, plugin.panels.php, plugin.rpoints.php
@@ -15,7 +15,6 @@
 // these cannot be included in aseco.php because of their events registration
 require_once('includes/rasp.funcs.php');  // functions for the RASP plugins
 require_once('includes/manialinks.inc.php');  // provides ManiaLinks windows
-require_once('includes/types.inc.php');  
 
 // handles action id's "2201"-"2400" for /admin warn
 // handles action id's "2401"-"2600" for /admin ignore
@@ -436,37 +435,7 @@ function chat_admin($aseco, $command) {
 		trigger_error('Could not find config file ' . $config_file . ' !', E_USER_WARNING);
 	}    
     
-        
-    /*    switch($command['params'][1])
-        {
-           case "Royal":
-           case "royal":           
-                        $aseco->client->query('GetMapsDirectory');
-                        $dir = $aseco->client->getResponse().'MatchSettings/SMStormRoyal.txt'; 
-                        $aseco->client->query('LoadMatchSettings', $dir);
-                        $aseco->client->query('SetScriptName', 'ShootMania\Royal.Script.txt');
-                        $aseco->client->query('GameDataDirectory');
-                        $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/Royal.Script.txt';   
-                        $content = file_get_contents($dir);        
-                        $aseco->client->query('SetModeScriptText', $content);
-                        $aseco->client->query('NextMap'); 
-                        break;
-        
-           case "Melee":
-           case "melee":           
-                        $aseco->client->query('GetMapsDirectory');
-                        $dir = $aseco->client->getResponse().'MatchSettings/SMStormMelee.txt'; 
-                        $aseco->client->query('LoadMatchSettings', $dir);
-                        $aseco->client->query('SetScriptName', 'ShootMania\Melee.Script.txt');
-                        $aseco->client->query('GameDataDirectory');
-                        $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/Melee.Script.txt';   
-                        $content = file_get_contents($dir);        
-                        $aseco->client->query('SetModeScriptText', $content);
-                        $aseco->client->query('NextMap'); 
-                        break;        
-        }  */
-
-
+  
 	 /* Sets new game mode that will be active upon the next map:
 	 * ta,r
 	 */
