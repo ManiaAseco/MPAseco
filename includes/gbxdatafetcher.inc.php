@@ -50,7 +50,7 @@ class GBXChallengeFetcher {
 	       $pub, $authortm, $goldtm, $silvertm, $bronzetm, $cost, $multi,
 	       $unknown, $unknown2, $unknown4, $unknown5, $ascore, $editor, $password,
 	       $xml, $parsedxml, $xmlver, $exever, $exebld, $lightmap, $nblaps,
-	       $songfile, $songurl, $modname, $modfile, $modurl, $thumbnail, $comment, $maptype, $mapstyle;
+	       $songfile, $songurl, $modname, $modfile, $modurl, $thumbnail, $comment, $maptype, $mapstyle, $titleuid;
 
 
   const IMAGE_FLIP_HORIZONTAL = 1;
@@ -376,13 +376,15 @@ class GBXChallengeFetcher {
     
     fseek($handle, 17, SEEK_CUR);
     
-    // mapstyle length
+    // TODO: mapStyle (anyway its empty in all maps i saw)
+    
+    // titleUID length
     $data = fread($handle, 1);
     $r = unpack('Clen', $data);
     
     fseek($handle, 0x03, SEEK_CUR);
     $data = fread($handle, $r['len']);
-    $this->mapstyle = $data;
+    $this->titleuid = $data;
     
     //echo ftell($handle)."::\n\n";
     /**  Shootmania fixes end  **/
