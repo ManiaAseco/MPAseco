@@ -5,9 +5,9 @@
  * Chat plugin.
  * Provides regular admin commands.
  * Updated by Xymph
- * edited for SM 19.07.2012 by kremsy (www.mania-server.net) 
+ * edited for MPAseco 22.07.2012 by kremsy 
  *  
- * Dependencies: requires plugin.rasp_jukebox.php, plugin.rasp_votes.php, plugin.uptodate.php
+ * Dependencies: requires plugin.rasp_jukebox.php, plugin.rasp_votes.php, plugin.uptodate.php, scripts.xml
  *               uses plugin.autotime.php, plugin.donate.php, plugin.panels.php, plugin.rpoints.php
  *               used by plugin.matchsave.php
  */
@@ -48,6 +48,7 @@ Aseco::addChatCommand('setspecpwd', 'Changes the spectator password', true);
 //Aseco::addChatCommand('setrefpwd', 'Changes the referee password', true);
 Aseco::addChatCommand('setmaxplayers', 'Sets a new maximum of players', true);
 Aseco::addChatCommand('setmaxspecs', 'Sets a new maximum of spectators', true);
+Aseco::addChatCommand('setmodescript/setscript', 'Defines the next GameMode', true);           //Added 21.07.2012
 //Aseco::addChatCommand('setgamemode', 'Sets next mode {ta,rounds,team,laps,stunts,cup}', true);
 //Aseco::addChatCommand('setrefmode', 'Sets referee mode {0=top3,1=all}', true);
 Aseco::addChatCommand('nextmap/next', 'Forces server to load next map', true);
@@ -55,7 +56,7 @@ Aseco::addChatCommand('skipmap/skip', 'Forces server to load next map', true);
 Aseco::addChatCommand('previous/prev', 'Forces server to load previous map', true);
 //Aseco::addChatCommand('nextenv', 'Loads next map in same environment', true);
 Aseco::addChatCommand('restartmap/res', 'Restarts currently running map', true);
-Aseco::addChatCommand('replaymap/replay', 'Replays current map (via jukebox)', true);
+Aseco::addChatCommand('replaymap/replay', 'Replays current map (via jukebox)', true);    
 Aseco::addChatCommand('dropjukebox/djb', 'Drops a map from the jukebox', true);
 Aseco::addChatCommand('clearjukebox/cjb', 'Clears the entire jukebox', true);
 Aseco::addChatCommand('clearhist', 'Clears (part of) map history', true);
@@ -390,10 +391,53 @@ function chat_admin($aseco, $command) {
 		$message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} sets new spectator maximum to {#highlite}{3}{#admin} !',
 		                      $chattitle, $admin->nickname, $command['params'][1]);
 		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
-
+ 
 	/**
-	 * Sets new game mode that will be active upon the next map:
-	 * ta,rounds,team,laps,stunts
+	 * Sets the next script mode:
+	 * Royal, Melee, BattleWaves...
+	 */
+     
+	} elseif ($command['params'][0] == 'setmodescript' ||
+	          $command['params'][0] == 'setscript'     &&
+	          $command['params'][1] != '') { 
+            
+ 
+	$config_file = 'scripts.xml';
+	if (file_exists($config_file)) {
+		$aseco->console('Load scripts config [' . $config_file . ']');
+		if ($scripts = $aseco->xml_parser->parseXml($config_file)){
+  	   foreach ($scripts['MPSCRIPTS']['SCRIPT'] as $script) {
+    	   if($script['SHORTNAME'][0]==$command['params'][1]||$script['NAME'][0]==$command['params'][1])
+         {
+           $aseco->client->query('GetMapsDirectory');
+           $dir = $aseco->client->getResponse().'MatchSettings/'.$script['MATCHSETTINGS'][0]; 
+           $aseco->client->query('LoadMatchSettings', $dir);
+
+           $aseco->client->query('SetScriptName', 'ShootMania\\'.$script['NAME'][0]);
+                                   
+           $aseco->client->query('GameDataDirectory');
+           $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/'.$script['NAME'][0]; 
+           $content = file_get_contents($dir);   
+           $aseco->client->query('SetModeScriptText', $content); 
+			     
+           $aseco->console('{1} [{2}] changed script to [{3}]', $logtitle, $login, $script['NAME'][0]);	
+           $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} changed script to {#highlite}{3}{#admin}!',      
+		                      $chattitle, $admin->nickname, $script['NAME'][0]);
+		       $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+           usleep(100000); //sleep 0,1s
+           $aseco->client->query('NextMap');
+         }            	   
+  	   }
+		} else {
+			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_WARNING);
+		}
+	} else {
+		trigger_error('Could not find config file ' . $config_file . ' !', E_USER_WARNING);
+	}    
+    
+  
+	 /* Sets new game mode that will be active upon the next map:
+	 * ta,r
 	 */
 	} elseif ($command['params'][0] == 'setgamemode' && $command['params'][1] != '') {
 
