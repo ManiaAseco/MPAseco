@@ -7,7 +7,9 @@
  * Thanks to Electron for additional input
  * Based on information at http://en.tm-wiki.org/index.php?title=GBX&oldid=5300
  * Inspired by TMNDataFetcher & "Extract GBX data"
- *
+ *  
+ * v1.22: Quick & dirty fix for Shootmania maps. Updated by kremsy and maniactwister
+ * 
  * v1.21: Add TM2C Map version 6 compatibility; add $unknown4 & $unknown5; add
  *        track types Shortcut & Script
  * v1.20: Add TM2C Map/Replay compatibility; extract challenge $editor;
@@ -37,6 +39,10 @@
  * v1.0: Initial release
  */
 
+define('IMAGE_FLIP_HORIZONTAL', 1);
+define('IMAGE_FLIP_VERTICAL', 2);
+define('IMAGE_FLIP_BOTH', 3);
+
 class GBXChallengeFetcher {
 
 	public $filename, $parsexml, $tnimage,
@@ -45,10 +51,6 @@ class GBXChallengeFetcher {
 	       $unknown, $unknown2, $unknown4, $unknown5, $ascore, $editor, $password,
 	       $xml, $parsedxml, $xmlver, $exever, $exebld, $lightmap, $nblaps,
 	       $songfile, $songurl, $modname, $modfile, $modurl, $thumbnail, $comment;
-
-	const IMAGE_FLIP_HORIZONTAL = 1;
-	const IMAGE_FLIP_VERTICAL = 2;
-	const IMAGE_FLIP_BOTH = 3;
 
 	/**
 	 * Fetches a hell of a lot of data about a GBX challenge
@@ -85,7 +87,7 @@ class GBXChallengeFetcher {
 		$data = fread($handle, $len);
 		return $data;
 	}  // ReadGBXString
-
+  
 	// parser functions
 	private function startTag($parser, $name, $attribs) {
 		// echo 'startTag: ' . $name . "\n"; print_r($attribs);
@@ -119,15 +121,15 @@ class GBXChallengeFetcher {
 		$src_height = $height;
 
 		switch ((int)$mode) {
-		case self::IMAGE_FLIP_HORIZONTAL:
+		case IMAGE_FLIP_HORIZONTAL:
 			$src_y      =  $height;
 			$src_height = -$height;
 			break;
-		case self::IMAGE_FLIP_VERTICAL:
+		case IMAGE_FLIP_VERTICAL:
 			$src_x      =  $width;
 			$src_width  = -$width;
 			break;
-		case self::IMAGE_FLIP_BOTH:
+		case IMAGE_FLIP_BOTH:
 			$src_x      =  $width;
 			$src_y      =  $height;
 			$src_width  = -$width;
@@ -194,6 +196,8 @@ class GBXChallengeFetcher {
 		// start of Times/info block:
 		// 0x25 (TM v2), 0x2D (TMPowerUp v3), 0x35 (TMO/TMS/TMN v4), 0x3D (TMU/TMF v5), 0x45 (TM2C v6)
 		// get count of Times/info entries (well... sorta)
+    $blk[1] = ftell($handle);
+    
 		$data = fread($handle, 1);
 		// TM v2 tracks use 3, TMPowerUp v3 tracks use 4; actual count is 2 more
 		// oldest TMO/TMS tracks (exever="0.1.3.0-0.1.4.1") use 6-8, actual count always 8; no unknown2/ascore
@@ -284,6 +288,7 @@ class GBXChallengeFetcher {
 
 		// start of Strings block in version 2 (0x3A, TM)
 		// start of Version? block in versions >= 3
+    $blk[2] = ftell($handle);
 		fseek($handle, 0x04, SEEK_CUR);
 		// 00 03 00 00 (TM v2)
 		// 01 03 00 00 (TMPowerUp v3; TMO v4, exever="0.1.3.3-5"; TMS v4, exever="0.1.4.0")
@@ -302,35 +307,81 @@ class GBXChallengeFetcher {
 		// 0x6E (TMF v5, exever>="2.11.5")
 		// 0x72 (TM2C v5, exever>="3.0.0")
 		// 0x82 (TM2C v6, exever>="3.0.0")
+    
+    
+    /**  Shootmania fixes (removed some "if(version >=")  **/
+    $blk[3] = ftell($handle);
 		fseek($handle, 0x05, SEEK_CUR);  // 00 and 00 00 00 80
 		$this->uid = $this->ReadGBXString($handle);
-		$data = fread($handle, 4);  // if C0 00 00 00 no env, otherwise 00 00 00 40 and env
-		$r = unpack('Venv', $data);
-		if ($r['env'] != 12)
-			$this->envir = $this->ReadGBXString($handle);
-		else
-			$this->envir = 'XML';
-		fseek($handle, 0x04, SEEK_CUR);  // 00 00 00 [04|80]
-		$this->author = $this->ReadGBXString($handle);
-		$this->name = $this->ReadGBXString($handle);
-		fseek($handle, 0x01, SEEK_CUR);  // kind: almost always 08
+    
+    fseek($handle, 0x08, SEEK_CUR);  // 00 and 00 00 00 80
+    
+    // author length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
+    
+		fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->author = $data;
+    
+    // mapname length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
+    
+    fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->name = $data;
+    
+    // kind length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
+    
+    fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->kind = $data;
+    
+		fseek($handle, 0x1, SEEK_CUR);
+    
+    // mood length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
 
-		if ($this->version >= 3) {
-			fseek($handle, 0x04, SEEK_CUR);  // varies... a lot
-			$this->password = $this->ReadGBXString($handle);
-			if ($this->password == 'read error') $this->password = '';  // is optional
-		}
-		if ($this->version >= 4 && $count >= 8) {  // exever>="0.1.4.1"
-			fseek($handle, 0x04, SEEK_CUR);  // 00 00 00 40
-			$this->mood = $this->ReadGBXString($handle);
-			fseek($handle, 0x04, SEEK_CUR);  // 02 00 00 40
-			$data = fread($handle, 4);  // 03 00 00 40 if no pub, otherwise 00 00 00 40
-			if ($data[0] != chr(3)) {
-				$this->pub = $this->ReadGBXString($handle);
-			} else {
-				$this->pub = '';
-			}
-		}
+    fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->mood = $data;
+    
+    fseek($handle, 0x08, SEEK_CUR);
+    
+    // pub length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
+    
+    fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->pub = $data;
+    
+    fseek($handle, 32, SEEK_CUR);
+    
+    // maptype length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
+    
+    fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->maptype = $data;
+    
+    fseek($handle, 17, SEEK_CUR);
+    
+    // mapstyle length
+    $data = fread($handle, 1);
+    $r = unpack('Clen', $data);
+    
+    fseek($handle, 0x03, SEEK_CUR);
+    $data = fread($handle, $r['len']);
+    $this->mapstyle = $data;
+    
+    //echo ftell($handle)."::\n\n";
+    /**  Shootmania fixes end  **/
 
 		// set pointer to start of next block based on actual offsets
 		$lens = 0;
@@ -370,7 +421,7 @@ class GBXChallengeFetcher {
 						$tmp = tempnam(sys_get_temp_dir(), 'gbxflip');
 						if (@file_put_contents($tmp, $this->thumbnail)) {
 							if ($tn = @imagecreatefromjpeg($tmp)) {
-								$tn = $this->imageFlip($tn, self::IMAGE_FLIP_HORIZONTAL);
+								$tn = $this->imageFlip($tn, IMAGE_FLIP_HORIZONTAL);
 								if (@imagejpeg($tn, $tmp)) {
 									if ($tn = @file_get_contents($tmp)) {
 										$this->thumbnail = $tn;
@@ -561,13 +612,13 @@ class GBXReplayFetcher {
 			return false;
 		}
 
-		// get GBX version: 1 = TM, 2 = TMPU/TMO/TMS/TMN/TMU/TMF, 2-3 = TM2C
+		// get GBX version: 1 = TM, 2 = TMPU/TMO/TMS/TMN/TMU/TMF/TM2C
 		fseek($handle, 0x04, SEEK_CUR);  // data block offset
 		$data = fread($handle, 4);
 		$r = unpack('Vversion', $data);
 		$this->version = $r['version'];
 		// check for unsupported versions
-		if ($this->version < 1 || $this->version > 3) {
+		if ($this->version < 1 || $this->version > 2) {
 			fclose($handle);
 			return false;
 		}
@@ -578,7 +629,7 @@ class GBXReplayFetcher {
 			$r = unpack('Nmark'.$i . '/Vlen'.$i, $data);
 			$len[$i] = $r['len'.$i];
 		}
-		if ($this->version >= 2) {  // clear high-bit
+		if ($this->version == 2) {  // clear high-bit
 			$len[2] &= 0x7FFFFFFF;
 		}
 
