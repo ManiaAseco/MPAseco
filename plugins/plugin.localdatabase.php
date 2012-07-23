@@ -22,6 +22,11 @@ Aseco::registerEvent('onPlayerConnect', 'ldb_playerConnect');
 Aseco::registerEvent('onPlayerDisconnect', 'ldb_playerDisconnect');
 Aseco::registerEvent('onPlayerFinish', 'ldb_playerFinish');
 Aseco::registerEvent('onPlayerWins', 'ldb_playerWins');
+
+Aseco::registerEvent('onPlayerHit', 'ldb_playerHit');
+Aseco::registerEvent('onPoleCapture', 'ldb_poleCapture');
+Aseco::registerEvent('onPlayerRespawn', 'ldb_playerRespawn');
+Aseco::registerEvent('onPlayerDeath', 'ldb_playerDeath');
 //Aseco::registerEvent('onPlayerVote', 'ldb_vote');
 
 // called @ onStartup
@@ -95,6 +100,11 @@ function ldb_connect($aseco) {
 	            `Wins` mediumint(9) NOT NULL default 0,
 	            `TimePlayed` int(10) unsigned NOT NULL default 0,
 	            `TeamName` char(60) NOT NULL default '',
+              `Respawns` mediumint(9) unsigned NOT NULL default 0,
+              `Deaths` mediumint(9) unsigned NOT NULL default 0,
+              `Hits` mediumint(9) unsigned NOT NULL default 0,
+              `GotHits` mediumint(9) unsigned NOT NULL default 0,
+              `Captures` mediumint(9) unsigned NOT NULL default 0,
 	            PRIMARY KEY (`Id`),
 	            UNIQUE KEY `Login` (`Login`),
 	            KEY `Game` (`Game`)
@@ -139,6 +149,37 @@ function ldb_connect($aseco) {
 		$aseco->console("[LocalDB] Add 'players_extra' column 'PanelBG'...");
 		mysql_query("ALTER TABLE players_extra ADD PanelBG VARCHAR(30) NOT NULL DEFAULT ''");
 	}
+
+  // Add shootmania related columns
+  $fields = array();
+  $update = '';
+	$result = mysql_query('SHOW COLUMNS FROM players');
+	while ($row = mysql_fetch_row($result))
+		$fields[] = $row[0];
+	mysql_free_result($result);
+  print_r($fields);
+	if (!in_array('Respawns', $fields)) {
+    $update .= "ADD Respawns mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  }
+  if (!in_array('Deaths', $fields)) {
+    $update .= "ADD Deaths mediumint(9) unsigned NOT NULL DEFAULT 0,";
+	}
+  if (!in_array('Hits', $fields)) {
+    $update .= "ADD Hits mediumint(9) unsigned NOT NULL DEFAULT 0,";
+	}
+  if (!in_array('GotHits', $fields)) {
+    $update .= "ADD GotHits mediumint(9) unsigned NOT NULL DEFAULT 0,";
+	}
+  if (!in_array('Captures', $fields)) {
+    $update .= "ADD Captures mediumint(9) unsigned NOT NULL DEFAULT 0,";
+	}
+  $update = substr($update, -1, 1) == ',' ? substr($update, 0, -1) : $update;
+
+  if(!empty($update)) {
+    $aseco->console("[LocalDB] Add shootmania-related columns to 'players' ...");
+    mysql_query("ALTER TABLE players ".$update);
+  }
+  
 
 	$aseco->console('[LocalDB] ...Structure OK!');
 }  // ldb_connect
@@ -537,4 +578,24 @@ function ldb_playerWins($aseco, $player) {
 		trigger_error('Could not update winning player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_playerWins
+
+function ldb_playerHit($aseco, $data) {
+  $query = 'UPDATE players SET hits = hits+1 WHERE login = '.quotedString($data['shooter']).'; UPDATE players SET got_hit = got_hit+1 WHERE login = '.quotedString($data['victim']).'';
+  mysql_query($query);
+}
+
+function ldb_poleCapture($aseco, $login) {
+  $query = 'UPDATE players SET captures = captures+1 WHERE login = '.quotedString($login);
+  mysql_query($query);
+}
+
+function ldb_playerRespawn($aseco, $login) {
+  $query = 'UPDATE players SET respawns = respawns+1 WHERE login = '.quotedString($login);
+  mysql_query($query);
+}
+
+function ldb_playerDeath($aseco, $login) {
+  $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
+  mysql_query($query);
+}
 ?>
