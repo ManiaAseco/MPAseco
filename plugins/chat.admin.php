@@ -49,14 +49,8 @@ Aseco::addChatCommand('setspecpwd', 'Changes the spectator password', true);
 //Aseco::addChatCommand('setrefpwd', 'Changes the referee password', true);
 Aseco::addChatCommand('setmaxplayers', 'Sets a new maximum of players', true);
 Aseco::addChatCommand('setmaxspecs', 'Sets a new maximum of spectators', true);
-
-global $aseco;
-$aseco->client->query('GetVersion');
-$titleid=$aseco->client->getResponse();
-if($titleid['TitleId']=='SMStorm'){
-  Aseco::addChatCommand('listmodescripts/listscripts', 'Lists the available ScriptModes', true);           //Added 23.07.2012
-  Aseco::addChatCommand('setmodescript/setscript', 'Defines the next ScriptMode', true);           //Added 21.07.2012
-}
+Aseco::addChatCommand('listmodescripts/listscripts', 'Lists the available ScriptModes', true);           //Added 23.07.2012
+Aseco::addChatCommand('setmodescript/setscript', 'Defines the next ScriptMode', true);           //Added 21.07.2012                      
 //Aseco::addChatCommand('setgamemode', 'Sets next mode {ta,rounds,team,laps,stunts,cup}', true);
 //Aseco::addChatCommand('setrefmode', 'Sets referee mode {0=top3,1=all}', true);
 Aseco::addChatCommand('nextmap/next', 'Forces server to load next map', true);
@@ -406,51 +400,56 @@ function chat_admin($aseco, $command) {
 	} elseif ($command['params'][0] == 'listmodescripts' ||
 	          $command['params'][0] == 'listscripts'    ) { 
 
-		$admin->scriptlist = array();
-		$admin->msgs = array();
-
-		$head = 'Available ScriptModes:';
-		$msg = array();
-		$msg[] = array('ID', 'ScriptName','ShortName');
-		$scriptid = 1;
-		$lines = 0;
-
-  	$admin->msgs[0] = array(1,$head, array(0.9, 0.1, 0.4, 0.3), array('Icons128x128_1', 'Solo'));
-
-  	$config_file = 'scripts.xml';
-  	if (file_exists($config_file)) {
-  		$aseco->console('Load scripts config [' . $config_file . ']');
-  		if ($scripts = $aseco->xml_parser->parseXml($config_file)){
-    	   foreach ($scripts['MPSCRIPTS']['SCRIPT'] as $script) {
- 				  $msg[] = array(str_pad($scriptid, 2, '0', STR_PAD_LEFT) . '.',
-				               '{#black}' . $script['NAME'][0], '{#black}'.$script['SHORTNAME'][0]);
-          $scriptid++;
-  				if (++$lines > 14) {
-  					$admin->msgs[] = $msg;
-  					$lines = 0;
-  					$msg = array();
-  					$msg[] = array('Id', '{#nick}Nick $g/{#login} Login','ShortName');
-  				}
-  	     }
-  		} else {
-  			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_WARNING);
-  		}
-  	} else {
-  		trigger_error('Could not find config file ' . $config_file . ' !', E_USER_WARNING);
-  	}    
-           
-
-		// add if last batch exists
-		if (count($msg) > 1)
-			$admin->msgs[] = $msg;
-
-		// display ManiaLink message
-		if (count($admin->msgs) > 1) {
-			display_manialink_multi($admin);
-		} else {  // == 1
-			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No scripts found!'), $login);
-		}
- 
+    $aseco->client->query('GetVersion');   
+    $titleid=$aseco->client->getResponse();
+    if($titleid['TitleId']=='SMStorm'){
+    		$admin->scriptlist = array();
+    		$admin->msgs = array();
+    
+    		$head = 'Available ScriptModes:';
+    		$msg = array();
+    		$msg[] = array('ID', 'ScriptName','ShortName');
+    		$scriptid = 1;
+    		$lines = 0;
+    
+      	$admin->msgs[0] = array(1,$head, array(0.9, 0.1, 0.4, 0.3), array('Icons128x128_1', 'Solo'));
+    
+      	$config_file = 'scripts.xml';
+      	if (file_exists($config_file)) {
+      		$aseco->console('Load scripts config [' . $config_file . ']');
+      		if ($scripts = $aseco->xml_parser->parseXml($config_file)){
+        	   foreach ($scripts['MPSCRIPTS']['SCRIPT'] as $script) {
+     				  $msg[] = array(str_pad($scriptid, 2, '0', STR_PAD_LEFT) . '.',
+    				               '{#black}' . $script['NAME'][0], '{#black}'.$script['SHORTNAME'][0]);
+              $scriptid++;
+      				if (++$lines > 14) {
+      					$admin->msgs[] = $msg;
+      					$lines = 0;
+      					$msg = array();
+      					$msg[] = array('Id', '{#nick}Nick $g/{#login} Login','ShortName');
+      				}
+      	     }
+      		} else {
+      			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_WARNING);
+      		}
+      	} else {
+      		trigger_error('Could not find config file ' . $config_file . ' !', E_USER_WARNING);
+      	}    
+               
+    
+    		// add if last batch exists
+    		if (count($msg) > 1)
+    			$admin->msgs[] = $msg;
+    
+    		// display ManiaLink message
+    		if (count($admin->msgs) > 1) {
+    			display_manialink_multi($admin);
+    		} else {  // == 1
+    			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No scripts found!'), $login);
+		    }
+    } else {   
+      $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}Only available in SMStorm!'), $login);
+    }
 	/**
 	 * Sets the next script mode:
 	 * Royal, Melee, BattleWaves...
@@ -460,35 +459,40 @@ function chat_admin($aseco, $command) {
 	          $command['params'][0] == 'setscript'     &&
 	          $command['params'][1] != '') { 
 
-  $scriptmode=strtoupper($command['params'][1]);
-                    
-	$config_file = 'scripts.xml';
-	if (file_exists($config_file)) {
-		$aseco->console('Load scripts config [' . $config_file . ']');
-		if ($scripts = $aseco->xml_parser->parseXml($config_file)){
-  	   foreach ($scripts['MPSCRIPTS']['SCRIPT'] as $script) {
-    	   if(strtoupper($script['SHORTNAME'][0])==$scriptmode||strtoupper($script['NAME'][0])==$scriptmode)
-         {
-           $aseco->client->query('GetMapsDirectory');
-           $dir = $aseco->client->getResponse().'MatchSettings/'.$script['MATCHSETTINGS'][0]; 
-          $aseco->client->query('LoadMatchSettings', $dir);
-
-           $scriptchange=$script;  //scriptchange -> globale variable
-           $aseco->client->query('NextMap');
-
-           $aseco->console('{1} [{2}] changed script to [{3}]', $logtitle, $login, $script['NAME'][0]);	
-           $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} changed script to {#highlite}{3}{#admin}!',      
-		                      $chattitle, $admin->nickname, $script['NAME'][0]);
-		       $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
-         }          	   
-  	   }
-		} else {
-			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_WARNING);
-		}
-	} else {
-		trigger_error('Could not find config file ' . $config_file . ' !', E_USER_WARNING);
-	}    
-    
+    $aseco->client->query('GetVersion');   
+    $titleid=$aseco->client->getResponse();
+    if($titleid['TitleId']=='SMStorm'){         
+        $scriptmode=strtoupper($command['params'][1]);
+                          
+      	$config_file = 'scripts.xml';
+      	if (file_exists($config_file)) {
+      		$aseco->console('Load scripts config [' . $config_file . ']');
+      		if ($scripts = $aseco->xml_parser->parseXml($config_file)){
+        	   foreach ($scripts['MPSCRIPTS']['SCRIPT'] as $script) {
+          	   if(strtoupper($script['SHORTNAME'][0])==$scriptmode||strtoupper($script['NAME'][0])==$scriptmode)
+               {
+                 $aseco->client->query('GetMapsDirectory');
+                 $dir = $aseco->client->getResponse().'MatchSettings/'.$script['MATCHSETTINGS'][0]; 
+                $aseco->client->query('LoadMatchSettings', $dir);
+      
+                 $scriptchange=$script;  //scriptchange -> globale variable
+                 $aseco->client->query('NextMap');
+      
+                 $aseco->console('{1} [{2}] changed script to [{3}]', $logtitle, $login, $script['NAME'][0]);	
+                 $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} changed script to {#highlite}{3}{#admin}!',      
+      		                      $chattitle, $admin->nickname, $script['NAME'][0]);
+      		       $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+               }          	   
+        	   }
+      		} else {
+      			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_WARNING);
+      		}
+      	} else {
+      		trigger_error('Could not find config file ' . $config_file . ' !', E_USER_WARNING);
+      	}    
+    } else {   
+      $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}Only available in SMStorm!'), $login);
+    }   
   
 	 /* Sets new game mode that will be active upon the next map:
 	 * ta,r
