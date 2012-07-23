@@ -79,7 +79,7 @@ function panels_default($aseco) {
 function init_statspanel($aseco) {
 
 	if ($aseco->settings['sb_stats_panels']) {
-		$panel_file = 'panels/StatsCanyon.xml';
+		$panel_file = 'panels/StatsMP.xml';
 		$aseco->console('Load stats panel [{1}]', $panel_file);
 		if (!$aseco->statspanel = @file_get_contents($panel_file)) {
 			// Could not read XML file
