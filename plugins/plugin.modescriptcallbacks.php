@@ -7,7 +7,7 @@ function release_modeScriptCallbacks($aseco, $data) {
   
   switch($name) {
     case 'playerDeath':
-      $aseco->releaseEvent('onplayerDeath', $params);
+      $aseco->releaseEvent('onPlayerDeath', $params);
     break;
     case 'poleCapture':
       $aseco->releaseEvent('onPoleCapture', $params);
@@ -37,8 +37,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onEndMap1', $aseco->smrankings);
     break;
     case 'beginMap':
-      updateRankings($params);
-      $aseco->releaseEvent('onBegindMap', $params);
+      $aseco->releaseEvent('onBeginMap', $params);
     break;
   }
 }
