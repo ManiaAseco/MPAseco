@@ -79,7 +79,9 @@ function chat_server($aseco, $command) {
 		                 ' / ' . $aseco->server->relaymaster['NickName']);
 	else
 		$stats[] = array('Map Count', '{#black}' . $aseco->server->gameinfo->numchall);
-	$stats[] = array('Game Mode', '{#black}' . $aseco->server->gameinfo->getMode());
+	
+  $stats[] = array('Game Script', '{#black}' . $aseco->server->gameinfo->type);
+  
 switch ($aseco->server->gameinfo->mode) {
 case 0: // Script
 	break;
@@ -143,7 +145,7 @@ function chat_mpaseco($aseco, $command) {
 
 	$header = 'MPASECO info: ' . $aseco->server->name;
 	$info = array();
-	$info[] = array('Version', '{#black}' . SMASECO_VERSION);
+	$info[] = array('Version', '{#black}' . MPASECO_VERSION);
 	$field = 'Welcome';
 	$welcome = preg_split('/{br}/', $aseco->formatColors($welcome));
 	foreach ($welcome as $line) {
@@ -152,11 +154,11 @@ function chat_mpaseco($aseco, $command) {
 	}
 
 	$info[] = array('Uptime', '{#black}' . $updays . ' day' . ($updays == 1 ? ' ' : 's ') . formatTimeH($uptime * 1000, false));
-	$info[] = array('Websites', '{#black}$l[' . XASECO_ORG . ']' . XASECO_ORG . '$l');
+  $info[] = array('Websites', '{#black}$l[' . MPASECO . ']' . MPASECO . '$l');
+	$info[] = array('', '{#black}$l[' . XASECO_ORG . ']' . XASECO_ORG . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_TMN . ']' . XASECO_TMN . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_TMF . ']' . XASECO_TMF . '$l');  
 	$info[] = array('', '{#black}$l[' . XASECO_TM2 . ']' . XASECO_TM2 . '$l'); 
-  $info[] = array('', '{#black}$l[' . MPASECO . ']' . MPASECO . '$l');
 	$info[] = array('Credits', '{#black}Main author TMN:  Flo');    
 	$info[] = array('', '{#black}Main author TMF/TM2: Xmyph');  	
 	$info[] = array('', '{#black}Main author SM/QM:  kremsy');
