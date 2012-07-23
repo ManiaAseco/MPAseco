@@ -157,7 +157,7 @@ function ldb_connect($aseco) {
 	while ($row = mysql_fetch_row($result))
 		$fields[] = $row[0];
 	mysql_free_result($result);
-  print_r($fields);
+
 	if (!in_array('Respawns', $fields)) {
     $update .= "ADD Respawns mediumint(9) unsigned NOT NULL DEFAULT 0,";
   }
