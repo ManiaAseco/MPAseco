@@ -2,7 +2,7 @@
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
 /**
- * Projectname: SMASeco
+ * Projectname: MPAseco
  *
  * Requires: PHP version 5, MySQL version 4/5
  *
@@ -60,7 +60,8 @@ define('XASECO_TMN', 'http://www.gamers.org/tmn/');
 define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
-define('MPASECO_SM', 'http://www.mania-server.net/mpaseco/sm/');
+//define('MPASECO_SM', 'http://www.mania-server.net/mpaseco/sm/');
+define('MPASECO', 'http://www.mania-server.net/mpaseco/');
 
 // required official dedicated server build
 define('MP_BUILD', '2012-07-19-xx_xx');

@@ -18,7 +18,7 @@ Aseco::addChatCommand('uptodate', 'Checks current version of MPASECO', true);
 
 function up_to_date($aseco) {
 
-	$version_url = MPASECO_SM . 'version2.txt';  // URL to current version file
+	$version_url = MPASECO . 'version2.txt';  // URL to current version file
 
 	// grab version file
 	$current = trim(http_get_file($version_url));
@@ -27,7 +27,7 @@ function up_to_date($aseco) {
 		if ($current != MPASECO_VERSION) {
 			$message = formatText($aseco->getChatMessage('UPTODATE_NEW'), $current,
 			                      // hyperlink release page
-			                      '$l[' . MPASECO_SM  . ']' . MPASECO_SM  . '$l');
+			                      '$l[' . MPASECO  . ']' . MPASECO  . '$l');
 		} else {
 			$message = formatText($aseco->getChatMessage('UPTODATE_OK'), $current);
 		}

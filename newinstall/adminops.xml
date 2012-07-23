@@ -30,8 +30,8 @@
 		<setmaxspecs>false</setmaxspecs>
 		<setgamemode>true</setgamemode>
 		<setmodescript>false</setmodescript>
-		<listscripts>true</setscript>		
-		<listmodescripts>true</setmodescript>
+		<listscripts>true</listscripts>		
+		<listmodescripts>true</listmodescripts>
 		<setscript>false</setscript>		
 		<setrefmode>true</setrefmode>
 		<nextmap>true</nextmap>
@@ -184,8 +184,8 @@
 		<setmaxplayers>false</setmaxplayers>
 		<setmaxspecs>false</setmaxspecs>
 		<setgamemode>false</setgamemode>
-		<listscripts>false</setscript>		
-		<listmodescripts>false</setmodescript>
+		<listscripts>false</listscripts>		
+		<listmodescripts>false</listmodescripts>
 		<setmodescript>false</setmodescript>
 		<setscript>false</setscript>		
 		<setrefmode>false</setrefmode>
