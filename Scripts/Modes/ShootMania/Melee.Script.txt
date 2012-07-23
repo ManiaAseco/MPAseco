@@ -323,7 +323,7 @@ main() {
 		XmlRpc.SendCallback("endRound",fixGetRankings());
 		Score::RoundEnd();
 		
-		XmlRpc.SendCallback("endMatch",MapName);
+		XmlRpc.SendCallback("endMap",fixGetRankings());
 		Score::MatchEnd(True);
 		
 		/* -------------------------------------- */
@@ -361,7 +361,6 @@ main() {
 		UIManager.UIAll.BigMessage = "";
 		
 	
-    XmlRpc.SendCallback("endMap",fixGetRankings());
 		Mode::UnloadMap();
 	}
 	

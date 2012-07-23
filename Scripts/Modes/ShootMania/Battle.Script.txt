@@ -568,7 +568,7 @@ UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::EndRound;
 		}
 		
 		+++MatchEnd+++
-		XmlRpc.SendCallback("endMatch",MapName);
+		XmlRpc.SendCallback("endMap",fixGetRankings());
 		Score::MatchEnd();
 		Top::MatchEnd();	
 		Airshot::MatchEnd();
@@ -587,7 +587,6 @@ UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::EndRound;
 			
 		MatchEndRequested = False;
 
-    XmlRpc.SendCallback("endMap",fixGetRankings());
 		UnloadMap();
 	}
 	

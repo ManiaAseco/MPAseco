@@ -724,13 +724,13 @@ main() {
 /* ------------------------------------- */
 // Map End
 /* ------------------------------------- */	
+    XmlRpc.SendCallback("endMap",fixGetRankings());
 		Score::MatchEnd(True);	
 		Top::RoundEnd();
+    
 		Top::MatchEnd();	
 
 		UIManager.UIAll.UILayers.clear();
-		
-		XmlRpc.SendCallback("endMap",fixGetRankings());
 		
 		UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
 		if (Players.existskey(MapWinnerId)) {
