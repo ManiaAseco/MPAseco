@@ -32,6 +32,11 @@ CREATE TABLE IF NOT EXISTS `players` (
   `Wins` mediumint(9) NOT NULL default 0,
   `TimePlayed` int(10) unsigned NOT NULL default 0,
   `TeamName` char(60) NOT NULL default '',
+  `Respawns` mediumint(9) unsigned NOT NULL default 0,
+  `Deaths` mediumint(9) unsigned NOT NULL default 0,
+  `Hits` mediumint(9) unsigned NOT NULL default 0,
+  `GotHits` mediumint(9) unsigned NOT NULL default 0,
+  `Captures` mediumint(9) unsigned NOT NULL default 0,  
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Login` (`Login`),
   KEY `Game` (`Game`)
