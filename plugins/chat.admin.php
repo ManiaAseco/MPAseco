@@ -5,7 +5,7 @@
  * Chat plugin.
  * Provides regular admin commands.
  * Updated by Xymph
- * edited for MPAseco 22.07.2012 by kremsy 
+ * edited for MPAseco 23.07.2012 by kremsy 
  *  
  * Dependencies: requires plugin.rasp_jukebox.php, plugin.rasp_votes.php, plugin.uptodate.php, scripts.xml
  *               uses plugin.autotime.php, plugin.donate.php, plugin.panels.php, plugin.rpoints.php
@@ -33,6 +33,7 @@ require_once('includes/manialinks.inc.php');  // provides ManiaLinks windows
 // handles action id's "5001"-"5200" for /admin removeguest in listguests
 // handles action id's "-7901"-"-8100" for /admin unbanip
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_admin');
+Aseco::registerEvent('onBeginMap', 'setscript'); //for /admin setscript
 
 Aseco::addChatCommand('admin', 'Provides admin commands (see: /admin help)');
 if (ABBREV_COMMANDS) {
@@ -48,7 +49,11 @@ Aseco::addChatCommand('setspecpwd', 'Changes the spectator password', true);
 //Aseco::addChatCommand('setrefpwd', 'Changes the referee password', true);
 Aseco::addChatCommand('setmaxplayers', 'Sets a new maximum of players', true);
 Aseco::addChatCommand('setmaxspecs', 'Sets a new maximum of spectators', true);
-Aseco::addChatCommand('setmodescript/setscript', 'Defines the next GameMode', true);           //Added 21.07.2012
+
+//$aseco->client->query('GetVersion');
+//$titleid=$aseco->client->getResponse();
+//if($titleid['TitleId']=='SMStorm')
+Aseco::addChatCommand('setmodescript/setscript', 'Defines the next ScriptMode', true);           //Added 21.07.2012
 //Aseco::addChatCommand('setgamemode', 'Sets next mode {ta,rounds,team,laps,stunts,cup}', true);
 //Aseco::addChatCommand('setrefmode', 'Sets referee mode {0=top3,1=all}', true);
 Aseco::addChatCommand('nextmap/next', 'Forces server to load next map', true);
@@ -166,8 +171,8 @@ $auto_scorepanel = true;
 $rounds_finishpanel = true;
 
 function chat_admin($aseco, $command) {
-	global $jukebox;  // from plugin.rasp_jukebox.php
-
+	global $jukebox , $scriptchange,$logtitle,$chattitle,$admin,$login;  
+          // $jukebox from plugin.rasp_jukebox.php, rest needed global for etscript
 	$admin = $command['author'];
 	$login = $admin->login;
 
@@ -400,33 +405,28 @@ function chat_admin($aseco, $command) {
 	} elseif ($command['params'][0] == 'setmodescript' ||
 	          $command['params'][0] == 'setscript'     &&
 	          $command['params'][1] != '') { 
-            
- 
+
+  $scriptmode=strtoupper($command['params'][1]);
+                    
 	$config_file = 'scripts.xml';
 	if (file_exists($config_file)) {
 		$aseco->console('Load scripts config [' . $config_file . ']');
 		if ($scripts = $aseco->xml_parser->parseXml($config_file)){
   	   foreach ($scripts['MPSCRIPTS']['SCRIPT'] as $script) {
-    	   if($script['SHORTNAME'][0]==$command['params'][1]||$script['NAME'][0]==$command['params'][1])
+    	   if(strtoupper($script['SHORTNAME'][0])==$scriptmode||strtoupper($script['NAME'][0])==$scriptmode)
          {
            $aseco->client->query('GetMapsDirectory');
            $dir = $aseco->client->getResponse().'MatchSettings/'.$script['MATCHSETTINGS'][0]; 
-           $aseco->client->query('LoadMatchSettings', $dir);
+          $aseco->client->query('LoadMatchSettings', $dir);
 
-           $aseco->client->query('SetScriptName', 'ShootMania\\'.$script['NAME'][0]);
-                                   
-           $aseco->client->query('GameDataDirectory');
-           $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/'.$script['NAME'][0]; 
-           $content = file_get_contents($dir);   
-           $aseco->client->query('SetModeScriptText', $content); 
-			     
+           $scriptchange=$script;  //scriptchange -> globale variable
+           $aseco->client->query('NextMap');
+
            $aseco->console('{1} [{2}] changed script to [{3}]', $logtitle, $login, $script['NAME'][0]);	
            $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} changed script to {#highlite}{3}{#admin}!',      
 		                      $chattitle, $admin->nickname, $script['NAME'][0]);
 		       $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
-           usleep(100000); //sleep 0,1s
-           $aseco->client->query('NextMap');
-         }            	   
+         }          	   
   	   }
 		} else {
 			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_WARNING);
@@ -4361,6 +4361,24 @@ function chat_admin($aseco, $command) {
 	}
 }  // chat_admin
 
+
+/*
+Sets the new scriptmap onBeginMap
+*/
+function setscript($aseco) {
+	    global $scriptchange,$logtitle,$chattitle,$admin,$login; 
+        if(!empty($scriptchange))
+        {
+           $script=$scriptchange;
+           $aseco->client->query('SetScriptName', 'ShootMania\\'.$script['NAME'][0]);            
+           $aseco->client->query('GameDataDirectory');
+           $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/'.$script['NAME'][0]; 
+           $content = file_get_contents($dir);   
+           $aseco->client->query('SetModeScriptText', $content); 
+			     $aseco->console("new mode starting");	  
+           unset($scriptchange); 
+        }             
+}
 
 function get_ignorelist($aseco) {
 
