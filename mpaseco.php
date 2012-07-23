@@ -55,12 +55,11 @@ define('CONFIG_UTF8ENCODE', false);
  */
 
 // current project version
-define('MPASECO_VERSION', '0.10');
+define('MPASECO_VERSION', '0.30');
 define('XASECO_TMN', 'http://www.gamers.org/tmn/');
 define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
-//define('MPASECO_SM', 'http://www.mania-server.net/mpaseco/sm/');
 define('MPASECO', 'http://www.mania-server.net/mpaseco/');
 
 // required official dedicated server build
@@ -900,15 +899,19 @@ class Aseco {
 	 */
 	function sendHeader() {
 
+    $this->client->query('GetVersion');   
+    $titleid=$this->client->getResponse();
+  
 		$this->console_text('###############################################################################');
 		$this->console_text('  MPAseco v' . MPASECO_VERSION . ' running on {1}:{2}', $this->server->ip, $this->server->port);
 		$this->console_text('  Name   : {1} - {2}', stripColors($this->server->name, false), $this->server->serverlogin);
 		if ($this->server->isrelay)
 			$this->console_text('  Relays : {1} - {2}', stripColors($this->server->relaymaster['NickName'], false), $this->server->relaymaster['Login']);
 		$this->console_text('  Game   : {1} - {2} - {3}', $this->server->game,
-		                    /*$this->server->packmask*/0, $this->server->gameinfo->getMode());
+		                       $titleid['TitleId'], $this->server->gameinfo->getMode());
 		$this->console_text('  Version: {1} / {2}', $this->server->version, $this->server->build);
-		$this->console_text('  Author : kremsy Prev. Authors Xymph / Flo');
+		$this->console_text('  Author : Lukas Kremsmayr alias kremsy');
+		$this->console_text('  Previous Authors: Xymph & Flo');		
 		$this->console_text('###############################################################################');
 
 		// format the text of the message

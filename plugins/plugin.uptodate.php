@@ -23,17 +23,18 @@ function up_to_date($aseco) {
 	// grab version file
 	$current = trim(http_get_file($version_url));
 	if ($current && $current != -1) {
-		// compare versions
-		if ($current != MPASECO_VERSION) {
+		// compare versions                     str_replace('{br}', LF, $this->getChatMessage('CONNECT_ERROR'));
+		if ($current > MPASECO_VERSION) {
 			$message = formatText($aseco->getChatMessage('UPTODATE_NEW'), $current,
 			                      // hyperlink release page
 			                      '$l[' . MPASECO  . ']' . MPASECO  . '$l');
 		} else {
-			$message = formatText($aseco->getChatMessage('UPTODATE_OK'), $current);
+			$message = formatText($aseco->getChatMessage('UPTODATE_OK'), MPASECO_VERSION);
 		}
 	} else {
 		$message = false;
 	}
+	$message=str_replace('{br}', LF, $message);
 	return $message;
 }  // up_to_date
 
