@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<mpaseco_plugins>
-      
+<mpaseco_plugins>    
    <plugin>plugin.localdatabase.php</plugin>
    <plugin>chat.admin.php</plugin>
    <plugin>plugin.panels.php</plugin>
@@ -9,6 +8,9 @@
    <plugin>chat.laston.php</plugin>
    <plugin>chat.players.php</plugin>
    <plugin>chat.me.php</plugin>
+   <plugin>chat.stats.php</plugin>   
+   <plugin>chat.server.php</plugin>    
+   <plugin>plugin.chatlog.php</plugin>
    <plugin>plugin.map.php</plugin>
    <plugin>plugin.mxinfo.php</plugin>
    <plugin>plugin.rasp.php</plugin>
@@ -20,24 +22,22 @@
    <plugin>plugin.style.php</plugin>
    <plugin>mistral.idlekick.php</plugin>
    <plugin>plugin.uptodate.php</plugin>
+   <plugin>plugin.modescriptcallbacks.php</plugin>
+
 <!--		   
   <plugin>plugin.rounds.php</plugin>
 	<plugin>chat.wins.php</plugin>
  	<plugin>chat.players2.php</plugin>  	
 	<plugin>chat.lastwin.php</plugin>
-	<plugin>chat.stats.php</plugin>
 	<plugin>chat.songmod.php</plugin>
-  <plugin>chat.server.php</plugin> 
 	<plugin>plugin.rasp_nextrank.php</plugin>
-	<plugin>plugin.chatlog.php</plugin>
 	<plugin>plugin.donate.php</plugin>
 -->
 	
 <!--	<plugin>plugin.musicserver.php</plugin> -->
 <!--	<plugin>plugin.msglog.php</plugin> -->
 <!--	<plugin>plugin.muting.php</plugin> -->
-<!--	<plugin>plugin.rpoints.php</plugin> -->
 <!--	<plugin>plugin.autotime.php</plugin> -->
 <!--	<plugin>plugin.access.php</plugin> -->	
-  <plugin>plugin.modescriptcallbacks.php</plugin>
+
 </mpaseco_plugins>

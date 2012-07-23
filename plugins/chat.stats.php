@@ -6,7 +6,7 @@
  * Displays player statistics & personal settings.
  * Updated by Xymph
  *  
- * edited for SM 20.07.2012 by kremsy and the MPAseco-Team
+ * edited for SM 23.07.2012 by kremsy and the MPAseco-Team
  *  
  */
 
@@ -86,7 +86,7 @@ if ($feature_ranks) {
 		$value = array($value, -6);  // action id
 	$stats[] = array('Server Rank', $value);
 }
-	$value = '{#black}' . $records;
+//	$value = '{#black}' . $records;
 	// add clickable button
 	if ($aseco->settings['clickable_lists'])
 		$value = array($value, 5);  // action id

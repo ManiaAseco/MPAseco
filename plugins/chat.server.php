@@ -6,7 +6,7 @@
  * Displays server/MPASeco info & plugins/nations lists.
  * Created by Xymph
  *
- * edited for SM 20.07.2012 by kremsy and the MPAseco-Team
+ * edited for SM 23.07.2012 by kremsy and the MPAseco-Team
  *  
  * Dependencies: none
  */
@@ -156,7 +156,7 @@ function chat_mpaseco($aseco, $command) {
 	$info[] = array('', '{#black}$l[' . XASECO_TMN . ']' . XASECO_TMN . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_TMF . ']' . XASECO_TMF . '$l');  
 	$info[] = array('', '{#black}$l[' . XASECO_TM2 . ']' . XASECO_TM2 . '$l'); 
-  $info[] = array('', '{#black}$l[' . MPASECO_SM . ']' . MPASECO_SM . '$l');
+  $info[] = array('', '{#black}$l[' . MPASECO . ']' . MPASECO . '$l');
 	$info[] = array('Credits', '{#black}Main author TMN:  Flo');    
 	$info[] = array('', '{#black}Main author TMF/TM2: Xmyph');  	
 	$info[] = array('', '{#black}Main author SM/QM:  kremsy');
