@@ -5,7 +5,8 @@
  * Provides simple ManiaLink windows.
  * Also handles special panels and custom UI changes.
  * Created by Xymph
- *
+ * updated 23.07.2012 by kremsy and his MPTeam
+ * 
  * Currently reserved ManiaLink id's and action's:
  *        id= "0": dummy for custom_ui block
  *            "1": Main pop-up window
@@ -36,7 +37,8 @@
  *           "10": Records panel MX field         call "/mxrecs"
  *           "11": /list Env field Canyon         call "/list env:Canyon"
  *           "12": /list Env field Valley         call "/list env:Valley"
- *      "13"-"17": reserved for future use
+ *           "13": /list Env field Storm          call "/list env:Storm"          
+ *      "14"-"17": reserved for future use
  *           "18": Vote panel Yes, F5 key         call "/y"
  *           "19": Vote panel No, F6 key
  *           "20": /jukebox display Clear button  call "/admin clearjukebox"
@@ -468,6 +470,17 @@ function event_manialink($aseco, $answer) {
 		chat_list($aseco, $command);
 		return;
 	case 13:
+		// close main window because /list can take a while
+		mainwindow_off($aseco, $login);
+		// log clicked command
+		$aseco->console('player {1} clicked command "/list env:Storm"', $player->login);
+		// /list Env field Valley
+		$command = array();
+		$command['author'] = $player;
+		$command['params'] = 'env:Storm';
+		chat_list($aseco, $command);
+		return;	
+	
 	case 14:
 	case 15:
 	case 16:

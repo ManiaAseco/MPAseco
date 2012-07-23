@@ -2402,7 +2402,7 @@ function chat_admin($aseco, $command) {
 		if (!empty($dupelist)) {
 			$head = 'Duplicate Maps On This Server:';
 			$msg = array();
-			if ($aseco->server->packmask != 'Canyon')
+			if ($aseco->server->packmask != 'Storm')
 				$msg[] = array('Id', 'Name', 'Env');
 			else
 				$msg[] = array('Id', 'Name');
@@ -2410,7 +2410,7 @@ function chat_admin($aseco, $command) {
 			$lines = 0;
 			// reserve extra width for $w tags
 			$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-			if ($aseco->server->packmask != 'Canyon')
+			if ($aseco->server->packmask != 'Storm')
 				$admin->msgs[0] = array(1, $head, array(0.90+$extra, 0.15, 0.6+$extra, 0.15), array('Icons128x128_1', 'Challenge'));
 			else
 				$admin->msgs[0] = array(1, $head, array(0.75+$extra, 0.15, 0.6+$extra), array('Icons128x128_1', 'Challenge'));
@@ -2427,7 +2427,7 @@ function chat_admin($aseco, $command) {
 				$trkarr['uid'] = $row['UId'];
 				$admin->maplist[] = $trkarr;
 
-				if ($aseco->server->packmask != 'Canyon')
+				if ($aseco->server->packmask != 'Storm')
 					$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 					               '{#black}' . $mapname,
 					               $trkarr['environment']);
@@ -2439,7 +2439,7 @@ function chat_admin($aseco, $command) {
 					$admin->msgs[] = $msg;
 					$lines = 0;
 					$msg = array();
-					if ($aseco->server->packmask != 'Canyon')
+					if ($aseco->server->packmask != 'Storm')
 						$msg[] = array('Id', 'Name', 'Env');
 					else
 						$msg[] = array('Id', 'Name');
