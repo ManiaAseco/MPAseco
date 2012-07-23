@@ -8,13 +8,13 @@
 
 	<admins>
 <!-- format:
-		<mploign>YOUR_ADMIN_LOGIN</mplogin> <ipaddress></ipaddress>
+		<mplogin>YOUR_ADMIN_LOGIN</mplogin> <ipaddress></ipaddress>
 -->
 	</admins>
 
 	<operators>
 <!-- format:
-		<mploign>YOUR_OPERATOR_LOGIN</mplogin> <ipaddress></ipaddress>
+		<mplogin>YOUR_OPERATOR_LOGIN</mplogin> <ipaddress></ipaddress>
 -->
 	</operators>
 
@@ -29,6 +29,10 @@
 		<setmaxplayers>false</setmaxplayers>
 		<setmaxspecs>false</setmaxspecs>
 		<setgamemode>true</setgamemode>
+		<setmodescript>false</setmodescript>
+		<listscripts>true</setscript>		
+		<listmodescripts>true</setmodescript>
+		<setscript>false</setscript>		
 		<setrefmode>true</setrefmode>
 		<nextmap>true</nextmap>
 		<next>true</next>
@@ -180,6 +184,10 @@
 		<setmaxplayers>false</setmaxplayers>
 		<setmaxspecs>false</setmaxspecs>
 		<setgamemode>false</setgamemode>
+		<listscripts>false</setscript>		
+		<listmodescripts>false</setmodescript>
+		<setmodescript>false</setmodescript>
+		<setscript>false</setscript>		
 		<setrefmode>false</setrefmode>
 		<nextmap>true</nextmap>
 		<next>true</next>
