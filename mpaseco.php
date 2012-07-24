@@ -1278,6 +1278,7 @@ class Aseco {
 			} else {  // == 1
 				$this->restarting = 0;
 				// throw postfix 'restart map' event
+ 				$this->releaseEvent('onRestartMap', $map);
 				$this->releaseEvent('onRestartMap2', $map);
 				return;
 			}
@@ -1340,7 +1341,7 @@ class Aseco {
 	 */
 	function endMap($race) {
   		// check for RestartChallenge flag
-  	//	$this->console(print_r($race));
+  //	$this->console(print_r($race));
   //		$this->console($race[4]." Race4");
      /*
   		if ($race[4]) {
