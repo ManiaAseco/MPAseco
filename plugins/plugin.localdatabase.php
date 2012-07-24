@@ -523,6 +523,9 @@ function ldb_beginMap($aseco, $map) {
  		$record_item->map = clone $map;
 		unset($record_item->map->gbx);  // reduce memory usage
 		unset($record_item->map->mx);
+      
+      // get map info
+      $map->id = $record['MapId'];
     }     
 		mysql_free_result($result);
 	// map isn't in database yet
@@ -563,7 +566,13 @@ function ldb_beginMap($aseco, $map) {
 			trigger_error('Could not insert new map! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}
-}  // ldb_beginMap
+}  // ldb_beginMapfunction ldb_playerHit($aseco, $data) {
+  //maybe optimize
+  $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
+  mysql_query($query);
+  $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
+  mysql_query($query);
+}
 
 // called @ onPlayerWins
 function ldb_playerWins($aseco, $player) {
@@ -580,7 +589,10 @@ function ldb_playerWins($aseco, $player) {
 }  // ldb_playerWins
 
 function ldb_playerHit($aseco, $data) {
-  $query = 'UPDATE players SET hits = hits+1 WHERE login = '.quotedString($data['shooter']).'; UPDATE players SET got_hit = got_hit+1 WHERE login = '.quotedString($data['victim']).'';
+  //maybe optimize
+  $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
+  mysql_query($query);
+  $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
   mysql_query($query);
 }
 
