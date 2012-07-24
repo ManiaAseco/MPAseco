@@ -566,13 +566,7 @@ function ldb_beginMap($aseco, $map) {
 			trigger_error('Could not insert new map! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}
-}  // ldb_beginMapfunction ldb_playerHit($aseco, $data) {
-  //maybe optimize
-  $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
-  mysql_query($query);
-  $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
-  mysql_query($query);
-}
+}  // ldb_beginMap
 
 // called @ onPlayerWins
 function ldb_playerWins($aseco, $player) {
