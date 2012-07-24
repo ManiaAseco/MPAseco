@@ -176,6 +176,7 @@ class Aseco {
 	var $currsecond;  // server time changes
 	var $prevsecond;
 	var $uptime;  // MPAseco start-up time
+	
   public $smrankings; // XXX: Temporary rankings
 
 
@@ -214,7 +215,7 @@ class Aseco {
 		$this->restarting = 0;
 		$this->changingmode = false;
 		$this->currstatus = 0;
-
+    $this->endmapvar=0;
     
 	}  // Aseco
 
@@ -850,8 +851,13 @@ class Aseco {
 		}
 
 		// get MP packmask
-		$this->client->query('GetServerPackMask');
-		$this->server->packmask = $this->client->getResponse();
+//		$this->client->query('GetServerPackMask');
+//		$this->server->packmask = $this->client->getResponse();
+ 
+    //Temporary fix
+    $this->client->query('GetVersion');   
+    $titleid=$this->client->getResponse();  
+    $this->server->packmask=$titleid['TitleId'];
      
 		// clear possible leftover ManiaLinks
 		$this->client->query('SendHideManialinkPage');
@@ -986,7 +992,8 @@ class Aseco {
 						break;
 
 					case 'ManiaPlanet.EndMap':  // [0]=Challenge
-            $this->endMap($call[1]);
+					  if($this->endmapvar==0)
+              $this->endMap($call[1]);
 						break;
 
 					case 'ManiaPlanet.PlayerManialinkPageAnswer':  // [0]=PlayerUid, [1]=Login, [2]=Answer, [3]=Entries
@@ -1232,8 +1239,8 @@ class Aseco {
 	function beginMap($race) {
 		// request information about the new map
 		// ... and callback to function newMap()
+	    $this->endmapvar=0;
 
-	
   	// if new map, check WarmUp state
   /*
 		if ($race)
@@ -1332,52 +1339,53 @@ class Aseco {
 	 * Write records to database and/or display final statistics.
 	 */
 	function endMap($race) {
-
-		// check for RestartChallenge flag
-	//	$this->console(print_r($race));
-//		$this->console($race[4]." Race4");
-   /*
-		if ($race[4]) {
-			$this->restarting = 1;
-			// check whether changing game mode or any player has a time/score,
-			// then there will be ChatTime, otherwise it's an instant restart
-			if ($this->changingmode)
-				$this->restarting = 2;
-			else
-				foreach ($race[0] as $pl) {
-					if ($pl['BestTime'] > 0 || $pl['Score'] > 0) {
-						$this->restarting = 2;
-						break;
-					}
-				}
-			// log type of restart and signal an instant one
-			if ($this->restarting == 2) {
-				$this->console_text('Restart Map (with ChatTime)');
-			} else {  // == 1
-				$this->console_text('Restart Map (instant)');
-				// throw main 'restart map' event
-				$this->releaseEvent('onRestartMap', $race);
-				return;
-			}
-		}      */
-		// log if not a restart
-		if ($this->restarting == 0)
-			$this->console_text('End Map');
-
-		// get rankings and call endMapRanking as soon as we have them
-		// $this->addCall('GetCurrentRanking', array(2, 0), false, 'endMapRanking');
-/*		if (!$this->server->isrelay)
-			$this->endMapRanking($race[0]);*/  
-      
-      //$race[0] is not ranking anymore but challengeinfo
-
-      $race[1]=$race[0];   //to make it compatible with other Plugins
-		// throw prefix 'end map' event (chat-based votes)
-		$this->releaseEvent('onEndMap1', $race);
-		// throw main 'end map' event
-		$this->releaseEvent('onEndMap', $race);
-    
-    $this->smrankings = array(); // XXX: Temporary rankings
+  		// check for RestartChallenge flag
+  	//	$this->console(print_r($race));
+  //		$this->console($race[4]." Race4");
+     /*
+  		if ($race[4]) {
+  			$this->restarting = 1;
+  			// check whether changing game mode or any player has a time/score,
+  			// then there will be ChatTime, otherwise it's an instant restart
+  			if ($this->changingmode)
+  				$this->restarting = 2;
+  			else
+  				foreach ($race[0] as $pl) {
+  					if ($pl['BestTime'] > 0 || $pl['Score'] > 0) {
+  						$this->restarting = 2;
+  						break;
+  					}
+  				}
+  			// log type of restart and signal an instant one
+  			if ($this->restarting == 2) {
+  				$this->console_text('Restart Map (with ChatTime)');
+  			} else {  // == 1
+  				$this->console_text('Restart Map (instant)');
+  				// throw main 'restart map' event
+  				$this->releaseEvent('onRestartMap', $race);
+  				return;
+  			}
+  		}      */
+  		// log if not a restart
+  		if ($this->restarting == 0)
+  			$this->console_text('End Map');
+  
+  		// get rankings and call endMapRanking as soon as we have them
+  		// $this->addCall('GetCurrentRanking', array(2, 0), false, 'endMapRanking');
+  /*		if (!$this->server->isrelay)
+  			$this->endMapRanking($race[0]);*/  
+        
+        //$race[0] is not ranking anymore but challengeinfo
+  
+        $race[1]=$race[0];   //to make it compatible with other Plugins
+  
+  		// throw prefix 'end map' event (chat-based votes)
+  		$this->releaseEvent('onEndMap1', $race);
+  		// throw main 'end map' event
+  		$this->releaseEvent('onEndMap', $race);
+   
+     
+      $this->smrankings = array(); // XXX: Temporary rankings
 	}  // endMap
 
 

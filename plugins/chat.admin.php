@@ -158,7 +158,9 @@ Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
 global $pmbuf;  // pm history buffer
 global $pmlen;  // length of pm history
 global $lnlen;  // max length of pm line
+global $scriptchange;
 
+$scriptchange = array();
 $pmbuf = array();
 $pmlen = 30;
 $lnlen = 40;
@@ -473,8 +475,8 @@ function chat_admin($aseco, $command) {
                {
                  $aseco->client->query('GetMapsDirectory');
                  $dir = $aseco->client->getResponse().'MatchSettings/'.$script['MATCHSETTINGS'][0]; 
-                $aseco->client->query('LoadMatchSettings', $dir);
-      
+                 $aseco->client->query('LoadMatchSettings', $dir);
+                 //$aseco->console('test1');
                  $scriptchange=$script;  //scriptchange -> globale variable
                  $aseco->client->query('NextMap');
       
@@ -482,6 +484,7 @@ function chat_admin($aseco, $command) {
                  $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} changed script to {#highlite}{3}{#admin}!',      
       		                      $chattitle, $admin->nickname, $script['NAME'][0]);
       		       $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+                 $jukebox = array(); //clearjukebox
                }          	   
         	   }
       		} else {
@@ -4401,7 +4404,7 @@ function chat_admin($aseco, $command) {
 		}
 
 	/**
-	 * Checks current version of XASECO2.
+	 * Checks current version of MPASECO.
 	 */
 	} elseif ($command['params'][0] == 'uptodate') {
 
@@ -4424,18 +4427,24 @@ function chat_admin($aseco, $command) {
 Sets the new scriptmap onBeginMap
 */
 function setscript($aseco) {
-	    global $scriptchange,$logtitle,$chattitle,$admin,$login; 
-        if(!empty($scriptchange))
-        {
-           $script=$scriptchange;
-           $aseco->client->query('SetScriptName', 'ShootMania\\'.$script['NAME'][0]);            
-           $aseco->client->query('GameDataDirectory');
-           $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/'.$script['NAME'][0]; 
-           $content = file_get_contents($dir);   
-           $aseco->client->query('SetModeScriptText', $content); 
-			     $aseco->console("new mode starting");	  
-           unset($scriptchange); 
-        }             
+	global $scriptchange,$logtitle,$chattitle,$admin,$login; 
+ // $aseco->console('test2');
+  
+  //$aseco->console(print_r($scriptchange)."test4");
+  if(!empty($scriptchange))
+  {
+    //$aseco->console('test3');
+    $script=$scriptchange;
+    $aseco->client->query('SetScriptName', 'ShootMania\\'.$script['NAME'][0]);            
+    $aseco->client->query('GameDataDirectory');
+    $dir = $aseco->client->getResponse().'Scripts/Modes/ShootMania/'.$script['NAME'][0]; 
+    $content = file_get_contents($dir);   
+    $aseco->client->query('SetModeScriptText', $content); 
+		$aseco->console("new mode starting");	  
+    $scriptchange=array();
+    //unset($scriptchange); 
+  }             
+   //$aseco->console(print_r($scriptchange)."test5");
 }
 
 function get_ignorelist($aseco) {
