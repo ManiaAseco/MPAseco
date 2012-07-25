@@ -38,7 +38,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onEndMap1', $aseco->smrankings);
     break;
     case 'beginMap':
-      // nothing
+      $aseco->smrankings = array();
     break;
   }
 }
