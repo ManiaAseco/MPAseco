@@ -5,7 +5,7 @@
  * Chat plugin.
  * Provides private messages and a wide variety of shout-outs.
  * Updated by Xymph
- *
+ * updated by kremsy
  * Dependencies: requires chat.admin.php
  */
 
@@ -14,6 +14,7 @@ Aseco::addChatCommand('pma', 'Sends a private message to player & admins');
 Aseco::addChatCommand('pmlog', 'Displays log of your recent private messages');
 Aseco::addChatCommand('hi', 'Sends a Hi message to everyone');
 Aseco::addChatCommand('bye', 'Sends a Bye message to everyone');
+Aseco::addChatCommand('bb', 'Sends a Bye message to everyone');
 Aseco::addChatCommand('thx', 'Sends a Thanks message to everyone');
 Aseco::addChatCommand('lol', 'Sends a Lol message to everyone');
 Aseco::addChatCommand('lool', 'Sends a Lool message to everyone');
@@ -25,6 +26,34 @@ Aseco::addChatCommand('n1', 'Sends a Nice One message to everyone');
 Aseco::addChatCommand('bgm', 'Sends a Bad Game message to everyone');
 Aseco::addChatCommand('official', 'Shows a helpful message ;-)');
 Aseco::addChatCommand('bootme', 'Boot yourself from the server');
+
+
+//by LK 
+// 1. Param $aseco, 2. String der überprüft werden soll lj=last joined
+function isinplayerlist($aseco,$login)
+{
+    $pid=1;
+  	foreach ($aseco->server->players->player_list as $pl) {				
+				if($login==$pl->login)
+          return $pl->nickname.'$z';
+        //$aseco->console('ID:' . $pl->id);  
+				if($login==$pid)
+          return $pl->nickname.'$z';   
+				if($login==$pl->nickname)
+          return $pl->nickname.'$z';
+          
+      $nickname=$pl->nickname;  
+      $pid++;                            
+			} 
+      if($login==lj)
+          return $nickname.'$z';     
+			return $login;
+}
+
+
+
+
+
 
 function chat_pm($aseco, $command) {
 	global $muting_available,  // from plugin.muting.php
@@ -217,15 +246,23 @@ function chat_hi($aseco, $command) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $player->login);
 		return;
 	}
+	
 
 	if ($command['params'] != '') {
-		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Hello ' . $command['params'] . ' !';
+
+  	$plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
+
+		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Hello ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Hello All !';
 	}
 	$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($msg));
 }  // chat_hi
 
+function chat_bb($aseco, $command) {
+ chat_bye($aseco, $command);
+}
 function chat_bye($aseco, $command) {
 
 	$player = $command['author'];
@@ -238,7 +275,9 @@ function chat_bye($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Bye ' . $command['params'] . ' !';
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
+		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Bye ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}I have to go... Bye All !';
 	}
@@ -257,7 +296,9 @@ function chat_thx($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Thanks ' . $command['params'] . ' !';
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
+		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Thanks ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Thanks All !';
 	}
@@ -346,7 +387,7 @@ function chat_afk($aseco, $command) {
 function chat_gg($aseco, $command) {
 
 	$player = $command['author'];
-
+ 	$message = formatText($aseco->getChatMessage('MUTED'), '/n1');
 	// check if on global mute list
 	if (in_array($player->login, $aseco->server->mutelist)) {
 		$message = formatText($aseco->getChatMessage('MUTED'), '/gg');
@@ -355,7 +396,9 @@ function chat_gg($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Game ' . $command['params'] . ' !';
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
+		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Game ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Game All !';
 	}
@@ -374,7 +417,9 @@ function chat_gr($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Race ' . $command['params'] . ' !';
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
+		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Race ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Race !';
 	}
@@ -387,13 +432,15 @@ function chat_n1($aseco, $command) {
 
 	// check if on global mute list
 	if (in_array($player->login, $aseco->server->mutelist)) {
-		$message = formatText($aseco->getChatMessage('MUTED'), '/n1');
+		$message = formatText($aseco->getChatMessage('MUTED'), '/gr');
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $player->login);
 		return;
 	}
 
 	if ($command['params'] != '') {
-		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Nice One ' . $command['params'] . ' !';
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
+		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Nice One ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Nice One !';
 	}

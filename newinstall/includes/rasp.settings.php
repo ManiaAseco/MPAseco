@@ -59,7 +59,7 @@ $jukebox_in_window = false;
 $admin_contact = 'YOUR@EMAIL.COM';
 
 //Set to filename to enable autosaving matchsettings upon every map switch
-$autosave_matchsettings = '';  // e.g. 'autosave.txt'
+$autosave_matchsettings = 'tracklist.txt';  // e.g. 'autosave.txt'
 
 //Set to true if you want start-up to prune records/rs_times for players and
 // maps deleted from database, and for maps deleted from the server
@@ -107,7 +107,7 @@ $maxavg = 10;
 
 //Specifies how large the map history buffer is.
 //If a map that is in the buffer gets requested, it won't be jukeboxed.
-$buffersize = 20;
+$buffersize = 3;
 
 //Specifies the required vote ratio for a MX /add request to be successful.
 $mxvoteratio = 0.66;

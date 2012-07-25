@@ -148,7 +148,7 @@ function rasp_endmap($aseco, $data) {
 			trigger_error('[' . $aseco->client->getErrorCode() . '] ChooseNextMap - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
 		} else {
 			// check for future envs
-			if ($aseco->server->packmask != 'Storm') {
+			if ($aseco->server->packmask != 'SMStorm') {
 				// report map change from MX or jukebox
 				if ($next['mx']) {
 					$logmsg = '{RASP Jukebox} Setting Next Map to [' . $next['Env'] . '] ' . stripColors($next['Name'], false) . ', file downloaded from ' . $next['source'];
@@ -385,7 +385,7 @@ function chat_list($aseco, $command) {
 		                'Shows newest/oldest # maps (def: 50)');
 		$help[] = array('...', '{#black}xxx',
 		                'Where xxx is part of a map or author name');
-	if ($aseco->server->packmask != 'Storm') {
+	if ($aseco->server->packmask != 'SMStorm') {
 		$help[] = array('...', '{#black}env:zzz',
 		                'Where zzz is an environment from: storm,');
 		$help[] = array('', '',
@@ -465,7 +465,7 @@ function chat_list($aseco, $command) {
 	}
 	elseif ($cmdcount >= 1 && strlen($command['params'][0]) > 0) {
 		// check for future envs
-		if ($aseco->server->packmask != 'Storm') {
+		if ($aseco->server->packmask != 'SMStorm') {
 			$env = '*';  // wildcard
 			// find and delete optional env: parameter
 			foreach ($command['params'] as &$param) {
@@ -604,7 +604,7 @@ function chat_jukebox($aseco, $command) {
 				$dropall = $aseco->allowAbility($player, 'dropjukebox');
 				$head = 'Upcoming maps in the jukebox:';
 				$page = array();
-				if ($aseco->server->packmask != 'Storm')
+				if ($aseco->server->packmask != 'SMStorm')
 					if ($aseco->settings['clickable_lists'])
 						$page[] = array('Id', 'Name (click to drop)', 'Env', 'Requester');
 					else
@@ -620,7 +620,7 @@ function chat_jukebox($aseco, $command) {
 				$player->msgs = array();
 				// reserve extra width for $w tags
 				$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-				if ($aseco->server->packmask != 'Storm')
+				if ($aseco->server->packmask != 'SMStorm')
 					$player->msgs[0] = array(1, $head, array(1.25+$extra, 0.1, 0.6+$extra, 0.15, 0.4), array('Icons128x128_1', 'LoadTrack', 0.02));
 				else
 					$player->msgs[0] = array(1, $head, array(1.10+$extra, 0.1, 0.6+$extra, 0.4), array('Icons128x128_1', 'LoadTrack', 0.02));
@@ -634,7 +634,7 @@ function chat_jukebox($aseco, $command) {
 						$mapname = array('{#black}' . $mapname, -2000-$tid);  // action id
 					else
 						$mapname = '{#black}' . $mapname;
-					if ($aseco->server->packmask != 'Storm')
+					if ($aseco->server->packmask != 'SMStorm')
 						$page[] = array(str_pad($tid, 2, '0', STR_PAD_LEFT) . '.',
 						                $mapname, $item['Env'],
 						                '{#black}' . stripColors($item['Nick']));
@@ -646,7 +646,7 @@ function chat_jukebox($aseco, $command) {
 					if (++$lines > 14) {
 						if ($aseco->allowAbility($player, 'clearjukebox')) {
 							$page[] = array();
-							if ($aseco->server->packmask != 'Storm')
+							if ($aseco->server->packmask != 'SMStorm')
 								$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '', '');  // action id
 							else
 								$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '');  // action id
@@ -654,7 +654,7 @@ function chat_jukebox($aseco, $command) {
 						$player->msgs[] = $page;
 						$lines = 0;
 						$page = array();
-						if ($aseco->server->packmask != 'Storm')
+						if ($aseco->server->packmask != 'SMStorm')
 							if ($aseco->settings['clickable_lists'])
 								$page[] = array('Id', 'Name (click to drop)', 'Env', 'Requester');
 							else
@@ -670,7 +670,7 @@ function chat_jukebox($aseco, $command) {
 				if (count($page) > 1) {
 					if ($aseco->allowAbility($player, 'clearjukebox')) {
 						$page[] = array();
-						if ($aseco->server->packmask != 'Storm')
+						if ($aseco->server->packmask != 'SMStorm')
 							$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '', '');  // action id
 						else
 							$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '');  // action id
