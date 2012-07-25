@@ -24,14 +24,11 @@
        <!-- Define name of the Matchsettings -->     
        <matchsettings>SMStormTimeAttack.txt</matchsettings>              
   </script>   
-   <script>
-       <!-- Define Shortname (optional) -->  
+<!--   <script>
        <shortname>siege</shortname>
-       <!-- Define name of the Script -->   
-       <name>Siege.Script.txt</name>  
-       <!-- Define name of the Matchsettings -->              
+       <name>Siege.Script.txt</name>              
        <matchsettings>SMStormSiege.txt</matchsettings>              
-  </script>   
+  </script>        -->
     <script>
        <!-- Define Shortname (optional) -->  
        <shortname>battle</shortname>

@@ -57,13 +57,13 @@ define('CONFIG_UTF8ENCODE', false);
 // current project version
 define('MPASECO_VERSION', '0.30');
 // A fix for old plugins which checks this constant
-define('XASECO2_VERSION', '0.90');
+define('XASECO2_VERSION', '5.55');
 
 define('XASECO_TMN', 'http://www.gamers.org/tmn/');
 define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
-define('MPASECO', 'http://www.mania-server.net/mpaseco/');
+define('MPASECO', 'http://www.MPAseco.org');
 
 // required official dedicated server build
 define('MP_BUILD', '2012-07-19-xx_xx');
