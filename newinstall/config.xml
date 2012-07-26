@@ -58,9 +58,9 @@
       <sum_entry>{#highlite}{1} {#record}rec{2} #{#rank}{3}{#record}, </sum_entry>
 
       <!-- win/vote messages -->
-      <wins>{#server}> {#record}You have already won {#highlite}{1}{#record} race{2}</wins>
-      <win_new>{#server}> {#record}Congratulations, you won your {#highlite}{1}{#record}. race!</win_new>
-      <win_multi>{#server}>> {#record}Congratulations, {#highlite}{1}{#record} won his/her {#highlite}{2}{#record}. race!</win_multi>
+      <wins>{#server}> {#record}You have already won {#highlite}{1}{#record} game{2}</wins>
+      <win_new>{#server}> {#record}Congratulations, you won your {#highlite}{1}{#record}. game!</win_new>
+      <win_multi>{#server}>> {#record}Congratulations, {#highlite}{1}{#record} won his/her {#highlite}{2}{#record}. game!</win_multi>
 
       <!-- muting messages -->
       <mute>{#server}> Player {#highlite}{1}$z$s{#server} is muted!</mute>

@@ -31,8 +31,9 @@ function release_modeScriptCallbacks($aseco, $data) {
       updateRankings($params);
       $aseco->releaseEvent('onEndRound', $aseco->smrankings);
     break;
-    case 'endMap':
+    case 'endMap':  
       updateRankings($params);
+      $aseco->endMapRanking($aseco->smrankings);    //temporary fix  
       $aseco->endmapvar=1;
       $aseco->releaseEvent('onEndMap', $aseco->smrankings);
       $aseco->releaseEvent('onEndMap1', $aseco->smrankings);

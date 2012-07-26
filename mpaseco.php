@@ -1393,10 +1393,46 @@ class Aseco {
 	/**
 	 * Check out who won the current map and increment his/her wins by one.
 	 */
-	function endMapRanking($ranking) {
+	function endMapRanking($ranking) {    /* temporary fixed */
+   $multiple=0;    
+   $win_player=key($ranking);
+   if($win_player==next($ranking))
+    $multiple=1;
 
-		// check for online login
-		if (isset($ranking[0]['Login']) &&
+    
+   if(isset($ranking) && $multiple==0 &&
+		    ($player = $this->server->players->getPlayer($win_player)) !== false) {    
+
+        $player->newwins++;
+ 
+ 				// log console message
+				$this->console('{1} won for the {2}. time!',
+				               $player->login, $player->getWins());
+
+				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
+					// replace parameters
+					$message = formatText($this->getChatMessage('WIN_MULTI'),
+					                      stripColors($player->nickname), $player->getWins());
+
+					// show chat message
+					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
+				} else {
+					// replace parameters
+					$message = formatText($this->getChatMessage('WIN_NEW'),
+					                      $player->getWins());
+
+					// show chat message
+					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
+				}
+
+				// throw 'player wins' event
+				$this->releaseEvent('onPlayerWins', $player);                        
+
+
+  }   
+
+  /*  
+  if (isset($ranking[0]['Login']) &&
 		    ($player = $this->server->players->getPlayer($ranking[0]['Login'])) !== false) {
 			// check for winner if there's more than one player
 			if ($ranking[0]['Rank'] == 1 && count($ranking) > 1 &&
@@ -1428,7 +1464,7 @@ class Aseco {
 				// throw 'player wins' event
 				$this->releaseEvent('onPlayerWins', $player);
 			}
-		}
+		}      */               
 	}  // endMapRanking
 
 

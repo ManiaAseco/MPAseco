@@ -1,0 +1,5 @@
+Please entry all changed files into this list!
+
+plugins/plugin.modescriptcallback.php
+newinstall/config.xml
+mpaseco.php
