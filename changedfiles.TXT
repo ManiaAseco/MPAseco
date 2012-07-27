@@ -20,3 +20,6 @@ plugins/plugin.rasp.php
 plugins/plugin.rasp_chat.php
 plugins/plugin.uptodate.php
 --------------------------------------------
+** Inserted idea for checking plugins to be up-to-date **
+plugins/plugin.uptodate.php
+--------------------------------------------

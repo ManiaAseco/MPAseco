@@ -140,4 +140,56 @@ function admin_mergegbl($aseco, $logtitle, $login, $manual, $url) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
 	}
 }  // admin_mergegbl
+
+/** TODO: check if plugins are up to date (TheM)
+ * ------------------------------------------------------------------------------------
+ * Plugins up-to-date
+ * ------------------------------------------------------------------------------------
+ *
+ * List of plugins:
+ * ---------------------------------------------------------------------------
+ * | Upd. Type | Pluginname | Author | Cur. ver. | Lat. ver. | Req. MPA ver. |
+ * ---------------------------------------------------------------------------
+ *
+ * List is shown when using /checkplugins (MA only) and when a MasterAdmin connects
+ * to the server (like on undef's version for XAseco(2)).
+ *
+ * Pluginwindow:
+ * ---------------------------------------------------------------------------
+ * | Pluginname:  .........                 Current version: x.xx            |
+ * | Author:      .........                 Latest version:  x.xx            |
+ * | Description: .......................................................... |
+ * | ....................................................................... |
+ * | Update type: critical / beta / normal                                   |
+ * |                                                                         |
+ * |  (!! Your MPAseco is too old for this update, update your MPAseco !!)   |
+ * |                                                                         |
+ * | Changelog: ............................................................ |
+ * | ....................................................................... |
+ * | ....................................................................... |
+ * | ....................................................................... |
+ * | Information link: _click_                                               |
+ * | Download link:    _click_                                               |
+ * ---------------------------------------------------------------------------
+ *
+ * A pluginwindow is shown when you click on one of the plugins in the list.
+ * This window provides you with more information about the plugin and what
+ * changed in the update.
+ *
+ * ------------------------------------------------------------------------------------
+ *
+ * Saving the plugins in MPAseco might be done like in XAseco, make an array
+ * in $aseco ($aseco->plugins ?) and let all the plugins make an entry in this
+ * array.
+ *
+ * Administration of the plugins should be done on the MPAseco.org website,
+ * where people can upload their plugins (maybe to risky ... link to own site ?)
+ * and enter information about those plugins.
+ * A file will make a JSON object including all those plugins (dunno if this is
+ * slow ?), which MPAseco can retrieve and check for updates on plugins on the server.
+ *
+ * @Idea: maybe a "featured plugin" function, showing the MA's a nice plugin
+ * which they might wanna use on their server (pop-up in listwindow, or maybe by
+ * making a sidebar in that list ?).
+ */
 ?>
