@@ -5,7 +5,7 @@
  * Chat plugin.
  * Provides regular admin commands.
  * Updated by Xymph
- * edited for MPAseco 23.07.2012 by kremsy 
+ * Edited for ShootMania by the MPAseco team
  *  
  * Dependencies: requires plugin.rasp_jukebox.php, plugin.rasp_votes.php, plugin.uptodate.php, scripts.xml
  *               uses plugin.autotime.php, plugin.donate.php, plugin.panels.php, plugin.rpoints.php
@@ -46,17 +46,13 @@ Aseco::addChatCommand('setservername', 'Changes the name of the server', true);
 Aseco::addChatCommand('setcomment', 'Changes the server comment', true);
 Aseco::addChatCommand('setpwd', 'Changes the player password', true);
 Aseco::addChatCommand('setspecpwd', 'Changes the spectator password', true);
-//Aseco::addChatCommand('setrefpwd', 'Changes the referee password', true);
 Aseco::addChatCommand('setmaxplayers', 'Sets a new maximum of players', true);
 Aseco::addChatCommand('setmaxspecs', 'Sets a new maximum of spectators', true);
 Aseco::addChatCommand('listmodescripts/listscripts', 'Lists the available ScriptModes', true);           //Added 23.07.2012
-Aseco::addChatCommand('setmodescript/setscript', 'Defines the next ScriptMode', true);           //Added 21.07.2012                      
-//Aseco::addChatCommand('setgamemode', 'Sets next mode {ta,rounds,team,laps,stunts,cup}', true);
-//Aseco::addChatCommand('setrefmode', 'Sets referee mode {0=top3,1=all}', true);
+Aseco::addChatCommand('setmodescript/setscript', 'Defines the next ScriptMode', true);           //Added 21.07.2012
 Aseco::addChatCommand('nextmap/next', 'Forces server to load next map', true);
 Aseco::addChatCommand('skipmap/skip', 'Forces server to load next map', true);
 Aseco::addChatCommand('previous/prev', 'Forces server to load previous map', true);
-//Aseco::addChatCommand('nextenv', 'Loads next map in same environment', true);
 Aseco::addChatCommand('restartmap/res', 'Restarts currently running map', true);
 Aseco::addChatCommand('replaymap/replay', 'Replays current map (via jukebox)', true);    
 Aseco::addChatCommand('dropjukebox/djb', 'Drops a map from the jukebox', true);
@@ -70,8 +66,6 @@ Aseco::addChatCommand('kick', 'Kicks a player from server', true);
 Aseco::addChatCommand('kickghost', 'Kicks a ghost player from server', true);
 Aseco::addChatCommand('ban', 'Bans a player from server', true);
 Aseco::addChatCommand('unban', 'UnBans a player from server', true);
-//Aseco::addChatCommand('banip', 'Bans an IP address from server', true);
-//Aseco::addChatCommand('unbanip', 'UnBans an IP address from server', true);
 Aseco::addChatCommand('black', 'Blacklists a player from server', true);
 Aseco::addChatCommand('unblack', 'UnBlacklists a player from server', true);
 Aseco::addChatCommand('addguest', 'Adds a guest player to server', true);
@@ -81,11 +75,8 @@ Aseco::addChatCommand('cancel/can', 'Cancels any running vote', true);
 //Aseco::addChatCommand('endround/er', 'Forces end of current round', true);
 Aseco::addChatCommand('players', 'Displays list of known players {string}', true);
 Aseco::addChatCommand('showbanlist/listbans', 'Displays current ban list', true);
-//Aseco::addChatCommand('showiplist/listips', 'Displays current banned IPs list', true);
 Aseco::addChatCommand('showblacklist/listblacks', 'Displays current black list', true);
 Aseco::addChatCommand('showguestlist/listguests', 'Displays current guest list', true);
-//Aseco::addChatCommand('writeiplist', 'Saves current banned IPs list (def: bannedips.xml)', true);
-//Aseco::addChatCommand('readiplist', 'Loads current banned IPs list (def: bannedips.xml)', true);
 Aseco::addChatCommand('writeblacklist', 'Saves current black list (def: blacklist.txt)', true);
 Aseco::addChatCommand('readblacklist', 'Loads current black list (def: blacklist.txt)', true);
 Aseco::addChatCommand('writeguestlist', 'Saves current guest list (def: guestlist.txt)', true);
@@ -122,16 +113,10 @@ Aseco::addChatCommand('listops', 'Displays current operator list', true);
 //Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
 //Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
 Aseco::addChatCommand('wall/mta', 'Displays popup message to all players', true);
-//Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
-//Aseco::addChatCommand('prunerecs', 'Deletes records for specified map', true);
-//Aseco::addChatCommand('rpoints', 'Sets custom Rounds points (see: /admin rpoints help)', true);
 Aseco::addChatCommand('match', '{begin/end} to start/stop match tracking', true);
 Aseco::addChatCommand('amdl', 'Sets AllowMapDownload {ON/OFF}', true);
-//Aseco::addChatCommand('autotime', 'Sets Auto TimeLimit {ON/OFF}', true);
-//Aseco::addChatCommand('disablerespawn', 'Disables respawn at CPs {ON/OFF}', true);
 Aseco::addChatCommand('forceshowopp', 'Forces to show opponents {##/ALL/OFF}', true);
 Aseco::addChatCommand('scorepanel', 'Shows automatic scorepanel {ON/OFF}', true);
-//Aseco::addChatCommand('roundsfinish', 'Shows rounds panel upon first finish {ON/OFF}', true);
 Aseco::addChatCommand('forceteam', 'Forces player into {Blue} or {Red} team', true);
 Aseco::addChatCommand('forcespec', 'Forces player into free spectator', true);
 Aseco::addChatCommand('specfree', 'Forces spectator into free mode', true);
@@ -139,7 +124,6 @@ Aseco::addChatCommand('panel', 'Selects admin panel (see: /admin panel help)', t
 Aseco::addChatCommand('style', 'Selects default window style', true);
 Aseco::addChatCommand('admpanel', 'Selects default admin panel', true);
 Aseco::addChatCommand('donpanel', 'Selects default donate panel', true);
-//Aseco::addChatCommand('recpanel', 'Selects default records panel', true);
 Aseco::addChatCommand('votepanel', 'Selects default vote panel', true);
 Aseco::addChatCommand('panelbg', 'Selects default panel background', true);
 Aseco::addChatCommand('planets', 'Shows server\'s planets amount', true);
@@ -149,7 +133,6 @@ Aseco::addChatCommand('server', 'Displays server\'s detailed settings', true);
 Aseco::addChatCommand('pm', 'Sends private message to all available admins', true);
 Aseco::addChatCommand('pmlog', 'Displays log of recent private admin messages', true);
 Aseco::addChatCommand('call', 'Executes direct server call (see: /admin call help)', true);
-//Aseco::addChatCommand('unlock', 'Unlocks admin commands & features', true);
 Aseco::addChatCommand('debug', 'Toggles debugging output', true);
 Aseco::addChatCommand('shutdown', 'Shuts down MPASECO', true);
 Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);

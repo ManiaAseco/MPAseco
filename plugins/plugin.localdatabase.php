@@ -7,7 +7,7 @@
  * the information stored in the database!
  *
  * Updated by Xymph
- * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
+ * Edited for ShootMania by the MPAseco team
  * 
  * Dependencies: requires plugin.panels.php
  *  

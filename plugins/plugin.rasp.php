@@ -5,7 +5,7 @@
  * RASP plugin.
  * Provides rank & personal best handling, and related chat commands.
  * Updated by Xymph
- * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
+ * Edited for ShootMania by the MPAseco team
  *  
  * Dependencies: requires plugin.rasp_karma.php
  */
@@ -17,7 +17,7 @@ Aseco::registerEvent('onEndMap', 'event_endmap');
 Aseco::registerEvent('onPlayerFinish', 'event_finish');
 Aseco::registerEvent('onPlayerConnect', 'event_playerjoin');
 
-//Aseco::addChatCommand('rank', 'Shows your current server rank');
+//Aseco::addChatCommand('rank', 'Shows your current server rank'); -- disabled, rankings system still to be developed
 Aseco::addChatCommand('top10', 'Displays top 10 best ranked players');
 Aseco::addChatCommand('top100', 'Displays top 100 best ranked players');
 Aseco::addChatCommand('topwins', 'Displays top 100 victorious players');

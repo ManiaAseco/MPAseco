@@ -3,12 +3,14 @@
 
 /**
  * Uptodate plugin.
- * Checks XASECO2 version at start-up & MasterAdmin connect, and provides
+ * Checks MPAseco version at start-up & MasterAdmin connect, and provides
  * /admin uptodate command.
  * Also merges global blacklist at MasterAdmin connect, and provides
  * /admin mergegbl command.
+ *
  * Created by Xymph
- * edited for SM 20.07.2012 by kremsy (www.mania-server.net)  
+ * Edited for ShootMania by the MPAseco team
+ *
  * Dependencies: used by chat.admin.php
  */
 

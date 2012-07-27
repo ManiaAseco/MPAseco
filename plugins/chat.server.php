@@ -3,10 +3,10 @@
 
 /**
  * Chat plugin.
- * Displays server/MPASeco info & plugins/nations lists.
+ * Displays server/MPAseco info & plugins/nations lists.
  * Created by Xymph
  *
- * edited for SM 23.07.2012 by kremsy and the MPAseco-Team
+ * Edited for ShootMania by the MPAseco team
  *  
  * Dependencies: none
  */
@@ -80,46 +80,53 @@ function chat_server($aseco, $command) {
 	else
 		$stats[] = array('Map Count', '{#black}' . $aseco->server->gameinfo->numchall);
 	
-  $stats[] = array('Game Script', '{#black}' . $aseco->server->gameinfo->type);
+  	$stats[] = array('Game Script', '{#black}' . $aseco->server->gameinfo->type);
   
-switch ($aseco->server->gameinfo->mode) {
-case 0: // Script
-	break;
-case 1:
-	$stats[] = array('Points Limit', '{#black}' . $aseco->server->gameinfo->rndslimit);
-	break;
-case 2:
-	$stats[] = array('Time Limit', '{#black}' . formatTime($aseco->server->gameinfo->timelimit, false));
-	break;
-case 3:
-	$stats[] = array('Points Limit', '{#black}' . $aseco->server->gameinfo->teamlimit);
-	break;
-case 4:
-	$stats[] = array('Time Limit', '{#black}' . formatTime($aseco->server->gameinfo->lapslimit, false));
-	break;
-case 5:
-	$stats[] = array('Points Limit', '{#black}' . $aseco->server->gameinfo->cuplimit . '$g   R/C: {#black}' . $cuprpc);
-	break;
-case 6:
-	$stats[] = array('Time Limit', '{#black}' . formatTime(5 * 60 * 1000, false));  // always 5 minutes?
-	break;
-}
+	/* -- commented out, because mode will always be 0 (Script), might change in QM (TheM)
+	switch ($aseco->server->gameinfo->mode) {
+		case 0: // Script
+			break;
+		case 1:
+			$stats[] = array('Points Limit', '{#black}' . $aseco->server->gameinfo->rndslimit);
+			break;
+		case 2:
+			$stats[] = array('Time Limit', '{#black}' . formatTime($aseco->server->gameinfo->timelimit, false));
+			break;
+		case 3:
+			$stats[] = array('Points Limit', '{#black}' . $aseco->server->gameinfo->teamlimit);
+			break;
+		case 4:
+			$stats[] = array('Time Limit', '{#black}' . formatTime($aseco->server->gameinfo->lapslimit, false));
+			break;
+		case 5:
+			$stats[] = array('Points Limit', '{#black}' . $aseco->server->gameinfo->cuplimit . '$g   R/C: {#black}' . $cuprpc);
+			break;
+		case 6:
+			$stats[] = array('Time Limit', '{#black}' . formatTime(5 * 60 * 1000, false));  // always 5 minutes?
+			break;
+	}*/
+
 	$stats[] = array('Max Players', '{#black}' . $aseco->server->maxplay);
 	$stats[] = array('Max Specs', '{#black}' . $aseco->server->maxspec);
-if ($feature_votes) {
-	$stats[] = array('Voting info', '{#black}/helpvote');
-} else {
-	$stats[] = array('Vote Timeout', '{#black}' . formatTime($aseco->server->votetime, false));
-	$stats[] = array('Vote Ratio', '{#black}' . round($aseco->server->voterate, 2));
-}
-if ($aseco->allowAbility($player, 'server_planets')) {
-	$stats[] = array('Planets', '{#black}' . $planets);
-}
+
+	if ($feature_votes) {
+		$stats[] = array('Voting info', '{#black}/helpvote');
+	} else {
+		$stats[] = array('Vote Timeout', '{#black}' . formatTime($aseco->server->votetime, false));
+		$stats[] = array('Vote Ratio', '{#black}' . round($aseco->server->voterate, 2));
+	}
+
+	if ($aseco->allowAbility($player, 'server_planets')) {
+		$stats[] = array('Planets', '{#black}' . $planets);
+	}
+
 	$stats[] = array('Ladder Limits', '{#black}' . $aseco->server->laddermin .
 	                  '$g - {#black}' . $aseco->server->laddermax);
-if ($admin_contact) {
-	$stats[] = array('Admin Contact', '{#black}' . $admin_contact);
-}
+
+	if ($admin_contact) {
+		$stats[] = array('Admin Contact', '{#black}' . $admin_contact);
+	}
+
 	$stats[] = array();
 	$stats[] = array('Visited by $f80' . $players . ' $gPlayers from $f40' . $nations . ' $gNations');
 	$stats[] = array('who together played: {#black}' . $playdays . ' day' . ($playdays == 1 ? ' ' : 's ') . formatTimeH($playtime * 1000, false) . ' $g!');
@@ -154,14 +161,15 @@ function chat_mpaseco($aseco, $command) {
 	}
 
 	$info[] = array('Uptime', '{#black}' . $updays . ' day' . ($updays == 1 ? ' ' : 's ') . formatTimeH($uptime * 1000, false));
-  $info[] = array('Websites', '{#black}$l[' . MPASECO . ']' . MPASECO . '$l');
+	$info[] = array('Websites', '{#black}$l[' . MPASECO . ']' . MPASECO . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_ORG . ']' . XASECO_ORG . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_TMN . ']' . XASECO_TMN . '$l');
 	$info[] = array('', '{#black}$l[' . XASECO_TMF . ']' . XASECO_TMF . '$l');  
 	$info[] = array('', '{#black}$l[' . XASECO_TM2 . ']' . XASECO_TM2 . '$l'); 
 	$info[] = array('Credits', '{#black}Main author TMN:  Flo');    
 	$info[] = array('', '{#black}Main author TMF/TM2: Xmyph');  	
-	$info[] = array('', '{#black}Main author SM/QM:  kremsy');
+	$info[] = array('', '{#black}Main author SM/QM:  MPAseco team');
+
 	if (isset($aseco->masteradmin_list['MPLOGIN'])) {
 		// count non-LAN logins
 		$count = 0;

@@ -22,10 +22,11 @@
  *
  * @license             http://www.gnu.org/copyleft/gpl.html GNU GPL
  *
- * Project further developed for SM and QM from July 2012 - ? 
- *  by kremsy and his MPAseco-Team <server@esc-clan.net> www.mania-server.net
- * Authored & copyright Aug 2011 - Jan 2012 by Xymph <tm@gamers.org>
+ * Project further developed for ShootMania since July 2012 by the
+ * MPAseco team <www.mpaseco.org>
+ *
  * Derived from XAseco (formerly ASECO/RASP) by Xymph, Flo and others
+ * Authored & copyright Aug 2011 - Jan 2012 by Xymph <tm@gamers.org>
  */
 
 /**
@@ -63,7 +64,7 @@ define('XASECO_TMN', 'http://www.gamers.org/tmn/');
 define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
-define('MPASECO', 'http://www.MPAseco.org/');
+define('MPASECO', 'http://www.mpaseco.org/');
 
 // required official dedicated server build
 define('MP_BUILD', '2012-07-19-xx_xx');
@@ -179,9 +180,8 @@ class Aseco {
 	var $currsecond;  // server time changes
 	var $prevsecond;
 	var $uptime;  // MPAseco start-up time
-	
-  public $smrankings; // XXX: Temporary rankings
 
+	public $smrankings; // XXX: Temporary rankings
 
 	/**
 	 * Initializes the server.
@@ -212,14 +212,13 @@ class Aseco {
 		$this->adm_abilities = array();
 		$this->operator_list = array();
 		$this->op_abilities = array();
-	//	$this->bannedips = array();
+		//$this->bannedips = array();
 		$this->startup_phase = true;
 		$this->warmup_phase = false;
 		$this->restarting = 0;
 		$this->changingmode = false;
 		$this->currstatus = 0;
-    $this->endmapvar=0;
-    
+    	$this->endmapvar=0;
 	}  // Aseco
 
 
@@ -1578,7 +1577,7 @@ class Aseco {
 			                      stripColors($player_item->nickname),
 			                      $this->server->name, MPASECO_VERSION);
 			// hyperlink package name & version number
-			$message = preg_replace('/MPAseco.+' . MPASECO_VERSION . '/', '$l[' . XASECO_ORG . ']$0$l', $message);
+			$message = preg_replace('/MPAseco.+' . MPASECO_VERSION . '/', '$l[' .MPASECO . ']$0$l', $message);
 
 			// send welcome popup or chat message
 			if ($this->settings['welcome_msg_window']) {
@@ -1594,29 +1593,6 @@ class Aseco {
 				$message = str_replace('{br}', LF, $this->formatColors($message));
 				$this->client->query('ChatSendServerMessageToLogin', str_replace(LF.LF, LF, $message), $player_item->login);
 			}
-
-			// if there's a record on current map
-		/*	$cur_record = $this->server->records->getRecord(0);
-			if ($cur_record !== false && $cur_record->score > 0) {
-				// set message to the current record
-				$message = formatText($this->getChatMessage('RECORD_CURRENT'),
-				                      stripColors($this->server->map->name),
-				                      ($this->server->gameinfo->mode == Gameinfo::STNT ?
-				                       $cur_record->score : formatTime($cur_record->score)),
-				                      stripColors($cur_record->player->nickname));
-			} else {  // if there should be no record to display
-				// display a no-record message
-				$message = formatText($this->getChatMessage('MAP_BEGIN'),
-				                      stripColors($this->server->map->name));
-			}          
-
-			// show top-8 & records of all online players before map
-			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
-				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
-			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
-				// or show original record message
-				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
-			}           */
 
 			// throw main 'player connects' event
 			$this->releaseEvent('onPlayerConnect', $player_item);

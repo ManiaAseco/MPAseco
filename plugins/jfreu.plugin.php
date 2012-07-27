@@ -5,7 +5,7 @@
  * Jfreu's plugin 0.14
  * http://jfreu.servegame.com
  * Updated by Xymph
- * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
+ * Edited for ShootMania by the MPAseco team
  *  
  * Dependencies: requires jfreu.chat.php
  *

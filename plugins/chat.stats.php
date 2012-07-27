@@ -6,7 +6,7 @@
  * Displays player statistics & personal settings.
  * Updated by Xymph
  *  
- * edited for SM 23.07.2012 by kremsy and the MPAseco-Team
+ * Edited for ShootMania by the MPAseco team
  *  
  */
 
@@ -77,16 +77,19 @@ function chat_stats($aseco, $command) {
 	// add clickable button
 	if ($aseco->settings['clickable_lists'])
 		$value = array($value, -5);  // action id
+
 	$stats[] = array('Time Played', $value);
 	$stats[] = array('Last Online', '{#black}' . preg_replace('/:\d\d$/', '', $laston[0]));
-if ($feature_ranks) {
-	$value = '{#black}' . $rasp->getRank($target->login);
-	// add clickable button
-	if ($aseco->settings['clickable_lists'])
-		$value = array($value, -6);  // action id
-	$stats[] = array('Server Rank', $value);
-}
-//	$value = '{#black}' . $records;
+
+	if ($feature_ranks) {
+		$value = '{#black}' . $rasp->getRank($target->login);
+		// add clickable button
+		if ($aseco->settings['clickable_lists'])
+			$value = array($value, -6);  // action id
+		$stats[] = array('Server Rank', $value);
+	}
+
+	//	$value = '{#black}' . $records;
 	// add clickable button
 	if ($aseco->settings['clickable_lists'])
 		$value = array($value, 5);  // action id
@@ -106,9 +109,9 @@ if ($feature_ranks) {
 	$stats[] = array('Inscribed', '{#black}' . $inscrdays . ' day' . ($inscrdays == 1 ? ' ' : 's ') . $inscrhours . ' hours');
 	$stats[] = array('Clan', '{#black}' . ($target->teamname ? $target->teamname . '$z' : '<none>'));
 	$stats[] = array('Client', '{#black}' . $target->client);
-if ($aseco->allowAbility($player, 'chat_statsip')) {
-	$stats[] = array('IP', '{#black}' . $target->ipport);
-}
+	if ($aseco->allowAbility($player, 'chat_statsip')) {
+		$stats[] = array('IP', '{#black}' . $target->ipport);
+	}
 
 	// display ManiaLink message
 	display_manialink($player->login, $header, array('Icons128x128_1', 'Statistics', 0.03), $stats, array(1.0, 0.3, 0.7), 'OK');

@@ -7,19 +7,16 @@
  * at start of each map.
  * Created by Xymph
  *
- *  edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
+ * Edited for ShootMania by the MPAseco team
  *    
  * Dependencies: none
  */
 
 require_once('includes/mxinfofetcher.inc.php');  // provides access to MX info
 
-
 Aseco::addChatCommand('mxinfo', 'Displays MX info {Map_ID/MX_ID}');
 
-
 global $mxdata;  // cached MX data
-
 
 function chat_mxinfo($aseco, $command) {
 	global $mxdata;
@@ -92,6 +89,4 @@ function chat_mxinfo($aseco, $command) {
 	// display custom ManiaLink message
 	display_manialink_map($login, $header, array('Icons64x64_1', 'Maximize', -0.01), $links, $stats, array(1.15, 0.2, 0.45, 0.2, 0.3), 'OK');
 }  // chat_mxinfo
-
-
 ?>

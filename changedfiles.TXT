@@ -3,3 +3,20 @@ Please entry all changed files into this list!
 plugins/plugin.modescriptcallback.php
 newinstall/config.xml
 mpaseco.php
+
+--------------------------------------------
+** Just some small (and cosmetic) things, nothing major **
+mpaseco.php
+MPAseco_control.sh
+plugins/chat.admin.php
+plugins/chat.server.php
+plugins/chat.stats.php
+plugins/jfreu.plugin.php
+plugins/plugin.localdatabase.php
+plugins/plugin.modescriptcallbacks.php
+plugins/plugin.mxinfo.php
+plugins/plugin.panels.php
+plugins/plugin.rasp.php
+plugins/plugin.rasp_chat.php
+plugins/plugin.uptodate.php
+--------------------------------------------
