@@ -13,13 +13,13 @@ if [ "$1" = "start" ]; then
 			echo 'MPAseco not running, but .pid file exists.'
 			echo 'Removing .pid file and starting MPAseco ...'
 			rm mpaseco.pid
-			php mpaseco.php TM2C </dev/null >mpaseco.log 2>&1 &
+			php mpaseco.php SM </dev/null >mpaseco.log 2>&1 &
 			touch mpaseco.pid
 			echo $! > mpaseco.pid
 			echo 'MPAseco started with pid: '$(cat mpaseco.pid)
 		fi
 	else
-		php mpaseco.php TM2C </dev/null >mpaseco.log 2>&1 &
+		php mpaseco.php SM </dev/null >mpaseco.log 2>&1 &
 		touch mpaseco.pid
 		echo $! > mpaseco.pid
 		echo 'MPAseco started with pid: '$(cat mpaseco.pid)
@@ -48,7 +48,7 @@ elif [ "$1" = "restart" ]; then
 			kill ${PID}
 			rm mpaseco.pid
 			echo 'Starting MPAseco ...'
-			php mpaseco.php TM2C </dev/null >mpaseco.log 2>&1 &
+			php mpaseco.php SM </dev/null >mpaseco.log 2>&1 &
 			touch mpaseco.pid
 			echo $! > mpaseco.pid
 			echo 'MPAseco restarted with pid: '$(cat mpaseco.pid)
