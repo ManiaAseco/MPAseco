@@ -1450,7 +1450,7 @@ function chat_xlist($aseco, $command) {
 	$player->maplist = array();
 
 	$adminadd = $aseco->allowAbility($player, 'add');
-	$head = 'Maps On MX Section {#black}TM$g:';
+	$head = 'Maps On MX Section {#black}SM$g:';
 	$msg = array();
 	if ($aseco->settings['clickable_lists'])
 		if ($adminadd)
