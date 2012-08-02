@@ -278,7 +278,7 @@ class XmlrpcDB {
 		}
 	}  // _callCB
 
-	// build the datas array from XAseco or Dedimania server
+	// build the datas array from MPAseco or Dedimania server
 	//   remove the first array level into params if needed
 	//   add methodResponse name if needed
 	//   rename sub responses params array from [0] to ['params'] if needed

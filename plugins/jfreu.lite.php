@@ -96,7 +96,8 @@ function info_message($aseco, $data)
 	$message = preg_replace('|' . XASECO_TMN . '|', '$l[$0]$0$l', $message);
 	$message = preg_replace('|' . XASECO_TM2 . '|', '$l[$0]$0$l', $message);
 	$message = preg_replace('|' . XASECO_ORG . '|', '$l[$0]$0$l', $message);
-
+  $message = preg_replace('|' . MPASECO . '|', '$l[$0]$0$l', $message);
+  
 	// send the message & test for scoreboard or /message command
 	if ($aseco->server->jfreu->infomessages == 2 && function_exists('send_window_message'))
 		send_window_message($aseco, $message, ($data !== false));

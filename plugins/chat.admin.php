@@ -150,7 +150,7 @@ Aseco::addChatCommand('call', 'Executes direct server call (see: /admin call hel
 Aseco::addChatCommand('debug', 'Toggles debugging output', true);
 Aseco::addChatCommand('shutdown', 'Shuts down MPASECO', true);
 Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
-//Aseco::addChatCommand('uptodate', 'Checks current version of XASECO2', true);  // already defined in plugin.uptodate.php
+//Aseco::addChatCommand('uptodate', 'Checks current version of MPAseco', true);  // already defined in plugin.uptodate.php
 
 global $pmbuf;  // pm history buffer
 global $pmlen;  // length of pm history

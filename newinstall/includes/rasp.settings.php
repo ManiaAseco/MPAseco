@@ -69,7 +69,7 @@ $prune_records_times = false;
 //Set to true if you want to disable normal CallVotes & enable chat-based votes
 $feature_votes = false;
 
-//Set to true to perform XASECO2 version check at start-up & MasterAdmin connect
+//Set to true to perform MPAseco version check at start-up & MasterAdmin connect
 $uptodate_check = true;
 
 //Set to true to perform global blacklist merge at MasterAdmin connect

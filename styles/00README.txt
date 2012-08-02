@@ -17,8 +17,11 @@ are fixed in manialinks.inc.php and cannot be customized easily.
 Use <blackcolor> to invert the text highlight color on dark backgrounds.
 This color is used to replace any '{#black}' tags in window output.
 
-If you create a nice style template that's sufficiently distinct from
-the standard ones, send it to me and I might include it in the next
-XAseco2 release. :)
-
 Xymph
+
+
+If you create a nice style template that's sufficiently distinct from
+the standard ones, send it to me[1] and I might include it in the next
+MPAseco release. :)
+
+[1] http://forum.maniaplanet.com/viewforum.php?f=450

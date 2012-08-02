@@ -63,7 +63,7 @@ including the Next5/Prev5 ones if there are more than 5 pages in
 the window.
 
 The manialinks.inc.php module will do a $aseco->formatColors call over
-the entire XML output, so you can use XAseco color tags without having
+the entire XML output, so you can use MPAseco color tags without having
 to convert them.
 
 There currently is no general framework for handling widgets, the CPS
@@ -77,7 +77,7 @@ function chat_howtofixed($aseco, $command) {
 	$data[] = array('{#message}This window$g illustrates a simple ManiaLink pop-up');
 	$data[] = array('with fixed text and some $f60color$g tags and links.');
 	$data[] = array();
-	$data[] = array('Check the $l[' . XASECO_ORG . ']XASECO homepage$l :)');
+	$data[] = array('Check the $l[' . MPASECO . ']MPAseco homepage$l :)');
 
 	// display ManiaLink message
 	display_manialink($command['author']->login, $header, array('Icons64x64_1', 'TrackInfo', -0.01), $data, array(0.9), 'OK');

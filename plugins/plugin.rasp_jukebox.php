@@ -235,7 +235,7 @@ function rasp_newmap($aseco, $data) {
 	// append current map to history
 	$jb_buffer[] = $data->uid;
 
-	// write map history to file in case of XASECO2 restart
+	// write map history to file in case of MPAseco restart
 	if ($fp = @fopen($aseco->server->mapdir . $aseco->settings['maphist_file'], 'wb')) {
 		foreach ($jb_buffer as $uid)
 			fwrite($fp, $uid . CRLF);
@@ -1329,7 +1329,7 @@ function chat_y($aseco, $command) {
 function init_jbhistory($aseco, $data) {
 	global $buffersize, $jb_buffer;
 
-	// read map history from file in case of XASECO2 restart
+	// read map history from file in case of MPAseco restart
 	$jb_buffer = array();
 	if ($fp = @fopen($aseco->server->mapdir . $aseco->settings['maphist_file'], 'rb')) {
 		while (!feof($fp)) {

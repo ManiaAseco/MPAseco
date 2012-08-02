@@ -362,7 +362,7 @@ class ChatCommand {
 
 
 /**
- * Stores basic information of the server XASECO2 is running on.
+ * Stores basic information of the server MPAseco is running on.
  */
 class Server {
 	var $id;
@@ -402,7 +402,7 @@ class Server {
 		switch ($this->game) {
 			case 'ManiaPlanet':
 				return 'MP';
-			default:  // TM* are supported in XASECO
+			default:  // SM/QM is supported in MPAseco
 				return 'Unknown';
 		}
 	}

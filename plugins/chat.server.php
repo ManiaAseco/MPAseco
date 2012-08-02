@@ -197,7 +197,7 @@ function chat_mpaseco($aseco, $command) {
 
 	// display ManiaLink message
 	display_manialink($login, $header, array('BgRaceScore2', 'Warmup'), $info, array(1.0, 0.3, 0.7), 'OK');
-}  // chat_xaseco
+}  // chat_mpaseco
 
 function chat_plugins($aseco, $command) {
 
