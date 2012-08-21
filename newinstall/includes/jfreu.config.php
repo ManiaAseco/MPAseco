@@ -66,7 +66,7 @@
 	$message1 = 'Information about and download of this MPAseco on ' . MPASECO;
 	$message2 = 'Use "/list" -> "/jukebox ##" to add a map in the jukebox.';
 	$message3 = 'Please don\'t sound your horn throughout the entire map.';
-	$message4 = 'When going AFK, please set your car to Spectator mode.';
+	$message4 = 'When going AFK, please set your character to Spectator mode.';
 	$message5 = 'Don\'t use Enter to skip intros - instead use Space & Enter';
 	$message6 = 'For player & server info use the "/stats" and "/server" commands.';
 	$message7 = 'Looking for the name of this server?  Use the "/server" command.';
