@@ -150,6 +150,8 @@ Aseco::addChatCommand('call', 'Executes direct server call (see: /admin call hel
 Aseco::addChatCommand('debug', 'Toggles debugging output', true);
 Aseco::addChatCommand('shutdown', 'Shuts down MPASECO', true);
 Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
+Aseco::addChatCommand('teambalance/autoteambalance', 'Team balance', true);
+
 //Aseco::addChatCommand('uptodate', 'Checks current version of MPAseco', true);  // already defined in plugin.uptodate.php
 
 global $pmbuf;  // pm history buffer
@@ -4413,6 +4415,15 @@ function chat_admin($aseco, $command) {
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
 		}
 
+	} elseif ($command['params'][0] == 'teambalance' ||
+	          $command['params'][0] == 'autoteambalance') {
+
+		$aseco->client->query('AutoTeamBalance');
+
+		// show chat message
+		$message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} balanced teams!',
+		                      $chattitle, $admin->nickname);
+		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
 	} else {
 		$message = '{#server}> {#error}Unknown admin command or missing parameter(s): {#highlite}$i ' . $arglist[0] . ' ' . $arglist[1];
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
