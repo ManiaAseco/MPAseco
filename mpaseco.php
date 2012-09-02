@@ -181,7 +181,7 @@ class Aseco {
 	var $prevsecond;
 	var $uptime;  // MPAseco start-up time
 
-	public $smrankings; // XXX: Temporary rankings
+	public $smrankings = array(); // XXX: Temporary rankings
 
 	/**
 	 * Initializes the server.
