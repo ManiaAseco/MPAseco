@@ -167,18 +167,19 @@ main() {
 // Map/Round begin
 /* ------------------------------------- */
 		Mode::LoadMap();
-		
-		XmlRpc.SendCallback("beginMap",MapName);
+    
+    XmlRpc.SendCallback("beginMap",MapName);
 		
 		G_SpawnsList.clear();
 		G_LatestSpawnId = NullId;
-		
+
 		XmlRpc.SendCallback("beginMatch",MapName);
 		Score::MatchBegin();
+		Score::RoundBegin();
 		
 		XmlRpc.SendCallback("beginRound",fixGetRankings());
 		Score::RoundBegin();
-		
+    
 		MatchEndRequested = False;
 		
 		UIManager.ResetAll();
@@ -216,7 +217,9 @@ main() {
 					if (Event.Shooter == Event.Victim || Event.Shooter == Null) {
 						Score::RemovePoints(Event.Victim, 1);
 					}
-					XmlRpc.SendCallback("playerDeath", Event.Victim.Login);
+          
+          XmlRpc.SendCallback("playerDeath", Event.Victim.Login);
+          
 					PassOn(Event);
 				} else if (Event.Type == CSmModeEvent::EType::OnHit) {
 					if (Event.Shooter == Event.Victim) {
@@ -225,7 +228,9 @@ main() {
 						declare Points = Event.Damage / 100;
 						Score::AddPoints(Event.Shooter, Points);
 						Event.ShooterPoints = Points;
-						XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);
+            
+            XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);
+            
 						// Play sound and notice if someone is close to win
 						if (Event.Shooter != Null && Event.Shooter.Score != Null) {
 							declare Gap = S_PointLimit - Event.Shooter.Score.RoundPoints;
@@ -256,7 +261,9 @@ main() {
 					}
 				} else if (Event.Type == CSmModeEvent::EType::OnPlayerRequestRespawn) {
 					Score::RemovePoints(Event.Player, 1);
-					XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
+          
+          XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
+          
 					PassOn(Event);
 				} else {
 					PassOn(Event);
@@ -360,7 +367,6 @@ main() {
 		UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::Normal;
 		UIManager.UIAll.BigMessage = "";
 		
-	
 		Mode::UnloadMap();
 	}
 	
