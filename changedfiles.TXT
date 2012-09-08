@@ -1,25 +1,22 @@
-Please entry all changed files into this list!
-
-plugins/plugin.modescriptcallback.php
-newinstall/config.xml
-mpaseco.php
-
---------------------------------------------
-** Just some small (and cosmetic) things, nothing major **
-mpaseco.php
-MPAseco_control.sh
-plugins/chat.admin.php
-plugins/chat.server.php
-plugins/chat.stats.php
-plugins/jfreu.plugin.php
-plugins/plugin.localdatabase.php
+changed files:
+mpaseco.php 
+rasp.xml      
+plugins.xml   
+includes/jfreu.config.php 
+includes/rasp.settings.php  
+plugins/plugin.rasp.php    
+plugins/plugin.rasp_jukebox.php 
+plugins/plugin.rasp_chat.php 
 plugins/plugin.modescriptcallbacks.php
-plugins/plugin.mxinfo.php
-plugins/plugin.panels.php
-plugins/plugin.rasp.php
-plugins/plugin.rasp_chat.php
-plugins/plugin.uptodate.php
---------------------------------------------
-** Inserted idea for checking plugins to be up-to-date **
-plugins/plugin.uptodate.php
---------------------------------------------
+plugins/plugin.panels.php             
+plugins/plugin.rasp_nextrank.php    
+plugins/plugin.localdatabase.php    
+plugins/jfreu.plugin.php        
+panels/StatsMP.xml   
+
+Royal.Script.txt
+Melee.Script.txt            
+Battle.Script.txt
+
+new files:
+plugins/plugin.timedrank.php   
