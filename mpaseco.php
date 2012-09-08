@@ -56,7 +56,9 @@ define('CONFIG_UTF8ENCODE', false);
  */
 
 // current project version
-define('MPASECO_VERSION', '0.31');
+
+define('MPASECO_VERSION', '0.40');
+
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
 
@@ -1394,13 +1396,14 @@ class Aseco {
 	 */
 	function endMapRanking($ranking) {    /* temporary fixed */
    $multiple=0;    
-   $win_player=key($ranking);
-   if($win_player==next($ranking))
+   $first=key($ranking);
+   $second=next($ranking);
+   if($first==next($second))
     $multiple=1;
 
     
-   if(isset($ranking) && $multiple==0 &&
-		    ($player = $this->server->players->getPlayer($win_player)) !== false) {    
+   if(isset($ranking) && $multiple == false && $second > 0  &&   //min 2 player, max 1 pl sametime win
+		    ($player = $this->server->players->getPlayer($first)) !== false) {    
 
         $player->newwins++;
  
@@ -1426,8 +1429,6 @@ class Aseco {
 
 				// throw 'player wins' event
 				$this->releaseEvent('onPlayerWins', $player);                        
-
-
   }   
 
   /*  

@@ -5,7 +5,7 @@
  * Chat plugin.
  * Provides private messages and a wide variety of shout-outs.
  * Updated by Xymph
- * Updated by the MPAseco team
+ * updated by kremsy
  * Dependencies: requires chat.admin.php
  */
 
@@ -21,30 +21,26 @@ Aseco::addChatCommand('lool', 'Sends a Lool message to everyone');
 Aseco::addChatCommand('brb', 'Sends a Be Right Back message to everyone');
 Aseco::addChatCommand('afk', 'Sends an Away From Keyboard message to everyone');
 Aseco::addChatCommand('gg', 'Sends a Good Game message to everyone');
-Aseco::addChatCommand('gr', 'Sends a Good Race message to everyone');
+//Aseco::addChatCommand('gr', 'Sends a Good Race message to everyone');
 Aseco::addChatCommand('n1', 'Sends a Nice One message to everyone');
 Aseco::addChatCommand('bgm', 'Sends a Bad Game message to everyone');
 Aseco::addChatCommand('official', 'Shows a helpful message ;-)');
 Aseco::addChatCommand('bootme', 'Boot yourself from the server');
 
-function isInPlayerList($aseco, $login) {
-	$pid = 1;
-  	foreach($aseco->server->players->player_list as $pl) {
-		if($login == $pl->login)
-			return $pl->nickname.'$z';
-			//$aseco->console('ID:' . $pl->id);
-		if($login == $pid)
-			return $pl->nickname.'$z';
-		if($login == $pl->nickname)
-			return $pl->nickname.'$z';
-          
-		$nickname=$pl->nickname;
-		$pid++;
-	}
 
-	if($login==lj)
-		return $nickname.'$z';
-	return $login;
+//by LK 
+// 1. Param $aseco, 2. String der überprüft werden soll lj=last joined
+function isinplayerlist($aseco,$login){
+    $pid=1;
+  	foreach ($aseco->server->players->player_list as $pl) {		
+      $nickname=str_ireplace('$w', '', $pl->nickname);		
+			if($login==$pl->login || $login==$pid || $login==$pl->nickname)
+        return $nickname.'$z';
+      $pid++;                            
+			} 
+      if($login=='lj')
+          return $nickname.'$z';     
+			return $login;
 }
 
 function chat_pm($aseco, $command) {
@@ -241,8 +237,9 @@ function chat_hi($aseco, $command) {
 	
 
 	if ($command['params'] != '') {
-  		$plnickname = isInPlayerList($aseco, $command['params']);
-    	$command['params'] = $plnickname;
+
+  	$plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
 
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Hello ' . $command['params'] . ' $i!';
 	} else {
@@ -266,8 +263,8 @@ function chat_bye($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$plnickname = isInPlayerList($aseco,$command['params']);
-		$command['params']=$plnickname;
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Bye ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}I have to go... Bye All !';
@@ -287,8 +284,8 @@ function chat_thx($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$plnickname = isInPlayerList($aseco,$command['params']);
-		$command['params']=$plnickname;
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Thanks ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Thanks All !';
@@ -387,8 +384,8 @@ function chat_gg($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$plnickname = isInPlayerList($aseco,$command['params']);
-		$command['params']=$plnickname;
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Game ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Game All !';
@@ -396,6 +393,7 @@ function chat_gg($aseco, $command) {
 	$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($msg));
 }  // chat_gg
 
+/*
 function chat_gr($aseco, $command) {
 
 	$player = $command['author'];
@@ -408,14 +406,14 @@ function chat_gr($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$plnickname = isInPlayerList($aseco,$command['params']);
-		$command['params']=$plnickname;
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Race ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Good Race !';
 	}
 	$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($msg));
-}  // chat_gr
+}  // chat_gr   */
 
 function chat_n1($aseco, $command) {
 
@@ -429,8 +427,8 @@ function chat_n1($aseco, $command) {
 	}
 
 	if ($command['params'] != '') {
-		$plnickname = isInPlayerList($aseco,$command['params']);
-		$command['params']=$plnickname;
+	  $plnickname=isinplayerlist($aseco,$command['params']);
+    $command['params']=$plnickname;
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Nice One ' . $command['params'] . ' $i!';
 	} else {
 		$msg = '$g[' . $player->nickname . '$z$s] {#interact}Nice One !';

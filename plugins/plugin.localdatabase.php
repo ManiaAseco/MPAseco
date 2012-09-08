@@ -7,7 +7,7 @@
  * the information stored in the database!
  *
  * Updated by Xymph
- * Edited for ShootMania by the MPAseco team
+ * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
  * 
  * Dependencies: requires plugin.panels.php
  *  
@@ -26,6 +26,7 @@ Aseco::registerEvent('onPlayerWins', 'ldb_playerWins');
 Aseco::registerEvent('onPlayerHit', 'ldb_playerHit');
 Aseco::registerEvent('onPoleCapture', 'ldb_poleCapture');
 Aseco::registerEvent('onPlayerRespawn', 'ldb_playerRespawn');
+Aseco::registerEvent('onPlayerSurvival', 'ldb_playerSurvival');
 Aseco::registerEvent('onPlayerDeath', 'ldb_playerDeath');
 //Aseco::registerEvent('onPlayerVote', 'ldb_vote');
 
@@ -105,6 +106,8 @@ function ldb_connect($aseco) {
               `Hits` mediumint(9) unsigned NOT NULL default 0,
               `GotHits` mediumint(9) unsigned NOT NULL default 0,
               `Captures` mediumint(9) unsigned NOT NULL default 0,
+              `Survivals` mediumint(9) unsigned NOT NULL default 0,              
+              `AllPoints` mediumint(9) unsigned NOT NULL default 0,
 	            PRIMARY KEY (`Id`),
 	            UNIQUE KEY `Login` (`Login`),
 	            KEY `Game` (`Game`)
@@ -173,6 +176,12 @@ function ldb_connect($aseco) {
   if (!in_array('Captures', $fields)) {
     $update .= "ADD Captures mediumint(9) unsigned NOT NULL DEFAULT 0,";
 	}
+  if (!in_array('Survivals', $fields)) {
+    $update .= "ADD Survivals mediumint(9) unsigned NOT NULL DEFAULT 0,";
+	}	
+  if (!in_array('AllPoints', $fields)) {
+    $update .= "ADD AllPoints int(20) unsigned NOT NULL DEFAULT 0,";
+	}	
   $update = substr($update, -1, 1) == ',' ? substr($update, 0, -1) : $update;
 
   if(!empty($update)) {
@@ -288,7 +297,7 @@ function ldb_playerConnect($aseco, $player) {
 			} else {
 				$dbplayer = mysql_fetch_row($result);
 				$player->id = $dbplayer[0];
-				mysql_free_result($result);
+				mysql_free_result($result);  	
 			}
 		}
 	}
@@ -597,6 +606,11 @@ function ldb_poleCapture($aseco, $login) {
 
 function ldb_playerRespawn($aseco, $login) {
   $query = 'UPDATE players SET respawns = respawns+1 WHERE login = '.quotedString($login);
+  mysql_query($query);
+}
+
+function ldb_playerSurvival($aseco, $login) {
+  $query = 'UPDATE players SET Survivals= Survivals+1 WHERE login = '.quotedString($login);
   mysql_query($query);
 }
 

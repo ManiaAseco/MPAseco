@@ -9,7 +9,8 @@
  * including MX searches.
  * Finally, handles the voting and passing for chat-based votes.
  * Updated by Xymph
- *
+ * updated by kremsy for Shootmania
+ * 
  * Dependencies: requires plugin.rasp_votes.php, plugin.map.php, chat.records2.php;
  *               used by plugin.rasp_votes.php
  */
@@ -148,7 +149,7 @@ function rasp_endmap($aseco, $data) {
 			trigger_error('[' . $aseco->client->getErrorCode() . '] ChooseNextMap - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
 		} else {
 			// check for future envs
-			if ($aseco->server->packmask != 'SMStorm') {
+			if ($aseco->server->packmask != 'Storm') {
 				// report map change from MX or jukebox
 				if ($next['mx']) {
 					$logmsg = '{RASP Jukebox} Setting Next Map to [' . $next['Env'] . '] ' . stripColors($next['Name'], false) . ', file downloaded from ' . $next['source'];
@@ -235,7 +236,7 @@ function rasp_newmap($aseco, $data) {
 	// append current map to history
 	$jb_buffer[] = $data->uid;
 
-	// write map history to file in case of MPAseco restart
+	// write map history to file in case of XASECO2 restart
 	if ($fp = @fopen($aseco->server->mapdir . $aseco->settings['maphist_file'], 'wb')) {
 		foreach ($jb_buffer as $uid)
 			fwrite($fp, $uid . CRLF);
@@ -363,7 +364,7 @@ function chat_list($aseco, $command) {
 		$help = array();
 		$help[] = array('...', '{#black}help',
 		                'Displays this help information');
-		$help[] = array('...', '{#black}nofinish',
+/*		$help[] = array('...', '{#black}nofinish',
 		                'Shows maps you haven\'t completed');
 		$help[] = array('...', '{#black}norank',
 		                'Shows maps you don\'t have a rank on');
@@ -372,20 +373,20 @@ function chat_list($aseco, $command) {
 		                 ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'score on' : 'time on'));
 		$help[] = array('...', '{#black}noauthor',
 		                'Shows maps you didn\'t beat author '.
-		                 ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'score on' : 'time on'));
+		                 ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'score on' : 'time on'));     */
 		$help[] = array('...', '{#black}norecent',
 		                'Shows maps you didn\'t play recently');
-		$help[] = array('...', '{#black}best$g/{#black}worst',
+	/*	$help[] = array('...', '{#black}best$g/{#black}worst',
 		                'Shows maps with your best/worst records');
 	if ($aseco->server->gameinfo->mode != Gameinfo::STNT) {
 		$help[] = array('...', '{#black}longest$g/{#black}shortest',
 		                'Shows the longest/shortest maps');
-	}
+	}                                                               */
 		$help[] = array('...', '{#black}newest$g/{#black}oldest #',
 		                'Shows newest/oldest # maps (def: 50)');
 		$help[] = array('...', '{#black}xxx',
 		                'Where xxx is part of a map or author name');
-	if ($aseco->server->packmask != 'SMStorm') {
+	if ($aseco->server->packmask != 'Storm') {
 		$help[] = array('...', '{#black}env:zzz',
 		                'Where zzz is an environment from: storm,');
 		$help[] = array('', '',
@@ -408,7 +409,7 @@ function chat_list($aseco, $command) {
 		// display ManiaLink message
 		display_manialink($login, $header, array('Icons64x64_1', 'TrackInfo', -0.01), $help, array(1.1, 0.05, 0.3, 0.75), 'OK');
 		return;
-	}
+	}            /*
 	elseif ($cmdcount == 1 && $command['params'][0] == 'nofinish') {
 		getMapsNoFinish($player);
 	}
@@ -419,11 +420,11 @@ function chat_list($aseco, $command) {
 		getMapsNoGold($player);
 	}
 	elseif ($cmdcount == 1 && $command['params'][0] == 'noauthor') {
-		getMapsNoAuthor($player);
-	}
+		getMapsNoAuthor($player);  
+	}       */
 	elseif ($cmdcount == 1 && $command['params'][0] == 'norecent') {
 		getMapsNoRecent($player);
-	}
+	}         /*
 	elseif ($cmdcount == 1 && $command['params'][0] == 'best') {
 		// avoid interference from possible parameters
 		$command['params'] = '';
@@ -442,8 +443,8 @@ function chat_list($aseco, $command) {
 		getMapsByLength($player, false);
 	}
 	elseif ($cmdcount == 1 && $command['params'][0] == 'shortest') {
-		getMapsByLength($player, true);
-	}
+		getMapsByLength($player, true);    
+	}                                      */
 	elseif ($cmdcount >= 1 && $command['params'][0] == 'newest') {
 		$count = 50;  // default
 		if ($cmdcount == 2 && is_numeric($command['params'][1]) && $command['params'][1] > 0)
@@ -465,7 +466,7 @@ function chat_list($aseco, $command) {
 	}
 	elseif ($cmdcount >= 1 && strlen($command['params'][0]) > 0) {
 		// check for future envs
-		if ($aseco->server->packmask != 'SMStorm') {
+		if ($aseco->server->packmask != 'Storm') {
 			$env = '*';  // wildcard
 			// find and delete optional env: parameter
 			foreach ($command['params'] as &$param) {
@@ -604,7 +605,7 @@ function chat_jukebox($aseco, $command) {
 				$dropall = $aseco->allowAbility($player, 'dropjukebox');
 				$head = 'Upcoming maps in the jukebox:';
 				$page = array();
-				if ($aseco->server->packmask != 'SMStorm')
+				if ($aseco->server->packmask != 'Storm')
 					if ($aseco->settings['clickable_lists'])
 						$page[] = array('Id', 'Name (click to drop)', 'Env', 'Requester');
 					else
@@ -620,7 +621,7 @@ function chat_jukebox($aseco, $command) {
 				$player->msgs = array();
 				// reserve extra width for $w tags
 				$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-				if ($aseco->server->packmask != 'SMStorm')
+				if ($aseco->server->packmask != 'Storm')
 					$player->msgs[0] = array(1, $head, array(1.25+$extra, 0.1, 0.6+$extra, 0.15, 0.4), array('Icons128x128_1', 'LoadTrack', 0.02));
 				else
 					$player->msgs[0] = array(1, $head, array(1.10+$extra, 0.1, 0.6+$extra, 0.4), array('Icons128x128_1', 'LoadTrack', 0.02));
@@ -634,7 +635,7 @@ function chat_jukebox($aseco, $command) {
 						$mapname = array('{#black}' . $mapname, -2000-$tid);  // action id
 					else
 						$mapname = '{#black}' . $mapname;
-					if ($aseco->server->packmask != 'SMStorm')
+					if ($aseco->server->packmask != 'Storm')
 						$page[] = array(str_pad($tid, 2, '0', STR_PAD_LEFT) . '.',
 						                $mapname, $item['Env'],
 						                '{#black}' . stripColors($item['Nick']));
@@ -646,7 +647,7 @@ function chat_jukebox($aseco, $command) {
 					if (++$lines > 14) {
 						if ($aseco->allowAbility($player, 'clearjukebox')) {
 							$page[] = array();
-							if ($aseco->server->packmask != 'SMStorm')
+							if ($aseco->server->packmask != 'Storm')
 								$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '', '');  // action id
 							else
 								$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '');  // action id
@@ -654,7 +655,7 @@ function chat_jukebox($aseco, $command) {
 						$player->msgs[] = $page;
 						$lines = 0;
 						$page = array();
-						if ($aseco->server->packmask != 'SMStorm')
+						if ($aseco->server->packmask != 'Storm')
 							if ($aseco->settings['clickable_lists'])
 								$page[] = array('Id', 'Name (click to drop)', 'Env', 'Requester');
 							else
@@ -670,7 +671,7 @@ function chat_jukebox($aseco, $command) {
 				if (count($page) > 1) {
 					if ($aseco->allowAbility($player, 'clearjukebox')) {
 						$page[] = array();
-						if ($aseco->server->packmask != 'SMStorm')
+						if ($aseco->server->packmask != 'Storm')
 							$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '', '');  // action id
 						else
 							$page[] = array('', array('{#emotic}                  Clear Entire Jukebox', 20), '');  // action id
@@ -762,7 +763,7 @@ function chat_autojuke($aseco, $command) {
 		$help = array();
 		$help[] = array('...', '{#black}help',
 		                'Displays this help information');
-		$help[] = array('...', '{#black}nofinish',
+/*		$help[] = array('...', '{#black}nofinish',
 		                'Selects maps you haven\'t completed');
 		$help[] = array('...', '{#black}norank',
 		                'Selects maps you don\'t have a rank on');
@@ -771,13 +772,13 @@ function chat_autojuke($aseco, $command) {
 		                 ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'score on' : 'time on'));
 		$help[] = array('...', '{#black}noauthor',
 		                'Selects maps you didn\'t beat author '.
-		                 ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'score on' : 'time on'));
+		                 ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'score on' : 'time on'));      */
 		$help[] = array('...', '{#black}norecent',
 		                'Selects maps you didn\'t play recently');
-	if ($aseco->server->gameinfo->mode != Gameinfo::STNT) {
+/*	if ($aseco->server->gameinfo->mode != Gameinfo::STNT) {
 		$help[] = array('...', '{#black}longest$g/{#black}shortest',
 		                'Selects the longest/shortest maps');
-	}
+	}                                                          */
 		$help[] = array('...', '{#black}newest$g/{#black}oldest',
 		                'Selects the newest/oldest maps');
 	if ($feature_karma) {
@@ -791,7 +792,7 @@ function chat_autojuke($aseco, $command) {
 		display_manialink($login, $header, array('Icons64x64_1', 'TrackInfo', -0.01), $help, array(1.1, 0.05, 0.3, 0.75), 'OK');
 		return;
 	}
-	elseif ($cmdcount == 1 && $command['params'][0] == 'nofinish') {
+/*	elseif ($cmdcount == 1 && $command['params'][0] == 'nofinish') {
 		getMapsNoFinish($player);
 	}
 	elseif ($cmdcount == 1 && $command['params'][0] == 'norank') {
@@ -802,16 +803,16 @@ function chat_autojuke($aseco, $command) {
 	}
 	elseif ($cmdcount == 1 && $command['params'][0] == 'noauthor') {
 		getMapsNoAuthor($player);
-	}
+	}                                                                    */
 	elseif ($cmdcount == 1 && $command['params'][0] == 'norecent') {
 		getMapsNoRecent($player);
-	}
+	}                                                              /*
 	elseif ($cmdcount == 1 && $command['params'][0] == 'longest') {
 		getMapsByLength($player, false);
 	}
 	elseif ($cmdcount == 1 && $command['params'][0] == 'shortest') {
 		getMapsByLength($player, true);
-	}
+	}                                                                */
 	elseif ($cmdcount == 1 && $command['params'][0] == 'newest') {
 		getMapsByAdd($player, true, $buffersize+1);
 	}
@@ -1329,7 +1330,7 @@ function chat_y($aseco, $command) {
 function init_jbhistory($aseco, $data) {
 	global $buffersize, $jb_buffer;
 
-	// read map history from file in case of MPAseco restart
+	// read map history from file in case of XASECO2 restart
 	$jb_buffer = array();
 	if ($fp = @fopen($aseco->server->mapdir . $aseco->settings['maphist_file'], 'rb')) {
 		while (!feof($fp)) {
@@ -1450,7 +1451,7 @@ function chat_xlist($aseco, $command) {
 	$player->maplist = array();
 
 	$adminadd = $aseco->allowAbility($player, 'add');
-	$head = 'Maps On MX Section {#black}SM$g:';
+	$head = 'Maps On MX Section {#black}TM$g:';
 	$msg = array();
 	if ($aseco->settings['clickable_lists'])
 		if ($adminadd)

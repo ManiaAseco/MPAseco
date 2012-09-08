@@ -18,10 +18,14 @@
    <plugin>plugin.rasp_karma.php</plugin>
    <plugin>plugin.rasp_jukebox.php</plugin>
    <plugin>plugin.rasp_nextmap.php</plugin>
+	 <plugin>plugin.rasp_nextrank.php</plugin>   
    <plugin>plugin.rasp_votes.php</plugin>
    <plugin>plugin.style.php</plugin>
    <plugin>plugin.uptodate.php</plugin>
    <plugin>plugin.modescriptcallbacks.php</plugin>
+   <plugin>plugin.rasp_nextrank.php</plugin>
+	 <plugin>plugin.donate.php</plugin>
+   <plugin>plugin.timedrank.php</plugin>	             
 
 <!--		   
   <plugin>plugin.rounds.php</plugin>
@@ -29,8 +33,6 @@
  	<plugin>chat.players2.php</plugin>  	
 	<plugin>chat.lastwin.php</plugin>
 	<plugin>chat.songmod.php</plugin>
-	<plugin>plugin.rasp_nextrank.php</plugin>
-	<plugin>plugin.donate.php</plugin>
   <plugin>mistral.idlekick.php</plugin>	
 -->
 	

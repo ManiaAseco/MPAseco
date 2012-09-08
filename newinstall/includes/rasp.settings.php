@@ -92,9 +92,9 @@ $globalbl_url = '';
 // Lower = Faster
 $maxrecs = 50;
 
-//Sets the minimum amount of records required for a player to be ranked
+//Sets the minimum amount of points required for a player to be ranked
 // Higher = Faster
-$minrank = 3;
+$minrank = 200;
 
 //Sets the number of times used to calculate a player's average
 // Lower = Faster

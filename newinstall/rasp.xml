@@ -2,10 +2,11 @@
 <rasp>
   <messages>
     <!-- rank/pb messages -->
-    <rank>{#server}> {#record}Your server rank is {#rank}{1}{#record}/{#highlite}{2}{#record} Average: {#highlite}{3}</rank>
-    <rank_none>{#server}> {#record}You must have {#highlite}{1}{#record} Local Records on this server before recieving a rank...</rank_none>
-    <nextrank>{#server}> {#record}The next better ranked player is {#highlite}{1}{#record}: {#highlite}{2}</nextrank>
-    <nextrank_rp> $n{#record}[{#highlite}-{1}{#record} RP]</nextrank_rp>
+    <rank>{#server}> {#record}Your server rank is {#rank}{1}{#record} / {#highlite}{2}{#record} Points: {#highlite}{3}</rank>
+   <!-- <rank_none>{#server}> {#record}You must have {#highlite}{1}{#record} Hits on this server before recieving a rank...</rank_none>    -->
+    <rank_none>{#server}> {#record}You must have {#highlite}{1}{#record} Points on this server before recieving a rank...</rank_none>  
+    <nextrank>{#server}> {#record}The next better ranked player is {#highlite}{1}</nextrank>
+    <nextrank_rp> $n{#record}[{#highlite}-{1}{#record} Points]</nextrank_rp>
     <toprank>{#server}> {#record}No better ranked player :-)</toprank>
     <pb>{#server}> {#record}Personal Best: {#highlite}{1}{#record}({#rank}{2}{#record}) Average: {#highlite}{3}</pb>
     <pb_none>{#server}> {#error}You don't have a Local Record on this map yet...</pb_none>

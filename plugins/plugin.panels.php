@@ -5,11 +5,11 @@
  * Panels plugin.
  * Selects ManiaLink panel templates.
  * Created by Xymph
- * Edited for ShootMania by the MPAseco team
+ * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
  *
  *  Dependencies: used by chat.admin.php, plugin.dedimania.php,
- *                         plugin.localdatabase.php, plugin.rasp_votes.php
- *                requires plugin.donate.php
+ *                       plugin.localdatabase.php, plugin.rasp_votes.php
+ *               requires plugin.donate.php
  *               
 
  */
@@ -17,10 +17,14 @@
 Aseco::registerEvent('onStartup', 'panels_default');
 Aseco::registerEvent('onSync', 'init_statspanel');
 Aseco::registerEvent('onEndMap', 'update_allstatspanels');
+//Aseco::registerEvent('onBeginMap2', 'update_allrecpanels');
 Aseco::registerEvent('onBeginMap2', 'display_alldonpanels');
+Aseco::registerEvent('onEndMap', 'display_alldonpanels');
 Aseco::registerEvent('onPlayerConnect', 'init_playerpanels');
 Aseco::registerEvent('onPlayerConnect', 'load_admpanel');
 Aseco::registerEvent('onPlayerConnect', 'load_donpanel');
+Aseco::registerEvent('onPlayerConnect', 'load_recpanel');
+Aseco::registerEvent('onPlayerFinish', 'finish_recpanel');
 
 // handles action id's "-100"-"-49" for selecting from max. 50 record panel templates
 // handles action id's "-48"-"-7" for selecting from max. 40 admin panel templates
@@ -30,6 +34,7 @@ Aseco::registerEvent('onPlayerConnect', 'load_donpanel');
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_panels');
 
 Aseco::addChatCommand('donpanel', 'Selects donate panel (see: /donpanel help)');
+//Aseco::addChatCommand('recpanel', 'Selects records panel (see: /recpanel help)');
 Aseco::addChatCommand('votepanel', 'Selects vote panel (see: /votepanel help)');
 Aseco::addChatCommand('panelbg', 'Selects panel background (see: /panelbg help)');
 
@@ -109,20 +114,34 @@ function update_allstatspanels($aseco, $data) {
 		}
 		mysql_free_result($result);          */
 
+    
+
 		// display stats panels for all these players
 		foreach ($aseco->server->players->player_list as $pl) {
-		//	$rank = $rasp->getRank($pl->login);
-	//		$avg = preg_replace('/.+ Avg: /', '', $rank);
-	//		$rank = preg_replace('/ Avg: .+/', '', $rank);
+			$rank = $rasp->getRank($pl->login);
+			$avg = getPts($pl->login);
+			$rank = preg_replace('/ Avg: .+/', '', $rank);
 			//$recs = (isset($recslist[$pl->login]) ? $recslist[$pl->login] : 0);
 			$wins = ($pl->getWins() > $pl->wins ? $pl->getWins() : $pl->wins);
 			$play = formatTimeH($pl->getTimeOnline() * 1000, false);
 			$dons = ldb_getDonations($aseco, $pl->login);
-			display_statspanel($aseco, $pl, 0, 0, 0, $wins, $play, $dons);
+			display_statspanel($aseco, $pl, $rank, $avg, 0, $wins, $play, $dons);
 		}
 	}
 }  // update_allstatspanels
 
+	function getPts($login) {
+    global $aseco;
+		$query = 'SELECT AllPoints FROM players
+		          WHERE login="' . $login. '"';
+    $res = mysql_query($query);
+		if (mysql_num_rows($res) > 0) {	
+		  $row = mysql_fetch_array($res); 
+	  }
+		mysql_free_result($res);
+		return $row['AllPoints']; 
+	}  // getPts
+	
 // called @ onPlayerConnect
 function init_playerpanels($aseco, $player) {
 
@@ -688,6 +707,7 @@ function chat_panelbg($aseco, $command) {
 			init_playerpanels($aseco, $player);
 			load_donpanel($aseco, $player);
 			load_admpanel($aseco, $player);
+		//	load_recpanel($aseco, $player);
 			display_votepanel($aseco, $player, $aseco->formatColors('{#emotic}') . 'Yes - F5', '$333No - F6', 2000);
 		}
 		else {
@@ -704,6 +724,7 @@ function chat_panelbg($aseco, $command) {
 				init_playerpanels($aseco, $player);
 				load_donpanel($aseco, $player);
 				load_admpanel($aseco, $player);
+		//		load_recpanel($aseco, $player);
 				display_votepanel($aseco, $player, $aseco->formatColors('{#emotic}') . 'Yes - F5', '$333No - F6', 2000);
 			} else {
 				// Could not parse XML file
@@ -728,7 +749,19 @@ function event_panels($aseco, $answer) {
 
 	// leave actions outside -7 - -100 & 7201 - 7222 & 7231 - 7262 to other handlers
 	$action = (int) $answer[2];
-	if ($action >= -48 && $action <= -7) {
+	if ($action >= -100 && $action <= -49) {
+		// get player & records panel
+		$player = $aseco->server->players->getPlayer($answer[1]);
+		$panel = $player->maplist[abs($action)-49]['panel'];
+
+		// select new panel
+		$command = array();
+		$command['author'] = $player;
+		$command['params'] = $panel;
+	//	chat_recpanel($aseco, $command);
+	}
+
+	elseif ($action >= -48 && $action <= -7) {
 		// get player & admin panel
 		$player = $aseco->server->players->getPlayer($answer[1]);
 		$panel = $player->maplist[abs($action)-7]['panel'];

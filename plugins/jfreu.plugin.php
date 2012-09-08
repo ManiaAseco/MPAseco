@@ -5,7 +5,7 @@
  * Jfreu's plugin 0.14
  * http://jfreu.servegame.com
  * Updated by Xymph
- * Edited for ShootMania by the MPAseco team
+ * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
  *  
  * Dependencies: requires jfreu.chat.php
  *
@@ -963,13 +963,12 @@ function player_connect($aseco, $player)
 		if ($feature_ranks) {
 			$message = formatText($aseco->server->jfreu->player_joins,
 			                      $title, clean_nick($player->nickname),
-			                      $nation, $rank);
+			                      $nation, $rank, $rasp->getRank($player->login));
 		} else {
 			$message = formatText($aseco->server->jfreu->player_join,
 			                      $title, clean_nick($player->nickname),
 			                      $nation);
 		}
-		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
 	}
 }  // player_connect
 
@@ -997,7 +996,7 @@ function player_disconnect($aseco, $player)
 		$message = formatText($aseco->server->jfreu->player_left,
 		                      clean_nick($player->nickname),
 		                      formatTimeH($player->getTimeOnline() * 1000, false));
-		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));   
 		if ($aseco->server->jfreu->autorank && !$aseco->server->jfreu->playerlist[$player->login]->speconly)
 		{
 			autorank($aseco, $player);
@@ -1441,7 +1440,6 @@ function info_message($aseco, $data)
 	$message = preg_replace('|' . XASECO_TMN . '|', '$l[$0]$0$l', $message);
 	$message = preg_replace('|' . XASECO_TM2 . '|', '$l[$0]$0$l', $message);
 	$message = preg_replace('|' . XASECO_ORG . '|', '$l[$0]$0$l', $message);
-  $message = preg_replace('|' . MPASECO . '|', '$l[$0]$0$l', $message);
 
 	// send the message & test for scoreboard or /message command
 	if ($aseco->server->jfreu->infomessages == 2 && function_exists('send_window_message'))

@@ -5,7 +5,7 @@
  * RASP plugin.
  * Provides rank & personal best handling, and related chat commands.
  * Updated by Xymph
- * Edited for ShootMania by the MPAseco team
+ * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
  *  
  * Dependencies: requires plugin.rasp_karma.php
  */
@@ -17,7 +17,7 @@ Aseco::registerEvent('onEndMap', 'event_endmap');
 Aseco::registerEvent('onPlayerFinish', 'event_finish');
 Aseco::registerEvent('onPlayerConnect', 'event_playerjoin');
 
-//Aseco::addChatCommand('rank', 'Shows your current server rank'); -- disabled, rankings system still to be developed
+Aseco::addChatCommand('rank', 'Shows your current server rank');
 Aseco::addChatCommand('top10', 'Displays top 10 best ranked players');
 Aseco::addChatCommand('top100', 'Displays top 100 best ranked players');
 Aseco::addChatCommand('topwins', 'Displays top 100 victorious players');
@@ -185,6 +185,69 @@ class Rasp {
 	}  // onSync
 
 	function resetRanks() { 
+	  global $aseco, $minrank;
+  	$players = array();
+		$this->aseco->console('[RASP] Calculating ranks...');
+
+		// erase old average data
+		mysql_query('TRUNCATE TABLE rs_rank');
+		
+		// get list of players 
+
+		//$query = 'SELECT Id, Hits, GotHits, Captures FROM players WHERE Hits > 50';    
+
+
+    $query = 'SELECT Id, AllPoints FROM players WHERE AllPoints > ' . $minrank;   
+   
+   //  $query = 'SELECT Id, AllPoints FROM players';          /* UPDATE TEST */
+     
+    $i=0;
+		$res = mysql_query($query);
+		while ($row = mysql_fetch_assoc($res)) {
+			$players[$i] = $row; 
+			$i++;
+		}
+		mysql_free_result($res);     
+  
+    $pcnt=$i;
+  
+
+    if (!empty($players)) {
+      
+ 			$query = 'INSERT INTO rs_rank VALUES ';
+			// compute each player's new average score
+			foreach ($players as $player) {
+				/*$avg = $player['Hits'] / $player['GotHits'] + $player['Captures'] / ($player['Hits'] + $player['GotHits'])*4;
+				$query .= '(' . $player['Id'] . ',' . round($avg * 10000) . '),';   */                /* RANKING SYSTEM 1  */ 
+
+       	$query .= '(' . $player['Id'] . ',' . $player['AllPoints'] . '),';     
+        	
+        	
+        /* ONLY ON UPDATE */
+          //$allpts=$player['Hits']*2 + $player['Captures']*6;
+          //$query = 'UPDATE players SET allpoints = '.$allpts.' WHERE Id = '.$player['Id'];  
+          //mysql_query($query);    
+         /* ONLY ON UPDATE 
+          $survivals=$player['AllPoints']/100;
+          $query = 'UPDATE players SET Survivals = '.$survivals.' WHERE Id = '.$player['Id'];    */
+          
+          mysql_query($query);           
+			}
+			$query = substr($query, 0, strlen($query)-1);  // strip trailing ','
+			
+//		  $aseco->console(print_r($query));
+			mysql_query($query);
+	
+  		if (mysql_affected_rows() < 1) {
+				trigger_error('{RASP_ERROR} Could not insert any player averages! (' . mysql_error() . ')', E_USER_WARNING);
+			} elseif (mysql_affected_rows() != count($players)) {
+				trigger_error('{RASP_ERROR} Could not insert all ' . count($players) . ' player averages! (' . mysql_error() . ')', E_USER_WARNING);
+				// increase MySQL's max_allowed_packet setting
+			}
+		}
+		$this->aseco->console('[RASP] ...Done!');
+             
+    	
 	}  // resetRanks  
 
 	// called @ onPlayerConnect
@@ -192,7 +255,10 @@ class Rasp {
 		global $feature_ranks, $feature_stats, $always_show_pb;
 
 		if ($feature_ranks)
+		{
 			$this->showRank($player->login);
+			chat_nextrank($aseco, 1, $player->login, $player->id);
+		}
 		if ($feature_stats)
 			$this->showPb($player, $aseco->server->map->id, $always_show_pb);   
 	}  // onPlayerjoin
@@ -204,7 +270,7 @@ class Rasp {
 	}  // getPb
 
 	function showRank($login) {
-	/*	global $minrank;
+		global $minrank, $aseco;
 
 		$pid = $this->aseco->getPlayerId($login);
 		$query = 'SELECT Avg FROM rs_rank
@@ -212,7 +278,7 @@ class Rasp {
 		$res = mysql_query($query);
 		if (mysql_num_rows($res) > 0) {
 			$row = mysql_fetch_array($res);
-			$query2 = 'SELECT PlayerId FROM rs_rank ORDER BY Avg ASC';
+			$query2 = 'SELECT PlayerId FROM rs_rank ORDER BY Avg DESC';
 			$res2 = mysql_query($query2);
 			$rank = 1;
 			while ($row2 = mysql_fetch_array($res2)) {
@@ -221,42 +287,48 @@ class Rasp {
 			}
 			$message = formatText($this->messages['RANK'][0],
 			                      $rank, mysql_num_rows($res2),
-			                      sprintf("%4.1F", $row['Avg'] / 10000));
+			                      $row['Avg']);
+			              /*        sprintf("%4.1F", $row['Avg'] / 10000));     */
 			$message = $this->aseco->formatColors($message);
+			$aseco->console($message) ;
 			$this->aseco->client->query('ChatSendServerMessageToLogin', $message, $login);
 			mysql_free_result($res2);
 		} else {
-			$message = formatText($this->messages['RANK_NONE'][0], $minrank);
+			$message = formatText($this->messages['RANK_NONE'][0], $minrank); //40 -> minrank
 			$message = $this->aseco->formatColors($message);
+			$aseco->console($message) ;			
 			$this->aseco->client->query('ChatSendServerMessageToLogin', $message, $login);
 		}
-		mysql_free_result($res);    */
+		mysql_free_result($res);   
+       	 
 	}  // showRank
 
 	function getRank($login) {
-       /*
+       
 		$pid = $this->aseco->getPlayerId($login);
 		$query = 'SELECT Avg FROM rs_rank
 		          WHERE PlayerId=' . $pid;
 		$res = mysql_query($query);
 		if (mysql_num_rows($res) > 0) {
 			$row = mysql_fetch_array($res);
-			$query2 = 'SELECT PlayerId FROM rs_rank ORDER BY Avg ASC';
+			$query2 = 'SELECT PlayerId FROM rs_rank ORDER BY Avg DESC';
 			$res2 = mysql_query($query2);
 			$rank = 1;
 			while ($row2 = mysql_fetch_array($res2)) {
 				if ($row2['PlayerId'] == $pid) break;
 				$rank++;
 			}
-			$message = formatText('{1}/{2} Avg: {3}',
-			                      $rank, mysql_num_rows($res2),
-			                      sprintf("%4.1F", $row['Avg'] / 10000));
+			$message = formatText('{1}/{2}',
+			                      $rank, mysql_num_rows($res2));
 			mysql_free_result($res2);
 		} else {
 			$message = 'None';
 		}
 		mysql_free_result($res);
-		return $message;  */
+		
+
+		
+		return $message;  
 	}  // getRank
 
 	// called @ onPlayerFinish
@@ -297,18 +369,25 @@ class Rasp {
 	// called @ onEndMap
 	function onEndMap($aseco, $data) {
 		global $feature_ranks, $mxplayed;
-
+    //$command=array();
 		// check for relay server
 		if ($aseco->server->isrelay) return;
-
+    $feature_ranks=true;
 		if ($feature_ranks) {
-			if (!$mxplayed) {
+		//	if (!$mxplayed) {
 				$this->resetRanks();
-			}
-			if (!$aseco->settings['sb_stats_panels']) {
+		//	}
+	//		if (!$aseco->settings['sb_stats_panels']) {
+	$pcnt=0;
 				foreach ($aseco->server->players->player_list as $pl)
-					$this->showRank($pl->login);
-			}
+				{
+					$this->showRank($pl->login); 
+   
+					chat_nextrank($aseco, 1, $pl->login, $pl->id);
+					$pcnt++;
+				}
+				$aseco->releaseEvent('onRankBuilded',$pcnt); 		
+	//		}
 		}
 	}  // onEndMap
 
@@ -344,7 +423,7 @@ function chat_top10($aseco, $command) {
 
 	$query = 'SELECT p.NickName, r.Avg FROM players p
 	          LEFT JOIN rs_rank r ON (p.Id=r.PlayerId)
-	          WHERE r.Avg!=0 ORDER BY r.Avg ASC LIMIT ' . $top;
+	          WHERE r.Avg!=0 ORDER BY r.Avg DESC LIMIT ' . $top;
 	$res = mysql_query($query);
 
 	if (mysql_num_rows($res) == 0) {
@@ -359,8 +438,9 @@ function chat_top10($aseco, $command) {
 		if (!$aseco->settings['lists_colornicks'])
 			$nick = stripColors($nick);
 		$recs[] = array($i . '.',
-		                $bgn . $nick,
-		                sprintf("%4.1F", $row->Avg / 10000));
+		                $bgn . $nick, $row->Avg);
+		                
+		                /*sprintf("%4.1F", $row->Avg / 10000));             */
 		$i++;
 	}
 
@@ -382,7 +462,7 @@ function chat_top100($aseco, $command) {
 
 	$query = 'SELECT p.NickName, r.Avg FROM players p
 	          LEFT JOIN rs_rank r ON (p.Id=r.PlayerId)
-	          WHERE r.Avg!=0 ORDER BY r.Avg ASC LIMIT ' . $top;
+	          WHERE r.Avg!=0 ORDER BY r.Avg DESC LIMIT ' . $top;
 	$res = mysql_query($query);
 
 	if (mysql_num_rows($res) == 0) {
@@ -403,8 +483,8 @@ function chat_top100($aseco, $command) {
 		if (!$aseco->settings['lists_colornicks'])
 			$nick = stripColors($nick);
 		$recs[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
-		                $bgn . $nick,
-		                sprintf("%4.1F", $row->Avg / 10000));
+		                $bgn . $nick, $row->Avg);
+		             /*   sprintf("%4.1F", $row->Avg / 10000));        */
 		$i++;
 		if (++$lines > 14) {
 			$player->msgs[] = $recs;
