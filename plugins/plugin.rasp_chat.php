@@ -29,7 +29,7 @@ Aseco::addChatCommand('bootme', 'Boot yourself from the server');
 
 
 //by LK 
-// 1. Param $aseco, 2. String der überprüft werden soll lj=last joined
+// first Param $aseco, second Param string who should looked in lj=last joined
 function isinplayerlist($aseco,$login){
     $pid=1;
   	foreach ($aseco->server->players->player_list as $pl) {		

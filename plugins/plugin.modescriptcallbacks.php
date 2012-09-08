@@ -16,7 +16,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onPlayerDeath', $params);
     break;
     case 'poleCapture':
-		 if($players > 1) //nur wenn mehr als 1 spieler am server
+		 if($players > 1) //only if more than 1 Player on the Server
       $aseco->releaseEvent('onPoleCapture', $params);
     break;
     case 'playerHit':  
@@ -24,11 +24,11 @@ function release_modeScriptCallbacks($aseco, $data) {
       $victim = str_replace('Victim:', '', $players[0]);
       $shooter = str_replace('Shooter:', '', $players[1]);
       $points = $players[2];	 
-		 if($players > 2) //nur wenn mehr als 2 spieler am server      
+		 if($players > 2) //only if more than 2 Player on the Server
       $aseco->releaseEvent('onPlayerHit', array('victim' => $victim, 'shooter' => $shooter, 'points' => $points));
     break;
     case 'playerSurvival':
-		 if($players > 3) //nur wenn mind 4 spieler am server    
+		 if($players > 3) //only if more than 3 Player on the Server
       $aseco->releaseEvent('onPlayerSurvival', $params);
     break;
     case 'playerRespawn':
