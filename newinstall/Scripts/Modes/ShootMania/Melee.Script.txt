@@ -106,6 +106,22 @@ Text UpdateLayerScoresInSpawn() {
 }
 
 /* ------------------------------------- */
+/** Get the rankings (temporary fix).
+ *
+ * @return		The rankings
+ */
+Text fixGetRankings() {
+	declare PlayerList = "";
+        	foreach (Player in Players) {
+        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
+	        }
+        	foreach (Player in Spectators) {
+        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
+	        }
+  return PlayerList;
+}
+
+/* ------------------------------------- */
 /** Create the Info manialink
  *
  *	@return		The ManiaLink string
@@ -113,7 +129,9 @@ Text UpdateLayerScoresInSpawn() {
 Text CreateLayerInfo() {
 	return
 """
-<script><!--
+<script><!-- 
+
+
 	main() {
 		declare Label_PosTotal <=> (Page.GetFirstChild("PosTotal") as CMlLabel);
 		declare Label_PosCurrent <=> (Page.GetFirstChild("PosCurrent") as CMlLabel);
@@ -392,18 +410,7 @@ main() {
 	Rules::Destroy();
 }
 
-/* ------------------------------------- */
-/** Get the rankings (temporary fix).
- *
- * @return		The rankings
- */
-Text fixGetRankings() {
-	declare PlayerList = "";
-        	foreach (Player in Players) {
-        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
-	        }
-        	foreach (Player in Spectators) {
-        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
-	        }
-  return PlayerList;
-}
+
+
+
+
