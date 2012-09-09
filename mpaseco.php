@@ -57,7 +57,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.41');
+define('MPASECO_VERSION', '0.42');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -1395,14 +1395,40 @@ class Aseco {
 	 * Check out who won the current map and increment his/her wins by one.
 	 */
 	function endMapRanking($ranking) {    /* temporary fixed */
-   $multiple=0;    
-   $first=key($ranking);
-   $second=next($ranking);
-   if($first==next($second))
-    $multiple=1;
+   $multiple=0;
+   $first=0;
+   $second=0;
+   $firstpts=0;
+   $secondpts=0;    
+  
+   /* ADD ALLTIMEPTS TO DB -> new part */
+   $cnt=1;
+   foreach($ranking as $login => $pts)
+   {
+      if($cnt==1){      //for rankings
+        $first=$login;
+        $firstpts=$pts;
+      }elseif($cnt==2){
+        $second=$login;
+        $secondpts=$pts;      
+      }
+      if($pts > 0)
+      {
+          $query = 'UPDATE players SET allpoints = allpoints+'.$pts.' WHERE login = '.quotedString($login);  
+          mysql_query($query);    
 
-    
-   if(isset($ranking) && $multiple == false && $second > 0  &&   //min 2 player, max 1 pl sametime win
+      }     
+      $cnt++;      
+   } 
+   
+
+	
+  /* end(ADD ALLTIMEPTS */
+  
+   if($firstpts==$secondpts)
+    $multiple=1;
+        
+   if(isset($ranking) && $multiple == false && $secondpts > 20  &&   //min 2 player, max 1 pl sametime win
 		    ($player = $this->server->players->getPlayer($first)) !== false) {    
 
         $player->newwins++;
