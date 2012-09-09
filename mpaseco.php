@@ -57,7 +57,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.40');
+define('MPASECO_VERSION', '0.41');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -1576,7 +1576,8 @@ class Aseco {
 			// replace parameters
 			$message = formatText($this->getChatMessage('WELCOME'),
 			                      stripColors($player_item->nickname),
-			                      $this->server->name, MPASECO_VERSION);
+			                      $this->server->name, MPASECO_VERSION);     
+			    $message=str_ireplace('$w', '', $message);                      
 			// hyperlink package name & version number
 			$message = preg_replace('/MPAseco.+' . MPASECO_VERSION . '/', '$l[' .MPASECO . ']$0$l', $message);
 

@@ -9,7 +9,7 @@ Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
 function release_modeScriptCallbacks($aseco, $data) {
   $name = $data[0];
   $params = isset($data[1]) ? $data[1] : '';
-  $players = count($aseco->server->players->player_list);	
+  $playercnt = count($aseco->server->players->player_list);	
         
   switch($name) {
     case 'playerDeath':
@@ -24,11 +24,11 @@ function release_modeScriptCallbacks($aseco, $data) {
       $victim = str_replace('Victim:', '', $players[0]);
       $shooter = str_replace('Shooter:', '', $players[1]);
       $points = $players[2];	 
-		 if($players > 2) //only if more than 2 Player on the Server
+		 if($playercnt > 2) //only if more than 2 Player on the Server
       $aseco->releaseEvent('onPlayerHit', array('victim' => $victim, 'shooter' => $shooter, 'points' => $points));
     break;
     case 'playerSurvival':
-		 if($players > 3) //only if more than 3 Player on the Server
+		 if($playercnt > 3) //only if more than 3 Player on the Server
       $aseco->releaseEvent('onPlayerSurvival', $params);
     break;
     case 'playerRespawn':
