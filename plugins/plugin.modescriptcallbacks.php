@@ -16,7 +16,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onPlayerDeath', $params);
     break;
     case 'poleCapture':
-		 if($players > 1) //only if more than 1 Player on the Server
+		 if($playercnt > 1) //only if more than 1 Player on the Server
       $aseco->releaseEvent('onPoleCapture', $params);
     break;
     case 'playerHit':  
