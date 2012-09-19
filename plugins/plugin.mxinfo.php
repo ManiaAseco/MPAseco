@@ -82,7 +82,7 @@ function chat_mxinfo($aseco, $command) {
 	                 'Length', '{#black}' . $data->length);
 	$stats[] = array('Updated', '{#black}' . str_replace('T', ' ', preg_replace('/:\d\d\.\d\d\d$/', '', $data->updated)),
 	                 'Awards', '{#black}' . $data->awards);
-	$stats[] = array('LB Rating', '{#black}' . $data->lbrating,
+	$stats[] = array('Map Value', '{#black}' . $data->trkvalue,
 	                 'Replay', ($data->replayurl ?
 	                 '{#black}$l[' . $data->replayurl . ']Download$l' : '<none>'));
 

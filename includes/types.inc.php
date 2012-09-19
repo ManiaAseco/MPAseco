@@ -388,6 +388,7 @@ class Server {
 	var $players;
 	var $mutelist;
 	var $gameinfo;
+	var $gamestate;
 	var $gamedir;
 	var $mapdir;
 	var $votetime;
@@ -398,6 +399,10 @@ class Server {
 	var $relaymaster;
 	var $relayslist;
 
+  // game states
+	const RACE  = 'race';
+	const SCORE = 'score';
+	
 	function getGame() {
 		switch ($this->game) {
 			case 'ManiaPlanet':

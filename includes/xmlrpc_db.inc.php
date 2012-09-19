@@ -191,7 +191,7 @@ class XmlrpcDB {
 		}
 
 		if ($this->_debug > 0)
-			$aseco->console_text('XmlrpcDB->RequestWaitArray() - datas' . CRLF . print_r($datas));
+			$aseco->console_text('XmlrpcDB->RequestWaitArray() - datas' . CRLF . print_r($datas, true));
 		if (isset($datas['params']) && isset($datas['params'][$reqnum])) {
 			$response['Data'] = $datas['params'][$reqnum];
 			$param_end = end($datas['params']);
@@ -278,7 +278,7 @@ class XmlrpcDB {
 		}
 	}  // _callCB
 
-	// build the datas array from MPAseco or Dedimania server
+	// build the datas array from XAseco or Dedimania server
 	//   remove the first array level into params if needed
 	//   add methodResponse name if needed
 	//   rename sub responses params array from [0] to ['params'] if needed
@@ -287,13 +287,14 @@ class XmlrpcDB {
 
 		if (is_array($params) && count($params) == 1 && is_array($params[0]))
 			$params = $params[0];
+		if ($this->_debug > 2)
+			$aseco->console_text('XmlrpcDB->_makeResponseDatas() - requests' . CRLF . print_r($requests, true));
 		if ($this->_debug > 1)
 			$aseco->console_text('XmlrpcDB->_makeResponseDatas() - params' . CRLF . print_r($params, true));
 
 		if (is_array($params) && is_array($params[0]) && !isset($params[0]['methodResponse'])) {
 			$params2 = array();
 			foreach ($params as $key => $param) {
-
 				$errors = null;
 				if (isset($param['faultCode'])) {
 					$errors[] = array('Code' => $param['faultCode'], 'Message' => $param['faultString']);
@@ -320,13 +321,12 @@ class XmlrpcDB {
 
 				if ($methodresponse == 'dedimania.WarningsAndTTR') {
 					if ($this->_debug > 1) {
-						$aseco->console_text('XmlrpcDB->_makeResponseDatas() - param' . CRLF . print_r($param));
-						$aseco->console_text('XmlrpcDB->_makeResponseDatas() - params2' . CRLF . print_r($params2));
+						$aseco->console_text('XmlrpcDB->_makeResponseDatas() - param' . CRLF . print_r($param, true));
+						$aseco->console_text('XmlrpcDB->_makeResponseDatas() - params2' . CRLF . print_r($params2, true));
 					}
 					$globalTTR = $param['globalTTR'];
-					$key2 = -1;
 					foreach ($param['methods'] as $key3 => $param3) {
-						$key2++;
+						$key2 = 0;
 						while ($key2 < count($params2) && $params2[$key2]['methodResponse'] != $param3['methodName']) {
 							$params2[$key2]['globalTTR'] = $globalTTR;
 							$key2++;
@@ -342,7 +342,7 @@ class XmlrpcDB {
 				}
 			}
 			if ($this->_debug > 1)
-				$aseco->console_text('XmlrpcDB->_makeResponseDatas() - params2' . CRLF . print_r($params2));
+				$aseco->console_text('XmlrpcDB->_makeResponseDatas() - params2' . CRLF . print_r($params2, true));
 			return array('methodName' => $methodname, 'params' => $params2);
 
 		} else {

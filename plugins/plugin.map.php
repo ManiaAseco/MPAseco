@@ -38,7 +38,7 @@ function chat_map($aseco, $command) {
 	} else {  // Stunts mode
 		$message = formatText($aseco->getChatMessage('MAP'),
 		                      $name, $aseco->server->map->author,
-		                      $aseco->server->map->gbx->ascore,
+		                      $aseco->server->map->gbx->authorScore,
 		                      $aseco->server->map->goldtime,
 		                      $aseco->server->map->silvertime,
 		                      $aseco->server->map->bronzetime,
@@ -64,7 +64,7 @@ function time_gameinfo($aseco, $map) {
 		$message = formatText($aseco->getChatMessage('CURRENT_MAP'),
 		                      $name, $map->author,
 		                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
-		                       $map->gbx->ascore :
+		                       $map->gbx->authorScore :
 		                       formatTime($map->authortime)));
 
 		// show chat message
