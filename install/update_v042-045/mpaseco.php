@@ -57,7 +57,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.42');
+define('MPASECO_VERSION', '0.45');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -1307,14 +1307,16 @@ class Aseco {
 		}
 
 		// obtain map's GBX data, MX info & records
-		$map_item->gbx = new GBXChallengeFetcher($this->server->mapdir . $map_item->filename, true);
+	//	$map_item->gbx = new GBXChallengeFetcher($this->server->mapdir . $map_item->filename, true);
+	 $map_item->gbx = new GBXChallMapFetcher($this->server->mapdir . $map_item->filename, true);
+	
 		// check for XML parser error
-		if (is_string($map_item->gbx->parsedxml))
-			trigger_error($map_item->gbx->parsedxml, E_USER_WARNING);
+		if (is_string($map_item->gbx->parseXml))
+			trigger_error($map_item->gbx->parseXml, E_USER_WARNING);
 		$map_item->mx = findMXdata($map_item->uid, true);
     
     // titleuid (is not in the GetMapInfos method..)
-    $map_item->titleuid = $map_item->gbx->titleuid;
+    $map_item->titleuid = $map_item->gbx->titleUid;
     
 		// throw main 'begin map' event
 		$this->releaseEvent('onBeginMap', $map_item);
