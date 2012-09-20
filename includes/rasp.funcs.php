@@ -1,10 +1,11 @@
-g<?php
+<?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
 /**
  * Common functions for RASP
  * Updated by Xymph
- * edited for SM 23.07.2012 by kremsy and his MP-Team
+ * edited for SM 23.07.2012 by kremsy and his MP-Team     
+ * edit 20.09.2012 changed to the new gbxdatafetcher from Xymphh 
  */
 
 require_once('includes/gbxdatafetcher.inc.php');  // provides access to GBX data
@@ -1378,24 +1379,35 @@ function getMapData($filename, $rtnvotes) {
 		$ret['votes'] = 1;
 	}
 
-	$gbx = new GBXChallengeFetcher($filename, false);
-	if (isset($gbx->uid) && $gbx->uid != 'read error') {
+	$gbx = new GBXChallMapFetcher();
+	try
+	{
+		$gbx->processFile($filename);
+
 		$ret['uid'] = $gbx->uid;
 		$ret['name'] = stripNewlines($gbx->name);
 		$ret['author'] = $gbx->author;
 		$ret['environment'] = $gbx->envir;
-		$ret['authortime'] = $gbx->authortm;
-		$ret['authorscore'] = $gbx->ascore;
+		$ret['authortime'] = $gbx->authorTime;
+		$ret['authorscore'] = $gbx->authorScore;
 		$ret['cost'] = $gbx->cost;
 		$ret['kind'] = $gbx->kind;		
 		$ret['mood'] = $gbx->mood;
-		$ret['pub'] = $gbx->pub;   
-		$ret['maptype'] = $gbx->maptype; 
-		$ret['titleuid'] = $gbx->titleuid; 					
-	} else {
+		$ret['pub'] = $gbx->authorBg;   
+		$ret['maptype'] = $gbx->mapType; 
+		$ret['mapstyle'] = $gbx->mapStyle; 
+		$ret['lightmap'] = $gbx->lightmap; 		
+		$ret['titleuid'] = $gbx->titleUid; 					
+	      
+	}                          
+	catch (Exception $e)
+	{
+
 		$ret['votes'] = 500;
-		$ret['name'] = 'Not a GBX file';
+		$ret['name'] = $e->getMessage();
 	}
 	return $ret;
 }  // getMapData
+
+
 ?>
