@@ -151,6 +151,7 @@ Aseco::addChatCommand('debug', 'Toggles debugging output', true);
 Aseco::addChatCommand('shutdown', 'Shuts down MPASECO', true);
 Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
 Aseco::addChatCommand('teambalance/autoteambalance', 'Team balance', true);
+Aseco::addChatCommand('scriptsettings/scriptset','Set Scriptsettings. $i/scriptsettings$i displays a list of available settings', true);
 
 //Aseco::addChatCommand('uptodate', 'Checks current version of MPAseco', true);  // already defined in plugin.uptodate.php
 
@@ -4424,10 +4425,50 @@ function chat_admin($aseco, $command) {
 		$message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} balanced teams!',
 		                      $chattitle, $admin->nickname);
 		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
-	} else {
-		$message = '{#server}> {#error}Unknown admin command or missing parameter(s): {#highlite}$i ' . $arglist[0] . ' ' . $arglist[1];
-		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
-	}
+
+	/**
+	 * Sets new Scriptsettings
+	 */  	
+	} elseif ($command['params'][0] == 'scriptsettings' ||
+	          $command['params'][0] == 'scriptset') {
+    if($command['params'][1] != ''){     
+      if(isset($command['params'][2])){
+      
+        if($command['params'][2] == 'true') 
+          $command['params'][2] = true;
+				else if($command['params'][2] == 'false') 
+          $command['params'][2] = false;
+				else if(intval($command['params'][2]) == $command['params'][2]) 
+          $command['params'][2] = (int) $command['params'][2];     
+
+
+				$scriptSettings[$command['params'][1]] = $command['params'][2];
+				$aseco->client->query('SetModeScriptSettings', $scriptSettings);
+ 
+        $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} set Scriptsettings {#highlite}{3} $z$s{#admin}to {#highlite}{4}$z$s{#admin}!',
+		                      $chattitle, $admin->nickname,$command['params'][1],$command['params'][2]);
+		    $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+      }       
+    } else { //Display ModeScriptSettings   TODO: Grafische liste mit values
+      $aseco->client->query('GetModeScriptSettings');
+      $script_settings = $aseco->client->getResponse();
+      $settings = array();
+ 
+      foreach($script_settings as $key => $value) {
+      
+        $aseco->console($sett);
+				if($value === false) $value = 'false';
+				if($value === true)  $value = 'true'; 
+
+        $setting = new ChatCommand($key, $value, true);
+        $settings[] = $setting;
+      }
+      showHelp($admin, $settings, 'Scripttsetting', true, true, 0.42);
+    }
+  } else {  //Unkown Admin Command
+  	$message = '{#server}> {#error}Unknown admin command or missing parameter(s): {#highlite}$i ' . $arglist[0] . ' ' . $arglist[1];
+  	$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
+ 	}
 }  // chat_admin
 
 
