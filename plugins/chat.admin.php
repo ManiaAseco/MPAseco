@@ -151,7 +151,7 @@ Aseco::addChatCommand('debug', 'Toggles debugging output', true);
 Aseco::addChatCommand('shutdown', 'Shuts down MPASECO', true);
 Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
 Aseco::addChatCommand('teambalance/autoteambalance', 'Team balance', true);
-Aseco::addChatCommand('scriptsettings/scriptset','Set Scriptsettings. $i/scriptsettings$i displays a list of available settings', true);
+Aseco::addChatCommand('scriptsettings/scriptset','Set Scriptsettings. $i/admin scriptset$i displays a list of available settings', true);
 
 //Aseco::addChatCommand('uptodate', 'Checks current version of MPAseco', true);  // already defined in plugin.uptodate.php
 
