@@ -176,7 +176,7 @@ include('plugins/jfreu.chat.php');
 // called @ onStartup
 function init_jfreu($aseco, $command)
 {
-	include_once('includes/jfreu.config.php');
+	include_once('configs/plugins/jfreu/jfreu.config.php');
 	$version = '0.14';
 	$aseco->server->jfreu = new Jfreu();
 	$aseco->server->jfreu->version = $version;

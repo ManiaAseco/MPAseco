@@ -581,7 +581,7 @@ function event_onstartup($aseco) {
 	global $rasp;
 
 	$rasp = new Rasp();
-	$rasp->start($aseco, 'rasp.xml');
+	$rasp->start($aseco, 'configs/plugins/rasp/rasp.xml');
 
 }  // event_onstartup
 ?>
