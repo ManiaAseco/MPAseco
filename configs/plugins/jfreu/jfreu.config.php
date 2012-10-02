@@ -8,6 +8,7 @@
  * list it in plugins.xml!
  * Updated by Xymph
  * updated by kremsy for mpaseco 
+ * TODO: ALL->TO->XML 
  */
 
 	//-> paths to config, vip/vip_team & bans files
@@ -15,49 +16,12 @@
 	$vips_file = 'configs/plugins/jfreu/jfreu.vips.xml';
 	$bans_file = 'configs/plugins/jfreu/jfreu.bans.xml';
 
-	//-> Server's base name: (ex: '$000Jfreu')
-	//   Max. length: 26 chars (incl. colors & tags, and optional "TopXXX")
-	$servername = 'YOUR SERVER NAME';
-	//-> Word between the servername and the limit (usually " Top")
-	$top = ' $449TOP';
-	//-> Change the servername when the limit changes: "Servername TopXXX" (0 = OFF, 1 = ON)
-	$autochangename = 0;
-
-	//-> ranklimit: ranklimiting default state (0 = OFF, 1 = ON)
-	$ranklimit = 0;
-
-	//-> limit: ranklimit default value (when autorank is OFF)
-	$limit = 500000;
-
-	//-> spec ranklimit
-	$hardlimit = 1000000;
-
-	//-> autorank: autorank default state (0 = OFF, 1 = ON)
-	$autorank = 0;
-
-	//-> offset (average + offset = Auto-RankLimit)
-	$offset = 999;
-
-	//-> autorankminplayers (autorank disabled when not enough players)
-	$autorankminplayers = 10;
-	//-> autorankvip: include VIP/unSpec in autorank calculation (0 = OFF, 1 = ON)
-	$autorankvip = 0;
-
-	//-> kick hirank when server is full and new player arrives (0 = OFF, 1 = ON)
-	$kickhirank = 0;
-	//-> maxplayers value for kickhirank (must be less than server's <max_players>)
-	$maxplayers = 20;
-
-	//-> allow user /unspec vote (0 = OFF, 1 = ON)
-	$unspecvote = 1;
 
 	//-> player join/leave messages
 	$player_join  = '{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}';
 	$player_joins = '{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}{#message} Server: {#highlite}{5}';
 	$player_left  = '{#server}>> {#highlite}{1}$z$s{#message} has left the game. Played: {#highlite}{2}';
 
-	//-> random info messages at the end of the race (0 = OFF, 1 = in chat, 2 = in message window)
-	$infomessages = 1;
 	//-> prefix for info messages
 	$message_start = '$z$s$ff0>> [$f00INFO$ff0] $fff';
 
@@ -110,14 +74,6 @@
 	$message31 = 'Missed a system message?  Use "/msglog" to check the message history!';
 	}
 
-	//-> Badwords checking (0 = OFF, 1 = ON)
-	$badwords = 0;
-	//-> Badwords banning (0 = OFF, 1 = ON)
-	$badwordsban = 0;
-	//-> Number of badwords allowed
-	$badwordsnum = 3;
-	//-> Banning period (minutes)
-	$badwordstime = 10;
 
 	//-> Badwords to check for
 	$badwordslist = array(
@@ -130,6 +86,4 @@
 		'sugi','cacat','pisat','labagiu','gaozar','muist','orospu',
 		'pédé','cunt','godve','godfe','kut','kudt','lul','iui');
 
-	//-> novote (auto-cancel votes) (0 = OFF, 1 = ON)
-	$novote = 0;
 ?>

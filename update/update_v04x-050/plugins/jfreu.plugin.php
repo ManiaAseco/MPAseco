@@ -2,10 +2,10 @@
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
 /**
- * Jfreu's plugin 0.14
+ * Jfreu's plugin 0.20
  * http://jfreu.servegame.com
  * Updated by Xymph
- * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
+ * edited for SM 02.10.2012 by kremsy (www.mania-server.net) 
  *  
  * Dependencies: requires jfreu.chat.php
  *
@@ -176,26 +176,15 @@ include('plugins/jfreu.chat.php');
 // called @ onStartup
 function init_jfreu($aseco, $command)
 {
-	include_once('configs/plugins/jfreu/jfreu.config.php');
-	$version = '0.14';
+	include_once('includes/jfreu.config.php');
+  
+	$version = '0.20';       
 	$aseco->server->jfreu = new Jfreu();
-	$aseco->server->jfreu->version = $version;
+  
+  $aseco->server->jfreu->version = $version;
 	$aseco->server->jfreu->conf_file = $conf_file;
 	$aseco->server->jfreu->vips_file = $vips_file;
 	$aseco->server->jfreu->bans_file = $bans_file;
-	$aseco->server->jfreu->servername = $servername;
-	$aseco->server->jfreu->top = $top;
-	$aseco->server->jfreu->autochangename = ($autochangename != 0);  // insure boolean
-	$aseco->server->jfreu->autorank = ($autorank != 0);  // insure boolean
-	$aseco->server->jfreu->ranklimit = ($ranklimit != 0);  // insure boolean
-	$aseco->server->jfreu->limit = $limit;
-	$aseco->server->jfreu->autolimit = $limit;
-	$aseco->server->jfreu->hardlimit = $hardlimit;
-	$aseco->server->jfreu->offset = $offset;
-	$aseco->server->jfreu->autorankvip = ($autorankvip != 0);  // insure boolean
-	$aseco->server->jfreu->autorankminplayers = $autorankminplayers;
-	$aseco->server->jfreu->maxplayers = $maxplayers;
-	$aseco->server->jfreu->kickhirank = ($kickhirank != 0);  // insure boolean
 
 	$aseco->server->jfreu->player_join = $player_join;
 	$aseco->server->jfreu->player_joins = $player_joins;
@@ -210,7 +199,6 @@ function init_jfreu($aseco, $command)
 	$adm = $aseco->server->jfreu->admin = $aseco->formatColors('$z$s{#logina}');
 
 	//** random information messages **//
-	$aseco->server->jfreu->infomessages = $infomessages;
 	$aseco->server->jfreu->message_start = $message_start;
 	$i = 1;
 	while (isset(${'message'.$i}) && $i < 1000)
@@ -232,15 +220,8 @@ function init_jfreu($aseco, $command)
 		ajouter_joueur_liste($aseco, $pl->login, false, false);
 
 	//** badwords **//
-	$aseco->server->jfreu->badwords = ($badwords != 0);  // insure boolean
-	$aseco->server->jfreu->badwordsban = ($badwordsban != 0);  // insure boolean
-	$aseco->server->jfreu->badwordsnum = $badwordsnum;
-	$aseco->server->jfreu->badwordstime = $badwordstime;
 	$aseco->server->jfreu->badwordslist = $badwordslist;
 
-	//** BAD BAD BAD **//
-	$aseco->server->jfreu->pf = 0;
-	// $aseco->server->jfreu->pf_list['barcelona'] = 302880;
 
 	//** Votes **//
 	$aseco->server->jfreu->vote_item = new vote();
@@ -252,9 +233,6 @@ function init_jfreu($aseco, $command)
 	$aseco->server->jfreu->vote_item->nb_votes_needed = 0;
 	$aseco->server->jfreu->current_vote = false;
 
-	//** novote **//
-	$aseco->server->jfreu->novote = ($novote != 0);  // insure boolean
-	$aseco->server->jfreu->unspecvote = ($unspecvote != 0);  // insure boolean
 
 	//** init jfreu admin commands **//
 	$aseco->server->jfreu->admin_commands = array();
@@ -263,6 +241,10 @@ function init_jfreu($aseco, $command)
 	//** Permanent VIP & VIP_Team **//
 	$aseco->server->jfreu->vip_list = array();
 	$aseco->server->jfreu->vip_team_list = array();
+
+  /* Reads the config */
+  read_config_xml($aseco);
+  
 	read_lists_xml($aseco);
 	read_guest_list($aseco);
 	//** Temporary bans **//
