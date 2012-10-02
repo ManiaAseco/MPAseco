@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<rasp_settings>
+  <!--
+  ##################################################################
+  #------------------------- Features -----------------------------#
+  #  Specify here which features you would like to be activated    #  
+  ################################################################## -->
+
+  <!--Set to true if you want the rank system active -->
+  <feature_ranks>true</feature_ranks>
+
+  <!--Set to true if you want /nextrank to show the difference in record positions,
+      i.e. the combined number of positions that your records need to be improved
+      in order to catch up with the next better ranked player -->
+  <nextrank_show_points>true</nextrank_show_points>
+
+  <!--Set to true ONLY if you use the karma feature.
+     If you set this to true when you are not, it will produce errors -->
+  <feature_karma>true</feature_karma>  
+
+  <!--Set to true if you allow ++ & -- votes as well as /++ & /-- -->
+  <allow_public_karma>true</allow_public_karma>  
+
+  <!--Set to true if you want to show the karma message at the start of each map -->
+  <karma_show_start>true</karma_show_start>  
+
+  <!--Set to true if you want to show vote counts & percentages -->
+  <karma_show_details>true</karma_show_details>  
+  
+  <!--Set to true if you want to show players their actual votes -->
+  <karma_show_votes>true</karma_show_votes>  
+
+  <!--Set to the number of times a player should have finished a map before
+      being allowed to karma vote for it
+      Note: this is the total number of finishes since the first time a player
+     tried a map, not the number in the current session -->
+  <karma_require_finish>0</karma_require_finish>
+
+  <!--Set to true if you want to show players their actual votes 
+     2 = every finish; 1 = at end of race; 0 = none -->
+  <remind_karma>0</remind_karma>  
+
+  <!--Set to true if you want to show players their actual votes -->
+  <feature_jukebox>true</feature_jukebox>    
+
+  <!--Set to true if you want to show players their actual votes -->
+  <feature_mxadd>false</feature_mxadd>  
+  
+  <!--Set to true if you want jukebox to skip maps requested by players that left -->
+  <jukebox_skipleft>true</jukebox_skipleft>  
+ 
+  <!--Set to true if you want jukebox to _not_ skip maps requested by admins
+     (any tier) that left (and $jukebox_skipleft is true) -->
+  <jukebox_adminnoskip>false</jukebox_adminnoskip>    
+
+  <!--Set to true if you want /add to permanently add maps to the server -->
+  <jukebox_permadd>false</jukebox_permadd>    
+  
+  <!--Set to true if you want /admin add to automatically jukebox the downloaded map 
+      (just like a passed /add vote) -->
+  <jukebox_adminadd>true</jukebox_adminadd>    
+
+  <!--Set to true if you want jukebox messages diverted to message window -->
+  <jukebox_in_window>false</jukebox_in_window>    
+
+  <!--Set to contact (email, ICQ, etc) to show in /server command, leave empty to skip entry -->
+  <admin_contact>YOUR@EMAIL.COM</admin_contact>    
+
+  <!--Set to contact (email, ICQ, etc) to show in /server command, leave empty to skip entry -->
+  <autosave_matchsettings>tracklist.txt</autosave_matchsettings>    
+
+  <!--Set to true if you want to disable normal CallVotes & enable chat-based votes -->
+  <feature_votes>false</feature_votes>    
+
+  <!--Set to true to perform MPAseco version check at start-up & MasterAdmin connect -->
+  <uptodate_check>true</uptodate_check>    
+
+  <!--Set to true to perform global blacklist merge at MasterAdmin connect -->
+  <globalbl_merge>false</globalbl_merge>    
+
+  <!--Set to global blacklist in XML format, same as <blacklist_url> in dedicated_cfg.txt -->
+  <globalbl_url></globalbl_url>    
+  
+  
+  <!--
+  ##################################################################
+  #-------------------- Performance Variables ---------------------#
+  #  These variables are used in the main plugin.                  #
+  #  They specify how much data should be used for calculations    #
+  #                                                                #
+  #  If your server slows down considerably when calculating       #
+  #  ranks it is recommended that you lower/increase these values  #
+  ################################################################## -->  
+ 
+  <!--Sets the minimum amount of points required for a player to be ranked 
+      Higher = Faster -->  
+  <min_points>200</min_points> 
+
+
+  <!--
+  ##################################################################
+  #-------------------- Jukebox Variables -------------------------#
+  #  These variables are used by the jukebox.                      #
+  ##################################################################  -->  
+
+  <!--Specifies how large the map history buffer is. 
+      If a map that is in the buffer gets requested, it won't be jukeboxed. -->  
+  <buffer_size>5</buffer_size> 
+  
+  <!--Specifies the required vote ratio for a MX /add request to be successful. -->
+  <mx_voteratio>0.66</mx_voteratio>      
+
+  <!--The location of the maps folders for saving MX maps, relative
+      to the dedicated server's UserData/Maps/ directory:
+      mx_dir for maps downloaded via /admin add, and user maps approved
+      via /admin addthis.
+      mx_tmpdir for maps downloaded via /add user votes.
+      There must be full write permissions on these folders.
+      In linux the command will be:  chmod 777.
+      Regardless of OS, use the / character for pathing. -->
+  <mx_dir>MX</mx_dir> 
+  <mx_tmpdir>MXtmp</mxtmp_dir>  
+
+
+  <!--
+  ##################################################################
+  #------------------------ IRC Variables -------------------------#
+  #  These variables are used by the IRC plugin.                   #
+  ##################################################################  -->   
+ 
+  <!--Hostname of the irc-server (i.e. irc.gamesnet.net) -->
+  <irc_server>localhost</irc_server>
+ 
+  <!--Port of the irc-server (standard: 6667) -->
+  <irc_port>6667</irc_port>
+  
+  <!--Name of the irc-channel (i.e. #php) -->
+  <irc_channel>#channel</irc_channel>
+
+  <!--Name of the irc-bot (i.e. demonbot) -->
+  <irc_botname>botlogin</irc_botname>  
+    
+  <!--Nick of the irc-bot (i.e. demonbot) -->
+  <irc_botnick>botname</irc_botnick>
+                                   
+  <!--If set to true, the IRC connection messages will be displayed in the console. -->
+  <irc_show_connect>false</irc_show_connect>  
+  
+</rasp_settings>

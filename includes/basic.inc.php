@@ -752,4 +752,15 @@ function bool2text($boolval) {
 	else
 		return 'False';
 }  // bool2text
+
+/**
+ * Convert text string to boolean value
+ */
+function text2bool($boolval) {
+
+	if (strtoupper($boolval) == 'TRUE')
+		return true;
+	else
+		return false;
+}  // text2bool
 ?>

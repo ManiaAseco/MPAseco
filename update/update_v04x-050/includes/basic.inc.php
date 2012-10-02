@@ -617,7 +617,7 @@ require_once('includes/mxinfofetcher.inc.php');  // provides access to MX info
 function findMXdata($uid, $records = false) {
 
 	// search MX for map
-	$mxdata = new MXInfoFetcher('SM', $uid, $records);
+	$mxdata = new MXInfoFetcher('TM2', $uid, $records);
 	if ($mxdata->error == '')
 		return $mxdata;
 	else
@@ -752,4 +752,15 @@ function bool2text($boolval) {
 	else
 		return 'False';
 }  // bool2text
+
+/**
+ * Convert text string to boolean value
+ */
+function text2bool($boolval) {
+
+	if (strtoupper($boolval) == 'TRUE')
+		return true;
+	else
+		return false;
+}  // text2bool
 ?>

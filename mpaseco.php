@@ -1306,9 +1306,21 @@ class Aseco {
 			$map_item->forcedlaps = $this->server->gameinfo->forcedlaps;
 		}
 
+    // obtain map's GBX data, MX info & records
+		$map_item->gbx = new GBXChallMapFetcher(true);
+		try
+		{
+			$map_item->gbx->processFile($this->server->mapdir . $map_item->filename);
+  	}
+		catch (Exception $e)
+  	{
+			trigger_error($e->getMessage(), E_USER_WARNING);
+		}
+
+
 		// obtain map's GBX data, MX info & records
-	//	$map_item->gbx = new GBXChallengeFetcher($this->server->mapdir . $map_item->filename, true);
-	 $map_item->gbx = new GBXChallMapFetcher($this->server->mapdir . $map_item->filename, true);
+	  //	$map_item->gbx = new GBXChallengeFetcher($this->server->mapdir . $map_item->filename, true);
+	  $map_item->gbx = new GBXChallMapFetcher($this->server->mapdir . $map_item->filename, true);
 	
 		// check for XML parser error
 		if (is_string($map_item->gbx->parseXml))
@@ -1317,6 +1329,12 @@ class Aseco {
     
     // titleuid (is not in the GetMapInfos method..)
     $map_item->titleuid = $map_item->gbx->titleUid;
+
+    // author Informations from the GBXBaseFetcher
+	  $map_item->authorNick = $map_item->gbx->authorNick;
+	  $map_item->authorZone = $map_item->gbx->authorZone;
+		$map_item->authorEInfo = $map_item->gbx->authorEInfo;   
+
     
 		// throw main 'begin map' event
 		$this->releaseEvent('onBeginMap', $map_item);
