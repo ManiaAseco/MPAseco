@@ -37,7 +37,7 @@ require_once('includes/basic.inc.php');  // contains standard functions
 require_once('includes/GbxRemote.inc.php');  // needed for dedicated server connections
 require_once('includes/xmlparser.inc.php');  // provides an XML parser
 require_once('includes/gbxdatafetcher.inc.php');  // provides access to GBX data
-require_once('configs/plugins/rasp/rasp.settings.php');  // specific to the RASP plugins
+require_once('includes/rasp.settings.php');  // specific to the RASP plugins
 
 /**
  * Runtime configuration definitions
@@ -220,7 +220,7 @@ class Aseco {
 		$this->restarting = 0;
 		$this->changingmode = false;
 		$this->currstatus = 0;
-    	$this->endmapvar=0;
+    	$this->endmapvar=0;   
 	}  // Aseco
 
 
