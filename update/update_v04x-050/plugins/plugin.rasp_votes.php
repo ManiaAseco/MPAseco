@@ -48,7 +48,7 @@ function init_votes($aseco, $data) {
 	$replays_counter = 0;
 
 	// load configuration settings
-	include('configs/plugins/rasp/votes.config.php');
+	include('includes/votes.config.php');
 }  // init_votes
 
 // called @ onSync, onEndMap1

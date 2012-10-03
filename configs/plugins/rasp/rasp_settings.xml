@@ -18,7 +18,7 @@
      If you set this to true when you are not, it will produce errors -->
   <feature_karma>true</feature_karma>  
 
-  <!--Set to true if you allow ++ & - - votes as well as /++ & /- - -->
+  <!--Set to true if you allow vote shortforms (++ as well as /++) -->
   <allow_public_karma>true</allow_public_karma>  
 
   <!--Set to true if you want to show the karma message at the start of each map -->
