@@ -92,7 +92,7 @@ if (file_exists($config_file)) {
   		$ta_ladder_max       = $xml['RASP_VOTES']['TA_LADDER_MAX'][0];
   		$ta_replay_min       = $xml['RASP_VOTES']['TA_REPLAY_MIN'][0];
   		$ta_skip_max         = $xml['RASP_VOTES']['TA_SKIP_MAX'][0]; 
-
+   }
   } else {
   trigger_error('Could not read/parse rasp votes config file ' . $config_file . ' !', E_USER_WARNING);
   }
