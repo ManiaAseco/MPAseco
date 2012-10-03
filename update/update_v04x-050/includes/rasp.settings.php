@@ -5,11 +5,15 @@
  * XML file created and restructured php 2012 by Lukas Kremsmayr
  */
  
-$config_file = 'configs/plugins/rasp/rasp_settings.xml';
+$config_file = 'configs/plugins/rasp/rasp_settings.xml'; //Settings XML File
+
+require_once('includes/xmlparser.inc.php');    //XML-Parser
+
+$xml_parser = new Examsly();
 
 if (file_exists($config_file)) {
-  $aseco->console('Load rasp Config [' . $config_file . ']');
-  if ($rasp_settings = $aseco->xml_parser->parseXml($config_file)){
+ // $aseco->console('Load rasp Config [' . $config_file . ']');
+  if ($rasp_settings = $xml_parser->parseXml($config_file)){
  
     /***************************** FEATURES **************************************/
     $feature_ranks      = text2bool($rasp_settings['RASP_SETTINGS']['FEATURE_RANKS'][0]);

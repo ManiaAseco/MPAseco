@@ -148,7 +148,7 @@ function init_playerpanels($aseco, $player) {
 	if (($panels = ldb_getPanels($aseco, $player->login)) &&
 	    ($panelbg = ldb_getPanelBG($aseco, $player->login))) {
 		// load player's panel background
-		$panelbg_file = 'panels/' . $panelbg . '.xml';
+		$panelbg_file = 'configs/panels/' . $panelbg . '.xml';
 		if (($player->panelbg = $aseco->xml_parser->parseXml($panelbg_file)) && isset($player->panelbg['PANEL']['BACKGROUND'][0])) {
 			$player->panelbg = $player->panelbg['PANEL']['BACKGROUND'][0];
 		} else {
@@ -587,7 +587,7 @@ function admin_panel($aseco, $command) {
 			// add file prefix
 			if (strtolower(substr($panel, 0, 5)) != 'admin')
 				$panel = 'Admin' . $panel;
-			$panel_file = 'panels/' . $panel . '.xml';
+			$panel_file = 'configs/panels/' . $panel . '.xml';
 			// load new panel
 			if ($paneldata = @file_get_contents($panel_file)) {
 				$player->panels['admin'] = set_panel_bg($paneldata, $player->panelbg);

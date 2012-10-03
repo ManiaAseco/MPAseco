@@ -35,7 +35,7 @@ function ldb_loadSettings($aseco) {
 	global $ldb_settings;
 
 	$aseco->console('[LocalDB] Load config file [localdatabase.xml]');
-	if (!$settings = $aseco->xml_parser->parseXml('localdatabase.xml')) {
+	if (!$settings = $aseco->xml_parser->parseXml('configs/localdatabase.xml')) {
 		trigger_error('Could not read/parse Local database config file localdatabase.xml !', E_USER_ERROR);
 	}
 	$settings = $settings['SETTINGS'];

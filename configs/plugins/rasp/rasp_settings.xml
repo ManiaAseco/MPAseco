@@ -2,10 +2,10 @@
 <rasp_settings>
   <!--
   ##################################################################
-  #------------------------- Features -----------------------------#
+  #                          Features                              #
   #  Specify here which features you would like to be activated    #  
   ################################################################## -->
-
+  
   <!--Set to true if you want the rank system active -->
   <feature_ranks>true</feature_ranks>
 
@@ -18,7 +18,7 @@
      If you set this to true when you are not, it will produce errors -->
   <feature_karma>true</feature_karma>  
 
-  <!--Set to true if you allow ++ & -- votes as well as /++ & /-- -->
+  <!--Set to true if you allow ++ & - - votes as well as /++ & /- - -->
   <allow_public_karma>true</allow_public_karma>  
 
   <!--Set to true if you want to show the karma message at the start of each map -->
@@ -84,7 +84,7 @@
   
   <!--
   ##################################################################
-  #-------------------- Performance Variables ---------------------#
+  #                      Performance Variables                     #
   #  These variables are used in the main plugin.                  #
   #  They specify how much data should be used for calculations    #
   #                                                                #
@@ -99,7 +99,7 @@
 
   <!--
   ##################################################################
-  #-------------------- Jukebox Variables -------------------------#
+  #                     Jukebox Variables                          #
   #  These variables are used by the jukebox.                      #
   ##################################################################  -->  
 
@@ -119,12 +119,12 @@
       In linux the command will be:  chmod 777.
       Regardless of OS, use the / character for pathing. -->
   <mx_dir>MX</mx_dir> 
-  <mx_tmpdir>MXtmp</mxtmp_dir>  
+  <mx_tmpdir>MXtmp</mx_tmpdir>  
 
 
   <!--
   ##################################################################
-  #------------------------ IRC Variables -------------------------#
+  #                         IRC Variables                          #
   #  These variables are used by the IRC plugin.                   #
   ##################################################################  -->   
  
