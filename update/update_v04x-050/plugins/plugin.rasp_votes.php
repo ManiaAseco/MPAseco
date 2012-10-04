@@ -232,7 +232,8 @@ function ta_expire_votes($aseco, $data) {
 	       $ta_show_reminder, $ta_show_interval, $ta_show_num;
 
 	// in Rounds/Team/Cup modes, bail out immediately
-	if ($aseco->server->gameinfo->mode == Gameinfo::RNDS ||
+	if ($aseco->server->gameinfo->mode == Gameinfo::SCPT ||
+      $aseco->server->gameinfo->mode == Gameinfo::RNDS ||
 	    $aseco->server->gameinfo->mode == Gameinfo::TEAM ||
 	    $aseco->server->gameinfo->mode == Gameinfo::CUP) return;
 
@@ -492,9 +493,11 @@ function chat_ladder($aseco, $command) {
 	}
 
 	// check for mode-specific restrictions
-	if ($aseco->server->gameinfo->mode == Gameinfo::RNDS && $r_points_limits) {
+	if (($aseco->server->gameinfo->mode == Gameinfo::RNDS ||
+      $aseco->server->gameinfo->mode == Gameinfo::SCPT) && 
+      $r_points_limits) {
 		// in Rounds mode, get points of first player & points limit
-		$aseco->client->query('GetCurrentRanking', 1, 0);
+		$aseco->client->query('GetCurrentRanking', 1, 0);              
 		$info = $aseco->client->getResponse();
 		$points = $info[0]['Score'];
 		$aseco->client->query('GetRoundPointsLimit');
@@ -636,7 +639,9 @@ function chat_replay($aseco, $command) {
 	}
 
 	// check for mode-specific restrictions
-	if ($aseco->server->gameinfo->mode == Gameinfo::RNDS && $r_points_limits) {
+	if (($aseco->server->gameinfo->mode == Gameinfo::RNDS ||
+      $aseco->server->gameinfo->mode == Gameinfo::SCPT) && 
+      $r_points_limits) {
 		// in Rounds mode, get points of first player & points limit
 		$aseco->client->query('GetCurrentRanking', 1, 0);
 		$info = $aseco->client->getResponse();
@@ -764,7 +769,9 @@ function chat_skip($aseco, $command) {
 	}
 
 	// check for mode-specific restrictions
-	if ($aseco->server->gameinfo->mode == Gameinfo::RNDS && $r_points_limits) {
+	if (($aseco->server->gameinfo->mode == Gameinfo::RNDS ||
+      $aseco->server->gameinfo->mode == Gameinfo::SCPT) && 
+      $r_points_limits) {
 		// in Rounds mode, get points of first player & points limit
 		$aseco->client->query('GetCurrentRanking', 1, 0);
 		$info = $aseco->client->getResponse();
