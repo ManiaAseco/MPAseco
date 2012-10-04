@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<settings>
+	<!-- MySQL Server Settings -->
+	<mysql_server>localhost</mysql_server>
+	<mysql_login>MYSQL_LOGIN</mysql_login>
+	<mysql_password>MYSQL_PASSWORD</mysql_password>
+	<mysql_database>MYSQL_DATABASE</mysql_database>
+
+	<messages>
+
+	</messages>
+</settings>

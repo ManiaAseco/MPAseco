@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mpscripts>
+  <script>
+       <!-- Define Shortname (optional) -->  
+       <shortname>royal</shortname>
+       <!-- Define name of the Script -->   
+       <name>Royal.Script.txt</name>  
+       <!-- Define name of the Matchsettings -->              
+       <matchsettings>SMStormRoyal.txt</matchsettings>            
+  </script>
+  <script>
+       <!-- Define Shortname (optional) -->  
+       <shortname>melee</shortname>
+       <!-- Define name of the Script -->   
+       <name>Melee.Script.txt</name>  
+       <!-- Define name of the Matchsettings -->              
+       <matchsettings>SMStormMelee.txt</matchsettings>              
+  </script>  
+  <script>
+       <!-- Define Shortname (optional) -->  
+       <shortname>timeattack</shortname>  
+       <!-- Define name of the Script -->   
+       <name>TimeAttack.Script.txt</name>              
+       <!-- Define name of the Matchsettings -->     
+       <matchsettings>SMStormTimeAttack.txt</matchsettings>              
+  </script>   
+<!--   <script>
+       <shortname>siege</shortname>
+       <name>Siege.Script.txt</name>              
+       <matchsettings>SMStormSiege.txt</matchsettings>              
+  </script>        -->
+    <script>
+       <!-- Define Shortname (optional) -->  
+       <shortname>battle</shortname>
+       <!-- Define name of the Script -->   
+       <name>Battle.Script.txt</name>  
+       <!-- Define name of the Matchsettings -->              
+       <matchsettings>SMStormBattle.txt</matchsettings>              
+  </script>  
+   <script>
+       <!-- Define Shortname (optional) -->  
+       <shortname>battlewaves</shortname>
+       <!-- Define name of the Script -->   
+       <name>BattleWaves.Script.txt</name>  
+       <!-- Define name of the Matchsettings -->              
+       <matchsettings>SMStormBattle.txt</matchsettings>              
+  </script>      
+</mpscripts>

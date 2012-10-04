@@ -1,0 +1,19 @@
+<manialink id="9"><frame posn="-45 -12.0 0">
+<format textsize="1" textcolor="ddd"/>
+<quad sizen="9 2.2" posn="1 0 0" style="%STYLE%" substyle="%SUBST%"/>
+<quad sizen="12 10" posn="0 -1.9 0" style="%STYLE%" substyle="%SUBST%"/>
+<frame posn="-1 0 0">
+<label posn="7 -0.3" sizen="8 2" halign="center" textcolor="ffc" text="Your Stats"/>
+<label posn="6.8 -2.7" halign="right" text="Rank:"/>
+<label posn="7.2 -2.7" sizen="6 2" textcolor="fff" text="%RANK%"/>
+<label posn="6.8 -4.7" halign="right" text="Points:"/>
+<label posn="7.2 -4.7" textcolor="fff" text="%AVG%"/>
+<!--<label posn="6.8 -6.7" halign="right" text="Records:"/>
+<label posn="7.2 -6.7" textcolor="fff" text="%RECS%"/> -->
+<label posn="6.8 -6.7" halign="right" text="Wins:"/>
+<label posn="7.2 -6.7" textcolor="fff" text="%WINS%"/>
+<label posn="6.8 -8.7" halign="right" text="Played:"/>
+<label posn="7.2 -8.7" textcolor="fff" text="%PLAY%"/>
+<!--<label posn="6.8 -10.7" halign="right" text="Donations:"/>
+<label posn="7.2 -10.7" textcolor="fff" text="%DONS%"/>  -->
+</frame></frame></manialink>

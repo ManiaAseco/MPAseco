@@ -6,11 +6,13 @@
  * XML file created and restructured php (2012 by Lukas Kremsmayr)
  */
 
+  global $feature_votes;
+  
 	//-> paths to config, vip/vip_team & bans files
 	$conf_file     = 'configs/plugins/jfreu/jfreu.config.xml';
 	$vips_file     = 'configs/plugins/jfreu/jfreu.vips.xml';
 	$bans_file     = 'configs/plugins/jfreu/jfreu.bans.xml';
-  $message_file  = 'configs/plugins/rasp/jfreu.messages.xml'; 
+  $message_file  = 'configs/plugins/jfreu/jfreu.messages.xml'; 
    
 if (file_exists($message_file)) {
   $aseco->console('Load jfreu message file [' . $message_file . ']');
@@ -29,7 +31,7 @@ if (file_exists($message_file)) {
  	     ${'message'.$i} = $message['MESSAGE'][0]; 
  	     $i++;
  	  }
-  	global $feature_votes;
+
   	if ($feature_votes) {
    	  foreach ($xml['JFREU_MESSAGES']['FEATURED_VOTE_MESSAGES'] as $message) {
    	     ${'message'.$i} = $message['MESSAGE'][0]; 

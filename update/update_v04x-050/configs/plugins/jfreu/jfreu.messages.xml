@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<jfreu_messages>
+
+	<!-- Player join / leave messages -->
+  <player_join>{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}</player_join>    
+  <player_joins>{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}{#message} Server: {#highlite}{5}</player_joins>      
+  <player_left>{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}</player_left>    
+
+  <!-- prefix for info messages -->
+  <message_start>$z$s$ff0>> [$f00INFO$ff0] $fff</message_start>  
+
+  <!-- Define your Info Messages here, just one line per message 
+      info_messages have to be enabled in jfreu.config.xml -->
+  <info_messages>
+    <message>Information about and download of this MPAseco on ' . MPASECO</message>
+    <message>Use "/list" -> "/jukebox ##" to add a map in the jukebox.</message>
+    <message>Please don\'t sound your horn throughout the entire map.</message>
+    <message>When going AFK, please set your character to Spectator mode.</message>
+    <message>Don\'t use Enter to skip intros - instead use Space & Enter</message>
+    <message>For player & server info use the "/stats" and "/server" commands.</message>
+    <message>Looking for the name of this server?  Use the "/server" command.</message>
+    <message>Wondering which maps you haven\'t played recently?  Use "/list norecent" to find out!</message>
+    <message>Who is the most victorious player?  Use "/topwins" to find out!</message>
+    <message>Wondering what maps were played recently?  Use the "/history" command.</message>
+    <message>Jukeboxed the wrong map?  Use "/jukebox drop" to remove it!</message>
+    <message>Forgot what someone said?  Use "/chatlog" to check the chat history!</message>
+    <message>Forgot what someone pm-ed you?  Use "/pmlog" to check your PM history!</message>
+    <message>Looking for the next better ranked player to beat?  Use "/nextrank"!</message>                        
+    <message>Use "/list newest" to find the newest maps added to the server, then /jukebox them!</message>
+    <message>Use "/mute" and "/unmute" to mute / unmute other players, and "/mutelist" to list them!</message>    
+    <message>Wondering when a player was last online?  Use "/laston LOGIN" to find out!</message>
+    <message>Find the MX info for a map with the "/mxinfo" command!</message>        
+    <message>Use the "/style" command to select your personal window style!</message>    
+    <message>Use the "/votepanel" command to select your personal vote panel!</message>        
+    <message>Check out the new MPAseco site at ' . MPASECO . ' !</message>
+  </info_messages>   
+
+  <!-- Define your Info Messages when the featured_votes are enabled here, just one line per message -->
+  <featured_vote_messages>
+    <message>Find out all about the chat-based voting commands with "/helpvote"!</message>
+  </featured_vote_messages>    
+  
+  <!-- only if function send_window_message is existing -->    
+  <send_window_message>Check out the new MPAseco site at ' . MPASECO . ' !</send_window_message>
+
+  <!-- Define your banwords here, just one line per word 
+       Banwords have to be enabled in jfreu.config.xml -->
+  <badwords_list>    
+    <badword>putain</badword>
+    <badword>ptain</badword>
+    <badword>klote</badword>
+    <badword>kIote</badword>
+    <badword>kanker</badword>
+    <badword>kenker</badword>
+    <badword>arschl</badword>
+    <badword>wichs</badword>
+    <badword>fick</badword>
+    <badword>fikk</badword>
+    <badword>siktirgit</badword>
+    <badword>gvd</badword>
+    <badword>hitler</badword>
+    <badword>nutte</badword>
+    <badword>dick</badword>
+    <badword>cock</badword> 
+    <badword>faitchier</badword>
+    <badword>bordel</badword>
+    <badword>shit</badword>
+    <badword>encul</badword>
+    <badword>a.q</badword>
+    <badword>conerie</badword>
+    <badword>baskasole</badword>
+    <badword>cocugu</badword>
+    <badword>kodugumun</badword>
+    <badword>cazo</badword>
+    <badword>bitch</badword>
+    <badword>penis</badword>
+    <badword>fotze</badword>
+    <badword>maul</badword>
+    <badword>frese</badword>
+    <badword>pizda</badword>
+    <badword>gay</badword>
+    <badword>tyfus</badword>
+    <badword>sugi</badword>
+    <badword>cacat</badword> 
+    <badword>pisat</badword>
+    <badword>labagiu</badword>
+    <badword>gaozar</badword>
+    <badword>muist</badword>
+    <badword>orospu</badword>
+    <badword>cunt</badword>    
+    <badword>pédé</badword> 
+    <badword>godve</badword>
+    <badword>godfe</badword>
+    <badword>kut</badword>
+    <badword>kudt</badword>
+    <badword>lul</badword>
+    <badword>iui</badword>        
+           
+  </badwords_list> 	
+</jfreu_messages>
