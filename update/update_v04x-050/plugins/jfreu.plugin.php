@@ -952,6 +952,7 @@ function player_connect($aseco, $player)
 			                      $title, clean_nick($player->nickname),
 			                      $nation);
 		}
+		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));		
 	}
 }  // player_connect
 

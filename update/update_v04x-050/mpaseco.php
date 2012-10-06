@@ -57,7 +57,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.50');
+define('MPASECO_VERSION', '0.51');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -269,7 +269,10 @@ class Aseco {
 			// timeout of the message window in seconds
 			$this->settings['window_timeout'] = $aseco['WINDOW_TIMEOUT'][0];
 			// set filename of admin/operator/ability lists file
-			$this->settings['adminops_file'] = 'configs/core/'.$aseco['ADMINOPS_FILE'][0];
+			if(file_exists($aseco['ADMINOPS_FILE'][0]))
+       $this->settings['adminops_file'] = $aseco['ADMINOPS_FILE'][0];   
+      else
+       $this->settings['adminops_file'] = 'configs/core/'.$aseco['ADMINOPS_FILE'][0];
 /*			// set filename of banned IPs list file
 			$this->settings['bannedips_file'] = $aseco['BANNEDIPS_FILE'][0];       */
 			// set filename of blacklist file
@@ -629,9 +632,13 @@ class Aseco {
 	 * Loads files in the plugins directory.
 	 */
 	function loadPlugins() {
-
 		// load and parse the plugins file
-		if ($plugins = $this->xml_parser->parseXml('configs/plugins.xml')) {
+		if(file_exists('plugins.xml'))
+		  $plugfile = 'plugins.xml';
+	  else
+	    $plugfile = 'configs/plugins.xml';
+		
+		if ($plugins = $this->xml_parser->parseXml($plugfile)) {
 			if (!empty($plugins['MPASECO_PLUGINS']['PLUGIN'])) {
 				// take each plugin tag
 				foreach ($plugins['MPASECO_PLUGINS']['PLUGIN'] as $plugin) {
@@ -2353,8 +2360,12 @@ ini_set('memory_limit', '50M');
 setlocale(LC_NUMERIC, 'C');
 
 
-if(isset($argv[2]))
- $conffile='configs/'.$argv[2];
+if(strpos($argv[$argc-2],".xml"))
+ $conffile='configs/'.$argv[$argc-2];
+else if(strpos($argv[$argc-1],".xml")) 
+ $conffile='configs/'.$argv[$argc-1];
+else if(file_exists('config.xml'))
+ $conffile='config.xml';
 else
  $conffile='configs/config.xml';  
 

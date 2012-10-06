@@ -33,13 +33,16 @@ Aseco::registerEvent('onPlayerDeath', 'ldb_playerDeath');
 // called @ onStartup
 function ldb_loadSettings($aseco) {
 	global $ldb_settings;
-  global $argv;
-  
-  if(isset($argv[3]))
-    $ldbfile='configs/'.$argv[3];
+  global $argv,$argc;
+
+
+  if(strpos($argv[$argc-2],".xml") && strpos($argv[$argc-1],".xml"))
+    $ldbfile='configs/'.$argv[$argc-1];
+  else if(file_exists('localdatabase.xml'))
+    $ldbfile='localdatabase.xml'; 
   else
-    $ldbfile='configs/localdatabase.xml';  
- 
+    $ldbfile='configs/localdatabase.xml'; 
+   
 	$aseco->console('[LocalDB] Load config file ['.$ldbfile.']');
 	if (!$settings = $aseco->xml_parser->parseXml($ldbfile)) {
 		trigger_error('Could not read/parse Local database config file '.$ldbfile.' !', E_USER_ERROR);
