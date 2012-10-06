@@ -5,6 +5,11 @@
  * XML file created and restructured php (2012 by Lukas Kremsmayr)
  */
 
+
+ /* Please don't make any changes in this file!!
+   Please make all your changes in the following file:
+   configs/plugins/rasp/votes_config.xml */
+   
 $config_file = 'configs/plugins/rasp/votes_config.xml'; 
  
 if (file_exists($config_file)) {

@@ -4,7 +4,11 @@
  * Parses the rasp_settings.xml and store the result in the well known rasp settings
  * XML file created and restructured php 2012 by Lukas Kremsmayr
  */
- 
+
+ /* Please don't make any changes in this file!!
+   Please make all your changes in the following file:
+   configs/plugins/rasp/rasp_settings.xml */
+    
 $config_file = 'configs/plugins/rasp/rasp_settings.xml'; //Settings XML File
 
 require_once('includes/xmlparser.inc.php');    //XML-Parser

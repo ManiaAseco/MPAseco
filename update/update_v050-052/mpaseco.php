@@ -57,7 +57,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.51');
+define('MPASECO_VERSION', '0.52');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');

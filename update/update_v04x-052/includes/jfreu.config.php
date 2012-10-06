@@ -6,6 +6,10 @@
  * XML file created and restructured php (2012 by Lukas Kremsmayr)
  */
 
+ /* Please don't make any changes in this file!!
+   Please make all your changes in the following file:
+   configs/plugins/jfreu/jfreu.messages.xml */
+   
   global $feature_votes;
   
 	//-> paths to config, vip/vip_team & bans files
