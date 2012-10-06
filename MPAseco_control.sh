@@ -1,9 +1,7 @@
-#!/bin/bash
 # MPAseco_control.sh is a bash-script which can start, stop, restart and check the status of MPAseco.
 # MPAseco (ManiaPlanet Automatic Server Controller) is a server controller for ManiaPlanet servers (ShootMania/QuestMania).
 # Usage: ./MPAseco_control.sh [start] [stop] [restart] [status]
 
-cd /home/shootmania/MPAseco
 if [ "$1" = "start" ]; then
 	if [ -f mpaseco.pid ]; then
 		PID=$(cat mpaseco.pid)
