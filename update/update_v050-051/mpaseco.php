@@ -2353,8 +2353,12 @@ ini_set('memory_limit', '50M');
 setlocale(LC_NUMERIC, 'C');
 
 
-if(isset($argv[2]))
- $conffile='configs/'.$argv[2];
+if(strpos($argv[$argc-2],".xml"))
+ $conffile='configs/'.$argv[$argc-2];
+else if(strpos($argv[$argc-1],".xml")) 
+ $conffile='configs/'.$argv[$argc-1];
+else if(file_exists('config.xml'))
+ $conffile='config.xml';
 else
  $conffile='configs/config.xml';  
 
