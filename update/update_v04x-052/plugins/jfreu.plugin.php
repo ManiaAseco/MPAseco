@@ -255,7 +255,7 @@ function init_jfreu($aseco, $command)
 	$aseco->client->query('ChatSendServerMessage', $message);
 
 	// start rank limiting
-	set_ranklimit($aseco, $aseco->server->jfreu->autolimit, $aseco->server->jfreu->autorank);  // pass $autorank as integer
+	set_ranklimit($aseco, $aseco->server->jfreu->autolimit, $autorank);  // pass $autorank as integer
 }  // init_jfreu
 
 function write_lists_xml($aseco)
@@ -439,7 +439,6 @@ function read_config_xml($aseco)
 	$aseco->server->jfreu->maxplayers = $limits['MAXPLAYERS'][0];
 	$aseco->server->jfreu->kickhirank = (strtolower($limits['KICKHIRANK'][0]) == 'true' ? true : false);
 	$aseco->server->jfreu->pf = $limits['PF'][0];
-	$aseco->server->jfreu->autorank = $limits['AUTORANK'][0];
 	
 	if ($aseco->server->jfreu->autochangename)
 	{
@@ -950,7 +949,7 @@ function player_connect($aseco, $player)
 		} else {
 			$message = formatText($aseco->server->jfreu->player_join,
 			                      $title, clean_nick($player->nickname),
-			                      $nation);
+			                      $nation, $rank);
 		}
 		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));		
 	}
@@ -981,10 +980,10 @@ function player_disconnect($aseco, $player)
 		                      clean_nick($player->nickname),
 		                      formatTimeH($player->getTimeOnline() * 1000, false));
 		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));   
-		if ($aseco->server->jfreu->autorank && !$aseco->server->jfreu->playerlist[$player->login]->speconly)
+	/*	if ($aseco->server->jfreu->autorank && !$aseco->server->jfreu->playerlist[$player->login]->speconly)
 		{
 			autorank($aseco, $player);
-		}
+		}*/
 	}
 }  // player_disconnect
 
@@ -1092,7 +1091,7 @@ function autokick($aseco, $player)  // returns true if no kick, false if kick
 				$message = $yel.'>> '.$title.': '.$whi.$nick.$blu.' Nation: '.$whi.$nation.$blu.' Ladder: '.$red.$rank.' ';
 				if ($feature_ranks)
 				{
-				//	$message .= $blu.' Server: '.$whi.$rasp->getRank($player->login);
+					$message .= $blu.' Server: '.$whi.$rasp->getRank($player->login);
 				}
 				$message .= $blu.' ['.$gre.'VIP'.$blu.']';
 				$aseco->client->query('ChatSendServerMessage', $message);
@@ -1115,7 +1114,7 @@ function autokick($aseco, $player)  // returns true if no kick, false if kick
 			$message = $yel.'>> '.$title.': '.$whi.$nick.$blu.' Nation: '.$whi.$nation.$blu.' Ladder: '.$whi.$rank;
 			if ($feature_ranks)
 			{
-				//$message .= $blu.' Server: '.$whi.$rasp->getRank($player->login);
+				$message .= $blu.' Server: '.$whi.$rasp->getRank($player->login);
 			}
 			$message .= $blu.' ['.$gre.'OK'.$blu.']';
 			$aseco->client->query('ChatSendServerMessage', $message);

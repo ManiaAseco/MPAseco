@@ -2,7 +2,7 @@
 <settings>
   <mpserver>
     <login>SuperAdmin</login>
-    <password>SERVER_PASSWORD</password>
+    <password>SUPERADMIN_PASSWORD</password>  
     <ip>127.0.0.1</ip>
     <port>XML_PORT</port>
     <timeout>180</timeout>
@@ -14,8 +14,10 @@
       <!-- unauthorized use of admin commands from other IP addresses   -->
 <!-- format:
       <mplogin>YOUR_MASTERADMIN_LOGIN</mplogin> <ipaddress>YOUR_MASTERADMIN_IP</ipaddress>
--->
-
+      or: (The ipaddress is only optional)     
+      <mplogin>YOUR_MASTERADMIN_LOGIN</mplogin>  
+ -->     
+      <mplogin>YOUR_MASTERADMIN_LOGIN</mplogin>  
     </masteradmins>
 
     <colors>

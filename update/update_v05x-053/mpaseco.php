@@ -57,7 +57,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.52');
+define('MPASECO_VERSION', '0.53');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -67,6 +67,7 @@ define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
 define('MPASECO', 'http://www.MPAseco.org/');
+define('IN_MPASECO');
 
 // required official dedicated server build
 define('MP_BUILD', '2012-07-19-xx_xx');

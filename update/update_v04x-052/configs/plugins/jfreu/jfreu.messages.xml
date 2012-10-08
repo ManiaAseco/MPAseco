@@ -4,7 +4,7 @@
 	<!-- Player join / leave messages -->
   <player_join>{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}</player_join>    
   <player_joins>{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}{#message} Server: {#highlite}{5}</player_joins>      
-  <player_left>{#server}>> {1}: {#highlite}{2}$z$s{#message} Nation: {#highlite}{3}{#message} Ladder: {#highlite}{4}</player_left>    
+  <player_left>{#server}>> {#highlite}{1}$z$s{#message} has left the game. Played: {#highlite}{2}</player_left>    
 
   <!-- prefix for info messages -->
   <message_start>$z$s$ff0>> [$f00INFO$ff0] $fff</message_start>  
@@ -12,7 +12,7 @@
   <!-- Define your Info Messages here, just one line per message 
       info_messages have to be enabled in jfreu.config.xml -->
   <info_messages>
-    <message>Information about and download of this MPAseco on ' . MPASECO</message>
+    <message>Information about and download of this MPAseco on ' . MPASECO. '</message>
     <message>Use "/list" -> "/jukebox ##" to add a map in the jukebox.</message>
     <message>Please don\'t sound your horn throughout the entire map.</message>
     <message>When going AFK, please set your character to Spectator mode.</message>
