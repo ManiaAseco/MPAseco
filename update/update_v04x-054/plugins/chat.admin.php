@@ -46,13 +46,13 @@ Aseco::addChatCommand('setservername', 'Changes the name of the server', true);
 Aseco::addChatCommand('setcomment', 'Changes the server comment', true);
 Aseco::addChatCommand('setpwd', 'Changes the player password', true);
 Aseco::addChatCommand('setspecpwd', 'Changes the spectator password', true);
-//Aseco::addChatCommand('setrefpwd', 'Changes the referee password', true);
+Aseco::addChatCommand('setrefpwd', 'Changes the referee password', true);
 Aseco::addChatCommand('setmaxplayers', 'Sets a new maximum of players', true);
 Aseco::addChatCommand('setmaxspecs', 'Sets a new maximum of spectators', true);
 Aseco::addChatCommand('listmodescripts/listscripts', 'Lists the available ScriptModes', true);           //Added 23.07.2012
 Aseco::addChatCommand('setmodescript/setscript', 'Defines the next ScriptMode', true);           //Added 21.07.2012
 //Aseco::addChatCommand('setgamemode', 'Sets next mode {ta,rounds,team,laps,stunts,cup}', true);
-//Aseco::addChatCommand('setrefmode', 'Sets referee mode {0=top3,1=all}', true);
+Aseco::addChatCommand('setrefmode', 'Sets referee mode {0=top3,1=all}', true);
 Aseco::addChatCommand('nextmap/next', 'Forces server to load next or an defined map', true);
 Aseco::addChatCommand('skipmap/skip', 'Forces server to load next or an defined map', true);
 Aseco::addChatCommand('previous/prev', 'Forces server to load previous map', true);
@@ -589,7 +589,7 @@ function chat_admin($aseco, $command) {
 	          $command['params'][0] == 'next' ||
 	          $command['params'][0] == 'skipmap' ||
 	          $command['params'][0] == 'skip') {
-        var_dump($command);
+        //var_dump($command);
     if($command['params'][1]!=""){
       //find map by the number
       $mid = ltrim($command['params'][1], '0');

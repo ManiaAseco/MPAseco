@@ -12,7 +12,7 @@
   <!-- Define your Info Messages here, just one line per message 
       info_messages have to be enabled in jfreu.config.xml -->
   <info_messages>
-    <message>Information about and download of this MPAseco on ' . MPASECO. '</message>
+    <message>Information about and download of this MPAseco on MPAseco.org</message>
     <message>Use "/list" -> "/jukebox ##" to add a map in the jukebox.</message>
     <message>Please don\'t sound your horn throughout the entire map.</message>
     <message>When going AFK, please set your character to Spectator mode.</message>
@@ -32,7 +32,7 @@
     <message>Find the MX info for a map with the "/mxinfo" command!</message>        
     <message>Use the "/style" command to select your personal window style!</message>    
     <message>Use the "/votepanel" command to select your personal vote panel!</message>        
-    <message>Check out the new MPAseco site at ' . MPASECO . ' !</message>
+    <message>Check out the new MPAseco site at MPAseco.org !</message>
   </info_messages>   
 
   <!-- Define your Info Messages when the featured_votes are enabled here, just one line per message -->
