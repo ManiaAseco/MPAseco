@@ -299,7 +299,7 @@ function ldb_playerConnect($aseco, $player) {
 		if (mysql_affected_rows() != 1) {
 			trigger_error('Could not insert connecting player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		} else {
-			$query = 'SELECT last_insert_id() FROM players';
+			$query = 'SELECT Id FROM players ORDER BY Id DESC LIMIT 1;';
 			$result = mysql_query($query);
 			if (mysql_num_rows($result) === false) {
 				trigger_error('Could not get inserted player\'s id! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);

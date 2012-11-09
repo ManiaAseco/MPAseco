@@ -1,16 +1,19 @@
 /**
  *	Mode Royal
+ *	with MPAseco XML Callbacks
+ *	2012-11-09  
  */
 
 #Extends "Modes/ShootMania/ModeBase.Script.txt"
 
 #Const	CompatibleMapTypes	"RoyalArena"
-#Const	Version				"2012-08-23"
+#Const	Version				"2012-10-25"
 
 #Include "MathLib" as MathLib
 #Include "TextLib" as TextLib
 #Include "Libs/Nadeo/Top.Script.txt" as Top
 #Include "Libs/Nadeo/Layers.Script.txt" as Layers
+#Include "Libs/Nadeo/Message.Script.txt" as Message
 #Include "Libs/Nadeo/ShootMania/SM.Script.txt" as SM
 #Include "Libs/Nadeo/ShootMania/Rules.Script.txt" as Rules
 #Include "Libs/Nadeo/ShootMania/Score.Script.txt" as Score
@@ -23,7 +26,7 @@
 #Setting S_OffZoneActivationTime	4	as _("OffZone activation duration")
 #Setting S_OffZoneTimeLimit			50	as _("OffZone shrink duration")
 #Setting S_SpawnInterval			5	as _("Time between each wave of spawns")
-#Setting S_OffZoneAutoStartTime		70	as _("Time before auto activation of the OffZone")
+#Setting S_OffZoneAutoStartTime		90	as _("Time before auto activation of the OffZone")
 
 #Const C_UITickPeriod			200		///< Update UI every xx milliseconds
 #Const C_OffZoneMinRadius		8.		///< Minimum size of the OffZone at the end
@@ -89,6 +92,7 @@ Top::RoundBegin();	///< Want global tops for the match
 XmlRpc.SendCallback("beginMap",MapName);
 
 declare MapWinnerId = NullId;
+SetNbFakePlayers(C_NbBots, 0);
 ***
 
 /* -------------------------------------- */
@@ -105,9 +109,10 @@ declare OffZoneBonus = G_TotalPlayersSpawned;
 declare RoundEndRequested = False;
 declare RoundWinnerId = NullId;
 declare LastSpawnTime = -S_SpawnInterval * 1000;
-declare LastMessageTime = Now;
 declare LastUIUpdateTime = -C_UITickPeriod;
 declare Goal <=> SM::GetPole("Goal", 0);
+declare FirstElimId = NullId;
+declare MessageCaptureEnabled = False;
 ***
 
 /* -------------------------------------- */
@@ -116,18 +121,19 @@ declare Goal <=> SM::GetPole("Goal", 0);
 ***StartRound***
 ***
 UIManager.UIAll.UISequence = CUIConfig::EUISequence::Playing;
-UIManager.ResetAll();
 SM::SetupDefaultVisibility();
+
 XmlRpc.SendCallback("beginRound",fixGetRankings());
 Score::RoundBegin();
-SetNbFakePlayers(C_NbBots, 0);
 
 /* ------------------------------------- */
 // Init goal
 Goal.Gauge.Clan = 0;
 Goal.Gauge.Value = 0;
-Goal.Gauge.Max = S_OffZoneActivationTime * 1000;
+
 Goal.Gauge.Speed = 0;
+Goal.Gauge.Max = S_OffZoneActivationTime * 1000;
+if (S_OffZoneActivationTime <= 0) Goal.Gauge.Max = 10;
 
 /* ------------------------------------- */
 // Init offzone
@@ -135,9 +141,9 @@ OffZoneRadius = -1.;
 OffZoneRadiusSpeed = 0.;
 OffZoneCenterBlockId = Goal.Id;	
 
-/* ------------------------------------- */
-// Wait enough players
-WaitForPlayers(1);
+
+
+
 
 /* ------------------------------------- */
 // Init the players and their scores
@@ -155,6 +161,10 @@ foreach (Player in Players) {
 	RoundHits = 0;
 	if (Player.Score != Null) Player.Score.RoundPoints = 1;
 }
+
+/* ------------------------------------- */
+// Wait enough players
+WaitForPlayers();
 
 /* ------------------------------------- */
 // Attach layers
@@ -178,6 +188,8 @@ UIManager.UIAll.CountdownEndTime = -1;
 /* -------------------------------------- */
 ***PlayLoop***
 ***
+Message::Loop();
+
 /* ------------------------------------- */
 // Spawn players
 if (G_PlayerSpawnQueue.count > 0 && LastSpawnTime + (S_SpawnInterval * 1000) < Now) {
@@ -186,29 +198,32 @@ if (G_PlayerSpawnQueue.count > 0 && LastSpawnTime + (S_SpawnInterval * 1000) < N
 	LastSpawnTime = Now;
 	UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::StartRound;
 	UIManager.UIAll.BigMessage = _("Spawning players...");
-	LastMessageTime = -1;
+
 	UIManager.UIAll.CountdownEndTime =  LastSpawnTime + (S_SpawnInterval * 1000);
 	LayerUpdated = Layers::Update("SpawnQueue", UpdateLayerSpawnQueue());
 } 
 /* ------------------------------------- */
 // OffZone can be activated
-else if (G_PlayerSpawnQueue.count <= 0 && LastSpawnTime + 100 > Now) {
+else if (G_PlayerSpawnQueue.count <= 0 && !MessageCaptureEnabled) {
 	if (S_OffZoneAutoStartTime >= 0) UIManager.UIAll.CountdownEndTime = LastSpawnTime + (S_OffZoneAutoStartTime * 1000);
 	else  UIManager.UIAll.CountdownEndTime = -1;
 	LayerDetached = Layers::Detach("SpawnQueue", NullId);
-	UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::PhaseChange;
-	UIManager.UIAll.BigMessage = _("The OffZone can now be activated.");
-	LastMessageTime = Now;
+	UIManager.UIAll.BigMessage = "";
+	Message::SendStatusMessage(
+		_("The pole can now be captured."), S_OffZoneAutoStartTime * 1000, 1, CUIConfig::EUISound::PhaseChange, 0
+	);
 	UIManager.UIAll.Hud3dMarkers = """
-		<marker label="Goal" pos="{{{ Goal.Position[0] }}} {{{ Goal.Position[1] + 25 }}} {{{ Goal.Position[2] }}}" />
+		<marker icon="PointA" pos="{{{ Goal.Position[0] }}} {{{ Goal.Position[1] + 25 }}} {{{ Goal.Position[2] }}}" />
 	""";
+	MessageCaptureEnabled = True;
 } 
 /* ------------------------------------- */
 // Auto activate goal
-else if (S_OffZoneAutoStartTime >= 0 && G_PlayerSpawnQueue.count <= 0 
-			&& OffZoneRadiusSpeed == 0. && OffZoneRadius == -1
-			&& LastSpawnTime + (S_OffZoneAutoStartTime * 1000) < Now) 
-{
+else if (
+	S_OffZoneAutoStartTime >= 0 && G_PlayerSpawnQueue.count <= 0 
+	&& OffZoneRadiusSpeed == 0. && OffZoneRadius == -1
+	&& LastSpawnTime + (S_OffZoneAutoStartTime * 1000) < Now
+) {
 	Goal.Gauge.Speed = Goal.Gauge.Max;
 	Goal.Gauge.Value = Goal.Gauge.Max + 1;
 	UIManager.UIAll.CountdownEndTime = -1;
@@ -226,6 +241,10 @@ foreach (Event in PendingEvents) {
 		UpdateSurvivalScore(Event.Victim.Id);
     XmlRpc.SendCallback("playerDeath", Event.Victim.Login);	
 		LayerUpdated = Layers::Update("ScoresTable", UpdateLayerScoresTable());
+		if (Event.Victim != Null && FirstElimId == NullId) {
+			FirstElimId = Event.Victim.User.Id;
+			DisplayFirstElimMessage(Event.Victim.Name);
+		}
 		PassOn(Event);
 	} 
 	/* ------------------------------------- */
@@ -236,24 +255,28 @@ foreach (Event in PendingEvents) {
 			// Active OffZone
 			OffZoneRadius = C_DefaultOffZoneRadius;
 			OffZoneRadiusSpeed = C_DefaultOffZoneRadius / S_OffZoneTimeLimit;
-			Goal.Gauge.Max = S_OffZoneTimeLimit * 1000;
-			Goal.Gauge.Value = Goal.Gauge.Max;
-			Goal.Gauge.Speed = -1;
+			Event.BlockPole.Gauge.Max = S_OffZoneTimeLimit * 1000;
+			Event.BlockPole.Gauge.Value = Goal.Gauge.Max;
+			Event.BlockPole.Gauge.Speed = -1;
 			AutoActivationInProgress = False;
+			
+			UIManager.UIAll.CountdownEndTime = -1;
+			Message::CleanAllMessages();
 			
 			/* ------------------------------------- */
 			// Give points
-			if (Goal.Sector.PlayersIds.count > 0 && Goal.Gauge.Value >= Goal.Gauge.Max) {
-				declare Bonus = OffZoneBonus / Goal.Sector.PlayersIds.count;
-				foreach (PlayerId in Goal.Sector.PlayersIds) {
+			if (Event.BlockPole.Sector.PlayersIds.count > 0 && Event.BlockPole.Gauge.Value >= Event.BlockPole.Gauge.Max) {
+				declare Bonus = OffZoneBonus / Event.BlockPole.Sector.PlayersIds.count;
+				foreach (PlayerId in Event.BlockPole.Sector.PlayersIds) {
 					if (Players.existskey(PlayerId) && Players[PlayerId].Score != Null) {
 						declare PoleBonus for Players[PlayerId].Score = 0;
 						PoleBonus = Bonus;
 						Score::AddPoints(Players[PlayerId], PoleBonus);
-            XmlRpc.SendCallback("poleCapture", Players[PlayerId].Login); 						
+            XmlRpc.SendCallback("poleCapture", Players[PlayerId].Login); 			
 						Top::IncrementPlayerPoints("Pole", Players[PlayerId], PoleBonus);
+						// Use notices to display several messages one after the other
 						UIManager.UIAll.SendNotice(
-							TextLib::Compose(_("$<%1$> activated the OffZone"), Players[PlayerId].Name), 
+							TextLib::Compose(_("$<%1$> captured the pole."), Players[PlayerId].Name), 
 							CUIConfig::ENoticeLevel::MatchInfo, Null, 
 							CUIConfig::EAvatarVariant::Default, 
 							CUIConfig::EUISound::PhaseChange, 0
@@ -261,11 +284,8 @@ foreach (Event in PendingEvents) {
 					}
 				}
 			} else {
-				UIManager.UIAll.SendNotice(
-					_("OffZone activated!"), 
-					CUIConfig::ENoticeLevel::MatchInfo, Null, 
-					CUIConfig::EAvatarVariant::Default, 
-					CUIConfig::EUISound::PhaseChange, 0
+				Message::SendBigMessage(
+					_("Pole captured and OffZone activated."), 3000, 2, CUIConfig::EUISound::PhaseChange, 0
 				);
 			}
 		}
@@ -277,9 +297,13 @@ foreach (Event in PendingEvents) {
 	else if (Event.Type == CSmModeEvent::EType::OnPlayerRequestRespawn) {
 		declare Integer SpawnTime for Event.Player;
 		SpawnTime = Now;
-XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
+    XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
 		UpdateSurvivalScore(Event.Player.Id);
 		LayerUpdated = Layers::Update("ScoresTable", UpdateLayerScoresTable());
+		if (Event.Player != Null && FirstElimId == NullId) {
+			FirstElimId = Event.Player.User.Id;
+			DisplayFirstElimMessage(Event.Player.Name);
+		}
 		PassOn(Event);
 	} 
 	/* ------------------------------------- */
@@ -297,7 +321,6 @@ XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
 				Score::AddPoints(Event.Shooter, Points);
         XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);	
 				Top::IncrementPlayerPoints("Hit", Event.Shooter, Points);
-			
 				CumulPoints += Points;
 			}
 			Event.ShooterPoints = CumulPoints;
@@ -333,13 +356,11 @@ if (OffZoneRadiusSpeed > 0 && OffZoneRadius <= C_OffZoneMinRadius) {
 
 /* ------------------------------------- */
 // UI
-if (LastMessageTime >= 0 && LastMessageTime + 3000 < Now) {
-	UIManager.UIAll.BigMessage = "";
-}
 if (LastUIUpdateTime + C_UITickPeriod < Now) {
 	LastUIUpdateTime = Now;
 	LayerUpdated = Layers::Update("Infos", UpdateLayerInfos());
 }
+
 
 /* ------------------------------------- */
 // Round end conditions
@@ -364,7 +385,7 @@ if ((G_TotalPlayersSpawned > 1 && G_PlayerSpawnQueue.count <= 0 && PlayersNbAliv
 /* ------------------------------------- */
 ***EndRound***
 ***
-UIManager.ResetAll();
+Message::CleanAllMessages();
 OffZoneRadiusSpeed = 0.;
 Goal.Gauge.Speed = 0;
 foreach (Player in Players) {
@@ -399,6 +420,7 @@ sleep(1000);
 OffZoneRadius = -1.;
 StartTime = -1;
 EndTime = -1;
+UIManager.UIAll.CountdownEndTime = -1;
 SM::UnspawnAllPlayers();
 UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
 UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
@@ -407,6 +429,7 @@ Score::RoundEnd();
 sleep(3000);
 UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::Normal;
 UIManager.UIAll.BigMessage = "";
+LayerDetached = Layers::Detach("Tops", NullId);
 
 /* ------------------------------------- */
 // Map end conditions
@@ -437,7 +460,7 @@ Top::MatchEnd();
 
 LayerDetached = Layers::DetachAll(NullId);
 
-UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
 if (Users.existskey(MapWinnerId)) {
 	UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::EndRound;
 	UIManager.UIAll.BigMessage = TextLib::Compose(_("$<%1$> wins the match!"), Users[MapWinnerId].Name);
@@ -447,12 +470,14 @@ if (Users.existskey(MapWinnerId)) {
 }
 sleep(6000);
 
-UIManager.UIAll.UISequence = CUIConfig::EUISequence::Podium;	
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
+UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
 LayerAttached = Layers::Attach("Tops", NullId);
 sleep(3000);
 
-UIManager.UIAll.BigMessage = "";	
-Mode::UnloadMap();
+UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::Normal;
+UIManager.UIAll.BigMessage = "";
+LayerDetached = Layers::Detach("Tops", NullId);
 ***
 
 /* ------------------------------------- */
@@ -471,23 +496,16 @@ Layers::Clean();
 /* ------------------------------------- */
 
 /* ------------------------------------- */
-/** Wait until there's enough players to play
- *
- * @param _MinPlayers	minimum number of players to begin
- */
-Void WaitForPlayers(Integer _MinPlayers) {
-	UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::Warning;
-	UIManager.UIAll.BigMessage = _("Waiting for players...");
+/// Wait until there's enough players to play
+Void WaitForPlayers() {
   UIManager.UIAll.AltMenuNoCustomScores = True;   
 	StartTime = -1;
 	EndTime = -1;
-	while (PlayersNbTotal < _MinPlayers && !MatchEndRequested) {
+	while (PlayersNbTotal < 1 && !ServerShutdownRequested && !MatchEndRequested) {
 		yield;
 	}
-	
-	StartTime = -1;
-	UIManager.UIAll.BigMessage = "";
 }
+
 
 /* ------------------------------------- */
 /// Update the player spawn queue
@@ -538,6 +556,24 @@ Void SpawnPlayers() {
 			}
 		}
 	}
+}
+
+/* ------------------------------------- */
+/** Display the First Elimination message
+ *
+ *	@param	_Name		The name of the first eliminated user
+ */
+Void DisplayFirstElimMessage(Text _Name) {
+	Message::SendBigMessage(
+		TextLib::Compose(
+			_("$<%1$> is the first eliminated!"),
+			_Name
+		), 									///< Message
+		3000,								///< Duration
+		4,									///< Priority
+		CUIConfig::EUISound::PhaseChange,	///< Sound
+		1									///< Sound variant
+	);
 }
 
 /* ------------------------------------- */
@@ -742,6 +778,8 @@ Text fixGetRankings() {
 	        }
   return PlayerList;
 }
+
+/* ------------------------------------- */
 
 /* ------------------------------------- */
 /** Update the Scores in Spawn manialink
