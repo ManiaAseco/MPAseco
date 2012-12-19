@@ -181,6 +181,15 @@ function chat_admin($aseco, $command) {
 	$command['params'] = explode(' ', preg_replace('/ +/', ' ', $command['params']));
 	if (!isset($command['params'][1])) $command['params'][1] = '';
 
+  if(is_numeric($command['params'][0])){
+    $commandObject = $aseco->getChatCommand($command['params'][0], true);  
+    var_dump($commandObject);
+    if($commandObject != null)
+      $command['params'][0] = $commandObject->name;      
+    
+    $aseco->console($command['params'][0]."test"); 
+  }
+
 	// check if chat command was allowed for a masteradmin/admin/operator
 	if ($aseco->isMasterAdmin($admin)) {
 		$logtitle = 'MasterAdmin';

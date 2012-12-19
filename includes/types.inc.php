@@ -354,24 +354,27 @@ class ChatCommand {
 	var $name;
 	var $help;
 	var $isadmin;
-  private static $adminCommandNr;
-  private static $userCommandNr;
+	var $commandNr;
+  private static $adminCommandCount = 0;
+  private static $userCommandCount = 0;
 	// instantiates the chat command with the parameters
 	function ChatCommand($name, $help, $isadmin) {
 		$this->name = $name;
 		$this->help = $help;
 		$this->isadmin = $isadmin;
 		if($isadmin){
-      self::$adminCommandNr++;
+      self::$adminCommandCount++;
+      $this->commandNr = self::$adminCommandCount;
     }else{
-      self::$userCommandNr++;   
-    }
+      self::$userCommandCount++;  
+      $this->commandNr = self::$userCommandCount;      
+    } 
 	}
-	public function getAdminCommandNr(){
-    return self::$adminCommandNr;
+	public function getAdminCommandCount(){
+    return self::$adminCommandCount;
   }
-	public function getUserCommandNr(){
-    return self::$userCommandNr;
+	public function getUserCommandCount(){
+    return self::$userCommandCount;
   }  
 }  // class ChatCommand
 

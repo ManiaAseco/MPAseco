@@ -1183,6 +1183,17 @@ class Aseco {
 	}  // addChatCommand
 
 	/**
+	 * Gets a chat command by its number.
+	 */
+	function getChatCommand($command_id, $command_is_admin = false) {
+    foreach($this->chat_commands as $command){
+      if($command->isadmin == $command_is_admin && $command->commandNr == $command_id)
+        return $command;
+    }
+    return null;
+	}  // getChatCommand
+
+	/**
 	 * When a round is started, signal the event.
 	 */
 	function beginRound() {
