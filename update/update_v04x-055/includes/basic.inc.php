@@ -2,7 +2,7 @@
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
 // Updated by Xymph
-// edited for SM 19.07.2012 by kremsy (www.mania-server.net) 
+// edited for SM 19.07.2012 by the MPAseco Team for Shootmania
 /**
  * Writes a logfile of all output messages, either in a single big file
  * or in monthly chunks inside the logs/ directory.

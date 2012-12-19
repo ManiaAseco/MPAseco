@@ -348,18 +348,31 @@ class RPCCall {
 
 /**
  * Contains information about a chat command.
+ * added Command Numbers by the MPAseco Team 
  */
 class ChatCommand {
 	var $name;
 	var $help;
 	var $isadmin;
-
+  private static $adminCommandNr;
+  private static $userCommandNr;
 	// instantiates the chat command with the parameters
 	function ChatCommand($name, $help, $isadmin) {
 		$this->name = $name;
 		$this->help = $help;
 		$this->isadmin = $isadmin;
+		if($isadmin){
+      self::$adminCommandNr++;
+    }else{
+      self::$userCommandNr++;   
+    }
 	}
+	public function getAdminCommandNr(){
+    return self::$adminCommandNr;
+  }
+	public function getUserCommandNr(){
+    return self::$userCommandNr;
+  }  
 }  // class ChatCommand
 
 
