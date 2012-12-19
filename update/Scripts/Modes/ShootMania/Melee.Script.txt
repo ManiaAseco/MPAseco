@@ -4,12 +4,14 @@
 #Include "TextLib" as TextLib
 #Include "Libs/Nadeo/Mode.Script.txt" as Mode
 #Include "Libs/Nadeo/Layers.Script.txt" as Layers
+#Include "Libs/Nadeo/Message.Script.txt" as Message
+#Include "Libs/Nadeo/Interface.Script.txt" as Interface
 #Include "Libs/Nadeo/ShootMania/SM.Script.txt" as SM
 #Include "Libs/Nadeo/ShootMania/Rules.Script.txt" as Rules
 #Include "Libs/Nadeo/ShootMania/Score.Script.txt" as Score
 
 #Const	CompatibleMapTypes	"MeleeArena"
-#Const	Version				"2012-08-08"
+#Const	Version				"2012-10-11"
 
 /* -------------------------------------- */
 // Settings
@@ -106,87 +108,10 @@ Text UpdateLayerScoresInSpawn() {
 }
 
 /* ------------------------------------- */
-/** Get the rankings (temporary fix).
- *
- * @return		The rankings
- */
-Text fixGetRankings() {
-	declare PlayerList = "";
-        	foreach (Player in Players) {
-        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
-	        }
-        	foreach (Player in Spectators) {
-        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
-	        }
-  return PlayerList;
-}
-
-/* ------------------------------------- */
-/** Create the Info manialink
- *
- *	@return		The ManiaLink string
- */
-Text CreateLayerInfo() {
-	return
-"""
-<script><!-- 
-
-
-	main() {
-		declare Label_PosTotal <=> (Page.GetFirstChild("PosTotal") as CMlLabel);
-		declare Label_PosCurrent <=> (Page.GetFirstChild("PosCurrent") as CMlLabel);
-		declare netread Net_LayerInfoUpdated for UI = 0;
-		declare netread Net_PosTotal for UI = 0;
-		declare netread Net_PosCurrent for UI = 0;
-		declare LayerInfoUpdated = 0;
-		declare LastUpdate = 0;
-		
-		while(True) {
-			yield;
-			if (LastUpdate + 500 > Now) continue;
-			LastUpdate = Now;
-			if (LayerInfoUpdated == Net_LayerInfoUpdated) continue;
-			LayerInfoUpdated = Net_LayerInfoUpdated;
-			
-			declare PosCurrentString = "";
-			if (Net_PosTotal <= 0) PosCurrentString = "-";
-			else PosCurrentString = ""^Net_PosCurrent;
-			
-			Label_PosTotal.SetText("/"^Net_PosTotal);
-			Label_PosCurrent.SetText(PosCurrentString);
-		}
-	}
---></script>
-<frame posn="150 -88">
-	<label posn="0 1" halign="left" valign="bottom" id="PosTotal" />
-	<label posn="0 0" halign="right" valign="bottom" style="TextRaceChrono" id="PosCurrent" />
-</frame>
-""";
-}
-
-/* ------------------------------------- */
-/** Update the Info manialink
- *
- *	@param	_Player		The player to update
- */
-Void UpdateLayerInfo(CSmPlayer _Player) {
-	if (_Player.Score == Null) return;
-	
-	declare UI <=> UIManager.GetUI(_Player);
-	if (UI == Null) return;
-	
-	declare netwrite Net_LayerInfoUpdated for UI = 0;
-	declare netwrite Net_PosTotal for UI = 0;
-	declare netwrite Net_PosCurrent for UI = 0;
-	Net_LayerInfoUpdated = Now;
-	Net_PosTotal = Scores.count;
-	Net_PosCurrent = Scores.keyof(_Player.Score) + 1;
-}
-
-/* ------------------------------------- */
 // Main
 /* ------------------------------------- */
 main() {
+	
 	/* -------------------------------------- */
 	// Set mode options
 	UseClans = False;
@@ -216,21 +141,22 @@ main() {
 /* ------------------------------------- */
 // Map/Round begin
 /* ------------------------------------- */
-		Mode::LoadMap();
-    XmlRpc.SendCallback("beginMap",MapName);    		
+		Mode::LoadMap();	
+    XmlRpc.SendCallback("beginMap",MapName);   	
 		SetNbFakePlayers(C_NbBots, 0);
 		G_SpawnsList.clear();
 		G_LatestSpawnId = NullId;
 		XmlRpc.SendCallback("beginMatch",MapName);		
 		Score::MatchBegin();
 		XmlRpc.SendCallback("beginRound",fixGetRankings());		
-		Score::RoundBegin();
 		MatchEndRequested = False;
 		
 		UIManager.ResetAll();
 		SM::SetupDefaultVisibility();
 		Rules::Attach();
 		
+		Mode::Synchro_DoBarrier();		
+
 		LayerUpdated = Layers::Update("ScoresTable", CreateLayerScoresTable());
 		LayerUpdated = Layers::Update("ScoresInSpawn", UpdateLayerScoresInSpawn());
 		LayerAttached = Layers::Attach("ScoresTable", NullId);
@@ -244,8 +170,17 @@ main() {
 		UIManager.UIAll.BigMessage = "";
 		UIManager.UIAll.UISequence = CUIConfig::EUISequence::Playing;
 		
+		// Init scores
+		foreach (Score in Scores) {
+			declare Integer LastPoint for Score;
+			LastPoint = 0;
+		}
+		
 		declare LastUITick = 0;
 		declare PrevPosTotal = 0;
+		declare LeadPoints = 0;
+		declare LeadId = NullId;
+		
 		StartTime = Now;
 		EndTime = StartTime + (S_TimeLimit * 1000);
 		while (!MatchEndRequested && !ServerShutdownRequested) {
@@ -254,13 +189,15 @@ main() {
 /* ------------------------------------- */
 			yield;
 			
+			Message::Loop();
+			
 			foreach (Event, PendingEvents) {
 				if (Event.Type == CSmModeEvent::EType::OnArmorEmpty) {
 					if (Event.Shooter == Event.Victim || Event.Shooter == Null) {
 						Score::RemovePoints(Event.Victim, 1);
 					}
-          XmlRpc.SendCallback("playerDeath", Event.Victim.Login);					
 					PassOn(Event);
+				  XmlRpc.SendCallback("playerDeath", Event.Victim.Login);		
 				} else if (Event.Type == CSmModeEvent::EType::OnHit) {
 					if (Event.Shooter == Event.Victim) {
 						Discard(Event);
@@ -268,9 +205,41 @@ main() {
 						declare Points = Event.Damage / 100;
 						Score::AddPoints(Event.Shooter, Points);
 						Event.ShooterPoints = Points;
-            XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);						
-						// Play sound and notice if someone is close to win
+				    XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);			
 						if (Event.Shooter != Null && Event.Shooter.Score != Null) {
+							// Play sound and notice if someone is taking the lead
+							if (Event.Shooter.Score.RoundPoints > LeadPoints && Event.Shooter.User.Id != LeadId) {
+								LeadId = Event.Shooter.User.Id;
+								Message::SendBigMessage(
+									TextLib::Compose(
+										_("$<%1$> takes the lead!"),
+										Event.Shooter.Name
+									), 									///< Message
+									3000,								///< Duration
+									1,									///< Priority
+									CUIConfig::EUISound::PhaseChange,	///< Sound
+									1									///< Sound variant
+								);
+							} else if (Event.Shooter.Score.RoundPoints == LeadPoints && Event.Shooter.User.Id != LeadId) {
+								LeadId = NullId;
+								Message::SendBigMessage(
+									TextLib::Compose(
+										_("$<%1$> tied the leader!"),
+										Event.Shooter.Name
+									), 									///< Message
+									3000,								///< Duration
+									1,									///< Priority
+									CUIConfig::EUISound::PhaseChange,	///< Sound
+									0									///< Sound variant
+								);
+							}
+							// Update the best current leading score
+							if (Event.Shooter.Score.RoundPoints > LeadPoints) {
+								LeadPoints = Event.Shooter.Score.RoundPoints;
+							}
+						
+							// Play sound and notice if someone is close to win
+							declare LastPoint for Event.Shooter.Score = 0;
 							declare Gap = S_PointLimit - Event.Shooter.Score.RoundPoints;
 							if (Gap <= 3 && Gap > 0) {
 								declare Variant = 3 - Gap;
@@ -279,27 +248,91 @@ main() {
 									Msg = TextLib::Compose(_("$<%1$> is %2 points from victory!"), Event.Shooter.Name, TextLib::ToText(Gap));
 								else 
 									Msg = TextLib::Compose(_("$<%1$> is 1 point from victory!"), Event.Shooter.Name);
-								UIManager.UIAll.SendNotice(
-									Msg, 
-									CUIConfig::ENoticeLevel::PlayerInfo, 
-									Null, CUIConfig::EAvatarVariant::Default, 
-									CUIConfig::EUISound::TieBreakPoint, Variant
+
+								Message::SendBigMessage(
+									Msg,
+									3000,
+									2,
+									CUIConfig::EUISound::TieBreakPoint,
+									Variant
 								);
 							} else if (Gap <= 0) {
-								UIManager.UIAll.SendNotice(
-									TextLib::Compose(_("$<%1$> gets the final hit!"), Event.Shooter.Name), 
-									CUIConfig::ENoticeLevel::PlayerInfo, 
-									Null, CUIConfig::EAvatarVariant::Default, 
-									CUIConfig::EUISound::VictoryPoint, 0
+								Message::SendBigMessage(
+									TextLib::Compose(_("$<%1$> gets the final hit!"), Event.Shooter.Name),
+									3000,
+									3,
+									CUIConfig::EUISound::VictoryPoint,
+									0
 								);
-								
+							} else {
+								declare SoundGap = S_PointLimit / 5;
+								if(SoundGap < 5) SoundGap = 5;
+								if (Event.Shooter.Score.RoundPoints / SoundGap > LastPoint) {
+									LastPoint = Event.Shooter.Score.RoundPoints / SoundGap;
+									Message::SendBigMessage(
+										Event.Shooter,
+										TextLib::Compose(
+											_("$666Score : $fff%1 / %2"), 
+											TextLib::ToText(Event.Shooter.Score.RoundPoints), 
+											TextLib::ToText(S_PointLimit)
+										),
+										3000,
+										0,
+										CUIConfig::EUISound::Custom2,
+										((Event.Shooter.Score.RoundPoints / SoundGap) - 1)
+									);
+								}
 							}
 						}
 						PassOn(Event);
 					}
 				} else if (Event.Type == CSmModeEvent::EType::OnPlayerRequestRespawn) {
 					Score::RemovePoints(Event.Player, 1);
-          XmlRpc.SendCallback("playerRespawn", Event.Player.Login);					
+			    XmlRpc.SendCallback("playerRespawn", Event.Player.Login);		
+      		if ((LeadId == NullId || Event.Player.User.Id == LeadId) && Event.Player.Score != Null) {
+						LeadPoints = Event.Player.Score.RoundPoints;
+						declare NewLead = False;
+						declare TieLead = False;
+						declare TieId = NullId;
+						foreach (Score in Scores) {
+							if (Score.RoundPoints > LeadPoints) {
+								LeadPoints = Score.RoundPoints;
+								LeadId = Score.User.Id;
+								NewLead = True;
+							} else if (Score.RoundPoints == LeadPoints && Score.User.Id != LeadId) {
+								TieLead = True;
+								TieId = Score.User.Id;
+								LeadId = NullId;
+							}
+						}
+						if (NewLead) {
+							declare Name = "Player";
+							if (Users.existskey(LeadId)) Name = Users[LeadId].Name;
+							Message::SendBigMessage(
+								TextLib::Compose(
+									_("$<%1$> takes the lead!"),
+									Name
+								), 									///< Message
+								3000,								///< Duration
+								1,									///< Priority
+								CUIConfig::EUISound::PhaseChange,	///< Sound
+								0									///< Sound variant
+							);
+						} else if (TieLead) {
+							declare Name = "Player";
+							if (Users.existskey(TieId)) Name = Users[TieId].Name;
+							Message::SendBigMessage(
+								TextLib::Compose(
+									_("$<%1$> tied the leader!"),
+									Name
+								), 									///< Message
+								3000,								///< Duration
+								0,									///< Priority
+								CUIConfig::EUISound::PhaseChange,	///< Sound
+								0									///< Sound variant
+							);
+						}
+					}
 					PassOn(Event);
 				} else {
 					PassOn(Event);
@@ -326,7 +359,7 @@ main() {
 				foreach (Player in Players) {
 					if (Layers::IsMissing("Info", Player.Id)) {
 						LayerAttached = Layers::Attach("Info", Player.Id);
-						LayerUpdated = Layers::Update("Info", CreateLayerInfo());
+						Interface::SetLayerPosition(Layers::GetFromName("Info"));
 						PosTotalUpdated = True;
 					}
 					
@@ -342,7 +375,7 @@ main() {
 						ScoresTableUpdated = True;
 					}
 					
-					if (PosTotalUpdated || PosCurrentUpdated) UpdateLayerInfo(Player);
+					if (PosTotalUpdated || PosCurrentUpdated) Interface::UpdatePosition(Player);
 				}
 				if (ScoresTableUpdated) LayerUpdated = Layers::Update("ScoresInSpawn", UpdateLayerScoresInSpawn());
 				LastUITick = Now;
@@ -382,9 +415,11 @@ main() {
 		}
 		foreach (Player in Players) {
 			if (Player.User != Winner) UnspawnPlayer(Player);
-			UpdateLayerInfo(Player);
+			Interface::UpdatePosition(Player);
 		}
 		
+		sleep(1000);
+		Message::CleanBigMessages();
 		UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::EndRound;
 		UIManager.UIAll.BigMessageSoundVariant = 0;
 		if (Winner != Null) {
@@ -411,6 +446,18 @@ main() {
 }
 
 
-
-
-
+/* ------------------------------------- */
+/** Get the rankings (temporary fix).
+ *
+ * @return		The rankings
+ */
+Text fixGetRankings() {
+	declare PlayerList = "";
+        	foreach (Player in Players) {
+        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
+	        }
+        	foreach (Player in Spectators) {
+        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
+	        }
+  return PlayerList;
+}
