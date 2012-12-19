@@ -181,15 +181,6 @@ function chat_admin($aseco, $command) {
 	$command['params'] = explode(' ', preg_replace('/ +/', ' ', $command['params']));
 	if (!isset($command['params'][1])) $command['params'][1] = '';
 
-  if(is_numeric($command['params'][0])){
-    $commandObject = $aseco->getChatCommand($command['params'][0], true);  
-    var_dump($commandObject);
-    if($commandObject != null)
-      $command['params'][0] = $commandObject->name;      
-    
-    $aseco->console($command['params'][0]."test"); 
-  }
-
 	// check if chat command was allowed for a masteradmin/admin/operator
 	if ($aseco->isMasterAdmin($admin)) {
 		$logtitle = 'MasterAdmin';
@@ -222,10 +213,6 @@ function chat_admin($aseco, $command) {
 		return false;
 	}
 
-	/**
-	 * Show admin help.
-	 */
-	if ($command['params'][0] == 'help') {
 		// build list of currently active commands
 		$active_commands = array();
 		foreach ($aseco->chat_commands as $cc) {
@@ -238,7 +225,16 @@ function chat_admin($aseco, $command) {
 				$active_commands[] = $active_command;
 			}
 		}
+     //Check if command is numeric, and exists in the array
+    if(is_numeric($command['params'][0]) && 
+       array_key_exists($command['params'][0]-1,$active_commands)){
+      $command['params'][0] = $active_commands[$command['params'][0]-1]->name;
+  }
 
+	/**
+	 * Show admin help.
+	 */
+	if ($command['params'][0] == 'help') {
 		// show active admin commands on command line
 		showHelp($admin, $active_commands, $logtitle, true, false);
 
@@ -246,20 +242,6 @@ function chat_admin($aseco, $command) {
 	 * Display admin help.
 	 */
 	} elseif ($command['params'][0] == 'helpall') {
-
-		// build list of currently active commands
-		$active_commands = array();
-		foreach ($aseco->chat_commands as $cc) {
-			// strip off optional abbreviation
-			$name = preg_replace('/\/.*/', '', $cc->name);
-
-			// check if admin command is within this admin's tier
-			if ($cc->isadmin && $aseco->allowAbility($admin, $name)) {
-				$active_command = new ChatCommand($cc->name, $cc->help, true);
-				$active_commands[] = $active_command;
-			}
-		}
-
 		// display active admin commands in popup with descriptions
 		showHelp($admin, $active_commands, $logtitle, true, true, 0.42);
 
