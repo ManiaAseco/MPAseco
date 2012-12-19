@@ -67,7 +67,7 @@ define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
 define('MPASECO', 'http://www.MPAseco.org/');
-define('IN_MPASECO');
+define('IN_MPASECO', true);
 
 // required official dedicated server build
 define('MP_BUILD', '2012-07-19-xx_xx');

@@ -7,7 +7,7 @@
  * the information stored in the database!
  *
  * Updated by Xymph
- * edited for SM 20.07.2012 by kremsy (www.mania-server.net) 
+ * edited for SM 20.07.2012 by the MPAseco team
  * 
  * Dependencies: requires plugin.panels.php
  *  
