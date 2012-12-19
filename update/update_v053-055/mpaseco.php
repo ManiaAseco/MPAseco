@@ -1749,11 +1749,21 @@ class Aseco {
 		// check for chat command '/' prefix
 		$command = $chat[2];
 		if ($command != '' && $command[0] == '/') {
+		
+		  $this->console($command);
 			// remove '/' prefix
 			$command = substr($command, 1);
 
 			// split strings at spaces and add them into an array
 			$params = explode(' ', $command, 2);
+			
+			//If command is numeric, and a valid command, give them the command name
+      if(is_numeric($params[0])){
+         $commandObject = $this->getChatCommand($params[0]);  
+      if($commandObject != null)
+        $params[0] = $commandObject->name;      
+      }			
+			
 			$translated_name = str_replace('+', 'plus', $params[0]);
 			$translated_name = str_replace('-', 'dash', $translated_name);
 

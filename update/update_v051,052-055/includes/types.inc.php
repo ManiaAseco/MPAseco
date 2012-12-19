@@ -363,7 +363,7 @@ class ChatCommand {
 		$this->help = $help;
 		$this->isadmin = $isadmin;
 		if($isadmin){
-      self::$adminCommandCount++;
+     // self::$adminCommandCount++;
       $this->commandNr = self::$adminCommandCount;
     }else{
       self::$userCommandCount++;  
