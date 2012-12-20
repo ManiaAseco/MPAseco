@@ -5,7 +5,7 @@
 #Extends "Modes/ShootMania/ModeBase.Script.txt"
 
 #Const	CompatibleMapTypes	"RoyalArena"
-#Const	Version				"2012-12-11"
+#Const	Version				"2012-12-20"
 
 #Include "MathLib" as MathLib
 #Include "TextLib" as TextLib
@@ -36,7 +36,7 @@
 #Const C_RandomEarlyRespawn		True	///< Spawn at a random point when early respawning
 #Const C_DamageMax				100		///< Not possible to inflict more damage with one hit
 #Const C_CaptureSpeedBonus		1.		///< Default capture speed bonus
-#Const C_GaugeMultiplier		10		///< Gauge.Max multiplier used for exact capture speed calculation
+#Const C_GaugeMultiplier		1000	///< Gauge.Max multiplier used for exact capture speed calculation
 #Const C_AllowDrawMap			False	///< Allow a map to end in a tie
 #Const C_AllowDoubleCapture		False	///< Allow the pole to be captured a second time
 
@@ -115,8 +115,6 @@ LayerAttached = Layers::Attach("TabScoresTable", NullId);
 LayerAttached = Layers::Attach("AltScoresTable", NullId);
 LayerAttached = Layers::Attach("ScoresInSpawn", NullId);
 
-/*UIManager.UIAll.ScoreTableOnlyManialink = False; */
-UIManager.UIAll.AltMenuNoDefaultScores = True;
 UIManager.UIAll.AltMenuNoCustomScores = True;
 UIManager.UIAll.NoticesFilter_LevelToShowAsBigMessage = CUIConfig::ENoticeLevel::MatchInfo;
 ***
@@ -138,14 +136,6 @@ Score::MatchBegin();
 Top::MatchBegin();
 Top::RoundBegin();	///< Want global tops for the match
 XmlRpc.SendCallback("beginMap",MapName);
-
-/* ------------------------------------- */
-// Init spawn priority list
-foreach (BlockSpawn in BlockSpawns) {
-	if (BlockSpawn.Order <= 1)		BlockSpawnsPriorities[1].add(BlockSpawn);
-	else if (BlockSpawn.Order == 2)	BlockSpawnsPriorities[2].add(BlockSpawn);
-	else if (BlockSpawn.Order >= 3)	BlockSpawnsPriorities[3].add(BlockSpawn);
-}
 
 /* ------------------------------------- */
 // Init players
@@ -221,13 +211,6 @@ Pole.Gauge.Value = 0;
 Pole.Gauge.Speed = 0;
 Pole.Gauge.Max = (S_OffZoneActivationTime * 1000) * C_GaugeMultiplier;
 if (S_OffZoneActivationTime <= 0) Pole.Gauge.Max = 10;
-
-/* ------------------------------------- */
-// Init early respawn block pool
-EarlyRespawnBlockPool.clear();
-foreach (BlockSpawn in BlockSpawns) {
-	EarlyRespawnBlockPool.add(BlockSpawn);
-}
 
 /* ------------------------------------- */
 // Init offzone
@@ -313,9 +296,19 @@ switch (GameplaySequence) {
 			UIManager.UIAll.CountdownEndTime =  LastSpawnTime + (S_SpawnInterval * 1000);
 			
 			declare SpawnQueueCount = 0;
+			/* ------------------------------------- */
+			// Init spawn priority list
+			foreach (BlockSpawn in BlockSpawns) {
+				if (BlockSpawn.Order <= 1)		BlockSpawnsPriorities[1].add(BlockSpawn);
+				else if (BlockSpawn.Order == 2)	BlockSpawnsPriorities[2].add(BlockSpawn);
+				else if (BlockSpawn.Order >= 3)	BlockSpawnsPriorities[3].add(BlockSpawn);
+			}
 		
 			for (I, 1, 3) {
-				foreach (BlockSpawn in BlockSpawnsPriorities[I]) {
+				//foreach (BlockSpawn in BlockSpawnsPriorities[I]) {
+				while (BlockSpawnsPriorities[I].count > 0) {
+					declare BlockSpawn <=> BlockSpawnsPriorities[I][MathLib::Rand(0, BlockSpawnsPriorities[I].count - 1)];
+					declare Removed = BlockSpawnsPriorities[I].remove(BlockSpawn);
 					/* ------------------------------------- */
 					// Spawning players
 					declare ToRemove = Ident[];
@@ -390,25 +383,14 @@ switch (GameplaySequence) {
 		// Manual activation of the OffZone
 		else {
 			if (Pole.Sector.PlayersIds.count > 0) {
-				/*declare CaptureSpeed = 1.;
-				declare BonusMax = 1.;
-				foreach (PlayerId in Pole.Sector.PlayersIds) {
-					declare Player <=> Players[PlayerId];
-					declare CaptureSpeedBonus for Player = 1.;
-					if (CaptureSpeedBonus > BonusMax) {
-						CaptureSpeed = CaptureSpeedBonus;
-						BonusMax = CaptureSpeedBonus;
-					}
-				}*/
-				
 				declare CaptureSpeed = 1.;
+				declare BonusMax = 0.;
 				foreach (PlayerId in Pole.Sector.PlayersIds) {
-					declare Player <=> Players[PlayerId];
-					declare CaptureSpeedBonus for Player = 1.;
-					CaptureSpeed += (CaptureSpeedBonus - 1.);
+					declare CaptureSpeedBonus for Players[PlayerId] = 1.;
+					if (CaptureSpeedBonus > BonusMax) BonusMax = CaptureSpeedBonus;
 				}
-				
-				CaptureSpeed *= C_GaugeMultiplier;
+				CaptureSpeed = BonusMax * C_GaugeMultiplier;
+
 				Pole.Gauge.Speed = MathLib::NearestInteger(CaptureSpeed);
 			} else Pole.Gauge.Speed = 0;
 		}
@@ -419,12 +401,13 @@ switch (GameplaySequence) {
 		if (AllowDoubleCapture) {
 			if (!Pole.Captured && Pole.Sector.PlayersIds.count > 0) {
 				declare CaptureSpeed = 1.;
+				declare BonusMax = 0.;
 				foreach (PlayerId in Pole.Sector.PlayersIds) {
-					declare Player <=> Players[PlayerId];
-					declare CaptureSpeedBonus for Player = 1.;
-					CaptureSpeed += (CaptureSpeedBonus - 1.);
+					declare CaptureSpeedBonus for Players[PlayerId] = 1.;
+					if (CaptureSpeedBonus > BonusMax) BonusMax = CaptureSpeedBonus;
 				}
-				CaptureSpeed *= C_GaugeMultiplier;
+				CaptureSpeed = BonusMax * C_GaugeMultiplier;
+				
 				Pole.Gauge.Speed = MathLib::NearestInteger(CaptureSpeed);
 				
 				declare RadiusSpeedBonus = (1 + ((S_OffZoneMaxSpeed - 1.) * (MathLib::ToReal(Pole.Gauge.Value) / MathLib::ToReal(Pole.Gauge.Max))));
@@ -538,7 +521,7 @@ foreach (Event in PendingEvents) {
 		if (Event.Victim != Null && !EarlyRespawnAllowed) {
 			declare Removed = PlayersAlive.removekey(Event.Victim.Id);
 			UpdateSurvivalScore(PlayersAlive);
-			XmlRpc.SendCallback("playerDeath", Event.Victim.Login);	
+			XmlRpc.SendCallback("playerDeath", Event.Victim.Login);				
 			UpdateLayerScoresTable = True;
 			UpdateLastEliminations(Event.Victim.Score);
 			UpdateLayerInfo(PlayersNbAlive - 1);
@@ -589,9 +572,8 @@ foreach (Event in PendingEvents) {
 				if (Players.existskey(PlayerId) && Players[PlayerId].Score != Null) {
 					declare Player <=> Players[PlayerId];
 					UpdatePlayerScores(Player, C_ScorePole, Points);
-					Top::IncrementPlayerPoints("Pole", Player, Points);
-					XmlRpc.SendCallback("poleCapture", Players[PlayerId].Login); 
-					
+				 					XmlRpc.SendCallback("poleCapture", Players[PlayerId].Login); 
+        	Top::IncrementPlayerPoints("Pole", Player, Points);
 					
 					// Use notices to display several messages one after the other
 					UIManager.UIAll.SendNotice(
@@ -649,13 +631,13 @@ foreach (Event in PendingEvents) {
 			OffZoneRadius = C_OffZoneDefaultRadius;
 			OffZoneStartingRadiusSpeed = (C_OffZoneDefaultRadius - C_OffZoneMinRadius) / (OffZoneTimeLimit/1000);
 			OffZoneRadiusSpeed = OffZoneStartingRadiusSpeed;
+			Event.BlockPole.Gauge.Speed = 0;
 			
 			if (AllowDoubleCapture) {
 				declare Local_OffZoneMaxSpeedTime = (OffZoneMaxSpeedTime * 1000);
 				if (OffZoneMaxSpeedTime <= 0) Local_OffZoneMaxSpeedTime = 10;
 				Event.BlockPole.Gauge.Max = (Local_OffZoneMaxSpeedTime * C_GaugeMultiplier);
 				Event.BlockPole.Gauge.Value = 0;
-				Event.BlockPole.Gauge.Speed = 0;
 			}
 			
 			UIManager.UIAll.CountdownEndTime = -1;
@@ -679,7 +661,7 @@ foreach (Event in PendingEvents) {
 	else if (Event.Type == CSmModeEvent::EType::OnPlayerRequestRespawn) {
 		if (Event.Player != Null && !EarlyRespawnAllowed) {
 			declare Removed = PlayersAlive.removekey(Event.Player.Id);
-	    XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
+			 XmlRpc.SendCallback("playerRespawn", Event.Player.Login);
       UpdateSurvivalScore(PlayersAlive);
 			UpdateLayerScoresTable = True;
 			UpdateLastEliminations(Event.Player.Score);
@@ -754,9 +736,10 @@ if (
 if (TimeLimitReached || AllEliminated) {
 	MB_StopRound = True;
 }
+
+XmlRpc.SendCallback("endRound",fixGetRankings());
+
 ***
-
-
 ***EndRound***
 ***
 LayerDetached = Layers::Detach("SpawnQueue", NullId);
@@ -766,13 +749,15 @@ UIManager.UIAll.BigMessage = "";
 UIManager.UIAll.StatusMessage = "";
 OffZoneRadiusSpeed = 0.;
 Pole.Gauge.Speed = 0;
- XmlRpc.SendCallback("endRound",fixGetRankings());
- 
+
 /* ------------------------------------- */
 // Bonus points for last two survivors
 declare ScoreToPlayer = Ident[Ident];
 foreach (Player in Players) { 
 	if (Player.Score != Null) ScoreToPlayer[Player.Score.Id] = Player.Id;
+	if (Player.SpawnStatus != CSmPlayer::ESpawnStatus::NotSpawned) {
+		+++EndRoundAlivePlayer+++
+	}
 }
 foreach (Rank => ScoreId in G_LastEliminations) {	
 	declare Points = 0;
@@ -785,7 +770,6 @@ foreach (Rank => ScoreId in G_LastEliminations) {
 		declare Score <=> Scores[ScoreId];
 		if (ScoreToPlayer.existskey(ScoreId) && Players.existskey(ScoreToPlayer[ScoreId])) {
 			UpdatePlayerScores(Players[ScoreToPlayer[ScoreId]], C_ScoreSurvival, Points);
-			
 			Top::IncrementPlayerPoints("Survival", Players[ScoreToPlayer[ScoreId]], Points);
 		}
 	}
@@ -843,7 +827,7 @@ declare ManialinkTops =
 	Top::GetFrameTop2("Round", _("Best Round Score"), "78 88", "");
 LayerUpdated = Layers::Update("Tops", ManialinkTops);
 LayerAttached = Layers::Attach("Tops", NullId);
-UIManager.UIAll.UISequence = CUIConfig::EUISequence::Podium;
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
 UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
 
 CustomSleep(6000);
@@ -877,14 +861,11 @@ if (PointLimitReached && !RequestTieBreak) MB_StopMap = True;
 
 ***EndMap***
 ***
-
-XmlRpc.SendCallback("endMap",fixGetRankings());
 Score::MatchEnd();
 Top::RoundEnd();
 Top::MatchEnd();
 
 LayerAttached = Layers::Attach("Tops", NullId);
-UIManager.UIAll.UISequence = CUIConfig::EUISequence::Podium;
 UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
 
 /* ------------------------------------- */
@@ -892,8 +873,10 @@ UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
 declare DisplayTime = (S_EndMapChatTime * 1000) / 2;
 DisplayWinnerName("Map", MapWinnerPlayer);
 UpdateLayerScoresTable();
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
 CustomSleep(DisplayTime);
 UpdateLayerScoresTable();
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::Podium;
 CustomSleep(DisplayTime);
 
 LayerDetached = Layers::Detach("Tops", NullId);
@@ -1617,7 +1600,8 @@ Text UpdateLayerSpawnQueue(Integer[Ident] _PlayersSpawnQueue) {
 	foreach (I => Name in SpawnQueue) {
 		declare LabelText = Name;
 		if (I == Max && SpawnQueue.count > Max) {
-			LabelText = TextLib::Compose(_("%1 more ..."), TextLib::ToText(SpawnQueue.count - (Max - 1)));
+			//LabelText = TextLib::Compose(_("%1 more ..."), TextLib::ToText(SpawnQueue.count - (Max - 1)));
+			LabelText = "$w+"^TextLib::ToText(SpawnQueue.count - (Max - 1));
 		}
 		PlayersList ^= """
 <label posn="0 {{{(I - 1) * -5}}} 0" sizen="28 5" text="$s{{{LabelText}}}" id="Label_Player_{{{I}}}" />
@@ -1752,7 +1736,7 @@ Void UpdateSurvivalScore(Ident[Ident] _PlayersAlive) {
 	foreach (PlayerId => ScoreId in _PlayersAlive) {
 		if (Players.existskey(PlayerId)) {
 			UpdatePlayerScores(Players[PlayerId], C_ScoreSurvival, 1);
-			Top::IncrementPlayerPoints("Survival", Players[PlayerId], 1);  
+			Top::IncrementPlayerPoints("Survival", Players[PlayerId], 1);
 		}
 	}
 }
