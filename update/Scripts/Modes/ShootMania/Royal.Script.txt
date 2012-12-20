@@ -1,4 +1,4 @@
-﻿/**
+/**
  *	Mode Royal
  */
 
@@ -40,7 +40,7 @@
 #Const C_AllowDrawMap			False	///< Allow a map to end in a tie
 #Const C_AllowDoubleCapture		False	///< Allow the pole to be captured a second time
 
-#Const C_ScoresTableWidth		200.	///< Width of the scores table UI
+#Const C_ScoresTableWidth		160.	///< Width of the scores table UI
 #Const C_ScoresTableScale		1.		///< Scale of the scores table UI
 #Const C_ScoresTableNbPlayers	16		///< Number of players in the scores table
 #Const C_ScoresTablePlayerHeight 6.		///< Height of a line for a player
@@ -115,8 +115,8 @@ LayerAttached = Layers::Attach("TabScoresTable", NullId);
 LayerAttached = Layers::Attach("AltScoresTable", NullId);
 LayerAttached = Layers::Attach("ScoresInSpawn", NullId);
 
-/*UIManager.UIAll.ScoreTableOnlyManialink = False;
-UIManager.UIAll.AltMenuNoDefaultScores = False;*/
+/*UIManager.UIAll.ScoreTableOnlyManialink = False; */
+UIManager.UIAll.AltMenuNoDefaultScores = True;
 UIManager.UIAll.AltMenuNoCustomScores = True;
 UIManager.UIAll.NoticesFilter_LevelToShowAsBigMessage = CUIConfig::ENoticeLevel::MatchInfo;
 ***
@@ -1752,7 +1752,7 @@ Void UpdateSurvivalScore(Ident[Ident] _PlayersAlive) {
 	foreach (PlayerId => ScoreId in _PlayersAlive) {
 		if (Players.existskey(PlayerId)) {
 			UpdatePlayerScores(Players[PlayerId], C_ScoreSurvival, 1);
-			Top::IncrementPlayerPoints("Survival", Players[PlayerId], 1);
+			Top::IncrementPlayerPoints("Survival", Players[PlayerId], 1);  
 		}
 	}
 }
