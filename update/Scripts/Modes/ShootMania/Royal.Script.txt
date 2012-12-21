@@ -860,7 +860,8 @@ if (PointLimitReached && !RequestTieBreak) MB_StopMap = True;
 
 
 ***EndMap***
-***
+*** 
+XmlRpc.SendCallback("endMap",fixGetRankings());
 Score::MatchEnd();
 Top::RoundEnd();
 Top::MatchEnd();
