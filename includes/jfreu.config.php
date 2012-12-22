@@ -32,13 +32,13 @@ if (file_exists($message_file)) {
 
     $i=1;
  	  foreach ($xml['JFREU_MESSAGES']['INFO_MESSAGES'] as $message) {
- 	     ${'message'.$i} = $message['MESSAGE'][0]; 
+ 	     ${'message'.$i} = $message['MESSAGE'][$i-1]; 
  	     $i++;
  	  }
 
   	if ($feature_votes) {
    	  foreach ($xml['JFREU_MESSAGES']['FEATURED_VOTE_MESSAGES'] as $message) {
-   	     ${'message'.$i} = $message['MESSAGE'][0]; 
+   	     ${'message'.$i} = $message['MESSAGE'][$i-1]; 
  	       $i++;  
    	  }
   	}
