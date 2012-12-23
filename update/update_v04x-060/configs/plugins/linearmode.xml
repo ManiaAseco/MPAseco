@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<!-- 2012 by the MPAseco Team v0.1 -->
+<linearmode_settings>
+   <!-- Formula: Playercount * factor + offset -->
+   <!-- Pointlimit Multiplier -->        
+   <factor>10</factor>
+   <!-- Pointlimit Offset -->      
+   <offset>0</offset>     
+   <!-- Minimal Pointlimit -->
+   <min_value>30</min_value>    
+   <!-- Maximal Pointlimit -->   
+   <max_value>200</max_value> 
+</linearmode_settings>
