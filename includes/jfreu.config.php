@@ -4,6 +4,7 @@
  * This file is included by jfreu.plugin.php or jfreu.lite.php, so don't
  * list it in plugins.xml!
  * XML file created and restructured php (2012 by Lukas Kremsmayr)
+ * v23.12.2012 
  */
 
  /* Please don't make any changes in this file!!
@@ -31,14 +32,14 @@ if (file_exists($message_file)) {
 	  $message_start = $xml['JFREU_MESSAGES']['MESSAGE_START'][0];   	
 
     $i=1;
- 	  foreach ($xml['JFREU_MESSAGES']['INFO_MESSAGES'] as $message) {
- 	     ${'message'.$i} = $message['MESSAGE'][$i-1]; 
+ 	  foreach ($xml['JFREU_MESSAGES']['INFO_MESSAGES'][0]['MESSAGE'] as $message) {
+ 	     ${'message'.$i} = $message; 
  	     $i++;
  	  }
 
   	if ($feature_votes) {
-   	  foreach ($xml['JFREU_MESSAGES']['FEATURED_VOTE_MESSAGES'] as $message) {
-   	     ${'message'.$i} = $message['MESSAGE'][$i-1]; 
+   	  foreach ($xml['JFREU_MESSAGES']['FEATURED_VOTE_MESSAGES'][0]['MESSAGE'] as $message) {
+   	     ${'message'.$i} = $message; 
  	       $i++;  
    	  }
   	}
@@ -47,8 +48,8 @@ if (file_exists($message_file)) {
   	}
   
     $badwordslist = array();
-   	foreach ($xml['JFREU_MESSAGES']['BADWORDS_LIST'] as $badword) {
-   	  $badword = $badword['BADWORD'][0]; 
+   	foreach ($xml['JFREU_MESSAGES']['BADWORDS_LIST'][0]['BADWORD'] as $badword) {
+   	  $badword = $badword['BADWORD']; 
    	  $badwordslist[] = $badword;
    	}    
      
