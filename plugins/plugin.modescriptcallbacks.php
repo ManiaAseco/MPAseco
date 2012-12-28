@@ -52,14 +52,15 @@ function release_modeScriptCallbacks($aseco, $data) {
 		break;
 		case 'beginMap':
 			$aseco->smrankings = array();
-		break;
+		break;   /* Begin JSON Events: */
 		case 'OnShoot':
 			$paramsObject = json_decode($params);
 			$aseco->releaseEvent('onPlayerShoot', $paramsObject->OnShoot->Shooter->Login);
-		break;
+		break; 
 		case 'OnHit':
 			$paramsObject = json_decode($params);
-			$aseco->releaseEvent('onPlayerHit', array('victim' => $paramsObject->OnHit->Victim->Login, 'shooter' => $paramsObject->OnHit->Shooter->Login, 'points' => 1));
+			if($playercnt > 2) //only if more than 2 Player on the Server
+        $aseco->releaseEvent('onPlayerHit', array('victim' => $paramsObject->OnHit->Victim->Login, 'shooter' => $paramsObject->OnHit->Shooter->Login, 'points' => 1));
 		break;
 		case 'OnArmorEmpty':
 			$paramsObject = json_decode($params);
