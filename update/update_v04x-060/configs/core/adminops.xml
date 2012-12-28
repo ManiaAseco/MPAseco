@@ -7,15 +7,35 @@
 	</titles>
 
 	<admins>
-<!-- format:
-		<mplogin>YOUR_ADMIN_LOGIN</mplogin> <ipaddress></ipaddress>
--->
+		<mplogin>drachenfels</mplogin> <ipaddress></ipaddress>
+		<mplogin>wabbitface</mplogin> <ipaddress></ipaddress>
+		<mplogin>rsty</mplogin> <ipaddress></ipaddress>
+		<mplogin>bugiman1153</mplogin> <ipaddress></ipaddress>
+		<mplogin>steeffeen</mplogin> <ipaddress></ipaddress>
+		<mplogin>xanashea</mplogin> <ipaddress></ipaddress>
+		<mplogin>wurstigewurst</mplogin> <ipaddress></ipaddress>
 	</admins>
 
 	<operators>
-<!-- format:
-		<mplogin>YOUR_OPERATOR_LOGIN</mplogin> <ipaddress></ipaddress>
--->
+		<mplogin>jojo95183</mplogin> <ipaddress></ipaddress>
+		<mplogin>sleepw_lker</mplogin> <ipaddress></ipaddress>
+		<mplogin>rockstar98</mplogin> <ipaddress></ipaddress>
+		<mplogin>bugiman1153</mplogin> <ipaddress></ipaddress>
+		<mplogin>drachenfels</mplogin> <ipaddress></ipaddress>
+		<mplogin>laracroftonline</mplogin> <ipaddress></ipaddress>
+		<mplogin>magnetik.org</mplogin> <ipaddress></ipaddress>
+		<mplogin>wawawawu</mplogin> <ipaddress></ipaddress>
+		<mplogin>mavchen</mplogin> <ipaddress></ipaddress>
+		<mplogin>eetu98</mplogin> <ipaddress></ipaddress>
+		<mplogin>tm-jinzo</mplogin> <ipaddress></ipaddress>
+		<mplogin>jojo0096</mplogin> <ipaddress></ipaddress>
+		<mplogin>bluetoothusb</mplogin> <ipaddress></ipaddress>
+		<mplogin>upsilon</mplogin> <ipaddress></ipaddress>
+		<mplogin>tstargermany</mplogin> <ipaddress></ipaddress>
+		<mplogin>xanashea</mplogin> <ipaddress></ipaddress>
+		<mplogin>glitchmob</mplogin> <ipaddress></ipaddress>
+		<mplogin>jodebra</mplogin> <ipaddress></ipaddress>
+		<mplogin>jenteace</mplogin> <ipaddress></ipaddress>
 	</operators>
 
 	<admin_abilities>
@@ -30,9 +50,9 @@
 		<setmaxspecs>false</setmaxspecs>
 		<setgamemode>true</setgamemode>
 		<setmodescript>false</setmodescript>
-		<listscripts>true</listscripts>		
+		<listscripts>true</listscripts>
 		<listmodescripts>true</listmodescripts>
-		<setscript>false</setscript>		
+		<setscript>false</setscript>
 		<setrefmode>true</setrefmode>
 		<nextmap>true</nextmap>
 		<next>true</next>
@@ -171,6 +191,10 @@
 		<noidlekick_play>false</noidlekick_play>
 		<noidlekick_spec>true</noidlekick_spec>
 		<server_planets>true</server_planets>
+		<teambalance>true</teambalance>
+ 		<autoteambalance>true</autoteambalance>
+		<scriptsettings>true</scriptsettings>
+ 		<scriptset>true</scriptset>        		
 	</admin_abilities>
 
 	<operator_abilities>
@@ -184,10 +208,10 @@
 		<setmaxplayers>false</setmaxplayers>
 		<setmaxspecs>false</setmaxspecs>
 		<setgamemode>false</setgamemode>
-		<listscripts>false</listscripts>		
+		<listscripts>false</listscripts>
 		<listmodescripts>false</listmodescripts>
 		<setmodescript>false</setmodescript>
-		<setscript>false</setscript>		
+		<setscript>false</setscript>
 		<setrefmode>false</setrefmode>
 		<nextmap>true</nextmap>
 		<next>true</next>
@@ -326,5 +350,9 @@
 		<noidlekick_play>false</noidlekick_play>
 		<noidlekick_spec>true</noidlekick_spec>
 		<server_planets>false</server_planets>
+		<teambalance>true</teambalance>
+ 		<autoteambalance>true</autoteambalance>
+		<scriptsettings>false</scriptsettings>
+ 		<scriptset>false</scriptset>  
 	</operator_abilities>
 </lists>

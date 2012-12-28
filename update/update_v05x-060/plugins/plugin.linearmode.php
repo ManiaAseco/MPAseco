@@ -11,7 +11,7 @@
 
 	
 class linearmode extends Plugin {
-  private $multipliere;
+  private $multiplier;
   private $offset;
   private $min_value;
   private $max_value;
