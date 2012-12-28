@@ -54,6 +54,18 @@ function release_modeScriptCallbacks($aseco, $data) {
     case 'beginMap':
       $aseco->smrankings = array();
     break;
+    case 'OnShoot':
+      $startPos = strpos($params,"Login") + 9;
+      $endPos   = strpos($params,'"',$startPos);
+      $player   = substr($params, $startPos, $endPos - $startPos);
+      $aseco->releaseEvent('onPlayerShoot', $player);
+    break;
+    /* case 'OnHit':
+      $startPos = strpos($params,"Login") + 9;
+      $endPos   = strpos($params,'"',$startPos);
+      $player   = substr($params, $startPos, $endPos - $startPos);
+      $aseco->releaseEvent('onPlayerShoot', $player);
+    break;       */
   }
 }
 
