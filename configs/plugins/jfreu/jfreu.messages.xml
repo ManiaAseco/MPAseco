@@ -14,12 +14,12 @@
   <info_messages>
     <message>Information about and download of this MPAseco on MPAseco.org</message>
     <message>Use "/list" -> "/jukebox ##" to add a map in the jukebox.</message>
-    <message>Please don\'t sound your horn throughout the entire map.</message>
+    <message>Please don't sound your horn throughout the entire map.</message>
     <message>When going AFK, please set your character to Spectator mode.</message>
     <message>Don\'t use Enter to skip intros - instead use Space & Enter</message>
     <message>For player & server info use the "/stats" and "/server" commands.</message>
     <message>Looking for the name of this server?  Use the "/server" command.</message>
-    <message>Wondering which maps you haven\'t played recently?  Use "/list norecent" to find out!</message>
+    <message>Wondering which maps you haven't played recently?  Use "/list norecent" to find out!</message>
     <message>Who is the most victorious player?  Use "/topwins" to find out!</message>
     <message>Wondering what maps were played recently?  Use the "/history" command.</message>
     <message>Jukeboxed the wrong map?  Use "/jukebox drop" to remove it!</message>
