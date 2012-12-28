@@ -39,7 +39,7 @@ class linearmode extends Plugin {
    }    
 	}
 
-  function change_pointlimit() {
+  function changePointlimit() {
     /* Playercount: */
     $CurrentPlayerCount = count($this->Aseco->server->players->player_list);
     /* Spectatorcount: */  
@@ -72,8 +72,8 @@ $linearmode->setDescription('Changes automatically the Pointlimit in Royal Mode.
 	
 /* Register the used Events */
 Aseco::registerEvent('onStartup', 'linearmode_mpasecoStartup');  
-Aseco::registerEvent('onPlayerConnect', 'change_pointlimit');
-Aseco::registerEvent('onPlayerDisconnect', 'change_pointlimit');
+Aseco::registerEvent('onPlayerConnect', 'linearmode_changePointlimit');
+Aseco::registerEvent('onPlayerDisconnect', 'linearmode_changePointlimit');
 
 /* Events: */  
 function linearmode_mpasecoStartup($aseco){
@@ -84,9 +84,9 @@ function linearmode_mpasecoStartup($aseco){
 	$linearmode->mpasecoStartup();
 }
 
-function change_pointlimit($aseco){
+function linearmode_changePointlimit($aseco){
 	global $linearmode;
-	$linearmode->change_pointlimit();
+	$linearmode->changePointlimit();
 }
 	
 ?>
