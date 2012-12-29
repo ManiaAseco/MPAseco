@@ -37,7 +37,13 @@ function release_modeScriptCallbacks($aseco, $data) {
 		break;
 		case 'playerEscaped': //Jailbreak Mode
 			$aseco->releaseEvent('onPlayerEscaped', $params);
-		break;		
+		break;	
+		case 'passBall': //Speedball Mode
+			$players = explode(';', $params);
+			$victim = str_replace('Victim:', '', $players[0]);
+			$shooter = str_replace('Shooter:', '', $players[1]);
+			$aseco->releaseEvent('onPassBall', array('victim' => $victim, 'shooter' => $shooter);
+		break;
 		case 'beginRound':
 			updateRankings($params);
 			$aseco->releaseEvent('onBeginRound', $aseco->smrankings);
