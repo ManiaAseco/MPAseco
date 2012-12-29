@@ -35,6 +35,9 @@ function release_modeScriptCallbacks($aseco, $data) {
 		case 'playerRespawn':
 			$aseco->releaseEvent('onPlayerRespawn', $params);
 		break;
+		case 'playerEscaped': //Jailbreak Mode
+			$aseco->releaseEvent('onPlayerEscaped', $params);
+		break;		
 		case 'beginRound':
 			updateRankings($params);
 			$aseco->releaseEvent('onBeginRound', $aseco->smrankings);
