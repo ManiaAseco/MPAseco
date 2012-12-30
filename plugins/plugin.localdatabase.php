@@ -532,7 +532,7 @@ function ldb_beginMap($aseco, $map) {
 	if (mysql_num_rows($result) === false) {
 		trigger_error('Could not get map info! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
-
+	
 	// map found?
 	if (mysql_num_rows($result) > 0) {
 
@@ -544,6 +544,7 @@ function ldb_beginMap($aseco, $map) {
       
       // get map info
       $map->id = $record['MapId'];
+		$ldb_map->id = $map->id;
     }     
 		mysql_free_result($result);
 	// map isn't in database yet
@@ -627,4 +628,33 @@ function ldb_playerDeath($aseco, $login) {
   $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
   mysql_query($query);
 }
+
+function ldb_playerFinish($aseco, $data) {
+	global $ldb_map;
+	
+	// create map_records table if necessary
+	$query = "CREATE TABLE IF NOT EXISTS `map_records` (
+					`index` int(11) NOT NULL AUTO_INCREMENT,
+					`map_id` int(11) NOT NULL,
+					`player` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+					`time` int(11) NOT NULL,
+					`respawncount` int(11) NOT NULL,
+					PRIMARY KEY (`index`),
+					KEY (`map_id`)
+					) AUTO_INCREMENT=1";
+	mysql_query($query);
+
+	// save new record
+	$data = json_decode($data);
+	$login = $data->Player->Login;
+	$time = $data->Run->Time;
+	$respawns = $data->Run->RespawnCount;
+	$query = "INSERT INTO `map_records` (
+					`map_id`, `player`, `time`, `respawncount`
+					) VALUES (
+					$ldb_map->id, '$login', $time, $respawns
+					)";
+	mysql_query($query);
+}
+
 ?>

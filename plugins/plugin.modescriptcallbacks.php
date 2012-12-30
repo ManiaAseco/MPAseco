@@ -42,7 +42,7 @@ function release_modeScriptCallbacks($aseco, $data) {
 			$players = explode(';', $params);
 			$victim = str_replace('Victim:', '', $players[0]);
 			$shooter = str_replace('Shooter:', '', $players[1]);
-			$aseco->releaseEvent('onPassBall', array('victim' => $victim, 'shooter' => $shooter);
+			$aseco->releaseEvent('onPassBall', array('victim' => $victim, 'shooter' => $shooter));
 		break;
 		case 'beginRound':
 			updateRankings($params);
@@ -78,6 +78,9 @@ function release_modeScriptCallbacks($aseco, $data) {
 		case 'OnPlayerRequestRespawn':
 			$paramsObject = json_decode($params);
 			$aseco->releaseEvent('onPlayerRespawn', $paramsObject->OnPlayerRequestRespawn->Player->Login);
+		break;
+		case 'OnFinish':
+			$aseco->releaseEvent('onPlayerFinish', $params);
 		break;
 	}
 }
