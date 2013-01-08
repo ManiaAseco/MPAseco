@@ -481,9 +481,9 @@ class Aseco {
 			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_ERROR);
 		}
 
-    $records_config = 'configs/core/records.xml';
-    if(file_exists($records_config)){
-  		if ($settings = $this->xml_parser->parseXml($records_config, true, CONFIG_UTF8ENCODE)) {
+    $this->settings['records_config'] = 'configs/core/records.xml';
+    if(file_exists($this->settings['records_config'])){
+  		if ($settings = $this->xml_parser->parseXml($this->settings['records_config'], true, CONFIG_UTF8ENCODE)) {
   			// read the XML structure into an array
   			$records = $settings['RECORDS']['SETTINGS'][0];
         	
@@ -511,7 +511,7 @@ class Aseco {
   			}
   		} else {
   			// could not parse XML file
-  			trigger_error('Could not read/parse records config file ' . $records_config . ' !', E_USER_ERROR);
+  			trigger_error('Could not read/parse records config file ' . $this->settings['records_config'] . ' !', E_USER_ERROR);
 		  }			                                                                                           
 		}	                                                
 	}  // loadSettings
@@ -1697,17 +1697,21 @@ class Aseco {
 				                      stripColors($cur_record->player->nickname));
 			} else {  // if there should be no record to display
 				// display a no-record message
-				$message = formatText($this->getChatMessage('RECORD_NONE'),
+				if(file_exists($this->settings['records_config'])){
+				  $message = formatText($this->getChatMessage('RECORD_NONE'),
 				                      stripColors($this->server->map->name));
+				}
 			}
 
-			// show top-8 & records of all online players before map
-			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
-				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
-			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
-				// or show original record message
-				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
-			}
+      if(file_exists($this->settings['records_config'])){
+  			// show top-8 & records of all online players before map
+  			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
+  				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
+  			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
+  				// or show original record message
+  				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
+  			} 
+  		}
 			// throw main 'player connects' event
 			$this->releaseEvent('onPlayerConnect', $player_item);
 			// throw postfix 'player connects' event (access control)
