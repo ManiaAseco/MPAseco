@@ -326,7 +326,7 @@ class Aseco {
 			} else {
 				$this->settings['chatpmlog_times'] = false;
 			}
-
+	
 			// show round reports in message window?
 			if (strtoupper($aseco['ROUNDS_IN_WINDOW'][0]) == 'TRUE') {
 				$this->settings['rounds_in_window'] = true;
@@ -480,6 +480,40 @@ class Aseco {
 			// could not parse XML file
 			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_ERROR);
 		}
+
+    $records_config = 'configs/core/records.xml';
+    if(file_exists($records_config)){
+  		if ($settings = $this->xml_parser->parseXml($records_config, true, CONFIG_UTF8ENCODE)) {
+  			// read the XML structure into an array
+  			$records = $settings['RECORDS']['SETTINGS'][0];
+        	
+  			// set minimum number of records to be displayed
+  			$this->settings['show_min_recs'] = $records['SHOW_MIN_RECS'][0];
+  			// show records before start of map?
+  			$this->settings['show_recs_before'] = $records['SHOW_RECS_BEFORE'][0];
+  			// show records after end of map?
+  			$this->settings['show_recs_after'] = $records['SHOW_RECS_AFTER'][0];
+  			// show MX world record?
+  			$this->settings['show_mxrec'] = $records['SHOW_MXREC'][0];			
+  			  
+        	// show records range?
+  			if (strtoupper($records['SHOW_RECS_RANGE'][0]) == 'TRUE') {
+  				$this->settings['show_recs_range'] = true;
+  			} else {
+  				$this->settings['show_recs_range'] = false;
+  			}
+  
+  			// show records in message window?
+  			if (strtoupper($records['RECS_IN_WINDOW'][0]) == 'TRUE') {
+  				$this->settings['recs_in_window'] = true;
+  			} else {
+  				$this->settings['recs_in_window'] = false;
+  			}
+  		} else {
+  			// could not parse XML file
+  			trigger_error('Could not read/parse records config file ' . $records_config . ' !', E_USER_ERROR);
+		  }			                                                                                           
+		}	                                                
 	}  // loadSettings
 
 
@@ -1652,7 +1686,28 @@ class Aseco {
 				$message = str_replace('{br}', LF, $this->formatColors($message));
 				$this->client->query('ChatSendServerMessageToLogin', str_replace(LF.LF, LF, $message), $player_item->login);
 			}
+			// if there's a record on current map
+			$cur_record = $this->server->records->getRecord(0);
+			if ($cur_record !== false && $cur_record->score > 0) {
+				// set message to the current record
+				$message = formatText($this->getChatMessage('RECORD_CURRENT'),
+				                      stripColors($this->server->map->name),
+				                      ($this->server->gameinfo->mode == Gameinfo::STNT ?
+				                       $cur_record->score : formatTime($cur_record->score)),
+				                      stripColors($cur_record->player->nickname));
+			} else {  // if there should be no record to display
+				// display a no-record message
+				$message = formatText($this->getChatMessage('RECORD_NONE'),
+				                      stripColors($this->server->map->name));
+			}
 
+			// show top-8 & records of all online players before map
+			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
+				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
+			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
+				// or show original record message
+				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
+			}
 			// throw main 'player connects' event
 			$this->releaseEvent('onPlayerConnect', $player_item);
 			// throw postfix 'player connects' event (access control)
