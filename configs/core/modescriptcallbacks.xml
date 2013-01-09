@@ -10,16 +10,23 @@
  
  <multi_callbacks>
     <callback>
-     <name>playerHit</name>
-     <index1>Victim</index1>    
-     <index2>Shooter</index2>  
-     <index3>Points</index3>   
-    <!-- <index1_type>String</index1_type>   
-     <index2_type>String</index2_type>  
-     <index3_type>Int</index3_type>     -->      
-     <database_index1>GotHits</database_index1>                
-     <database_index2>Hits</database_index2>        
-     <mincnt_players>3</mincnt_players>    
+     <name>playerHit</name>     
+     <mincnt_players>3</mincnt_players>   
+     <index>
+        <id>1</id>
+        <name>Victim</name>        
+        <database>GotHits</database>                
+     </index> 
+     <index>
+        <id>2</id>
+        <name>Shooter</name>            
+        <database>Hits</database>                
+     </index> 
+     <index>
+         <id>3</id>
+         <name>Points</name>
+         <database>0</database>                         
+     </index>                 
     </callback>     
  </multi_callbacks>  
  

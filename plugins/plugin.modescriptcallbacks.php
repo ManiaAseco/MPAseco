@@ -10,10 +10,30 @@ Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
 
 
 function release_modeScriptCallbacks($aseco, $data) {
+  global $singe_callbacks, $multi_callbacks;
+  
 	$name = $data[0];
 	$params = isset($data[1]) ? $data[1] : '';
 	$playercnt = count($aseco->server->players->player_list);
+/*
+  
+  foreach($single_callbacks as $callback){
+    if($callback->name == $name){
+        if($playercnt > $callback->mincntPlayers)
+           $aseco->releaseEvent('on'.ucfirst($callback->name), $params);      
+    }
+  }
 	
+	foreach($multi_callbacks as $callback){
+     if($callback->name == $name){
+ 			  $players = explode(';', $params);
+        
+        foreach($callback->index as $index)     
+        if($playercnt > $callback->mincntPlayers)
+           $aseco->releaseEvent('on'.ucfirst($callback->name), $params);          
+     } 
+  }
+	               */
 	switch($name) {
 		case 'playerDeath':
 			$aseco->releaseEvent('onPlayerDeath', $params);
@@ -110,10 +130,8 @@ class SingleCallback{
    var $database;
    var $mincnt_players;
    
-   function SingleCallback($name, $database, $mincntPlayers = 0){
+   function SingleCallback($name){
        $this->name = name;
-       $this->database = $database;
-       $this->mincntPlayers = $mincntPlayers;
    }
 }
 
@@ -123,10 +141,8 @@ class MultiCallback {
    var $mincnt_players;
    var $index;
    
-   function MultiCallback($name, $database, $mincntPlayers = 0){
+   function MultiCallback($name){
       $this->name = name;
-      $this->database = $database;
-      $this->mincntPlayers = $mincntPlayers;
    }
    function addIndex($indexName, $id){
       $index[$id] = new CallIndex($indexName);
@@ -141,26 +157,10 @@ class CallIndex(){
    }
 }
 
- /*
- <multi_callbacks>
-    <callback>
-     <name>playerHit</name>
-     <index1>Victim</index1>    
-     <index2>Shooter</index2>  
-     <index3>Points</index3>   
-    <!-- <index1_type>String</index1_type>   
-     <index2_type>String</index2_type>  
-     <index3_type>Int</index3_type>     -->      
-     <database_index1>GotHits</database_index1>                
-     <database_index2>Hits</database_index2>        
-     <mincnt_players>3</mincnt_players>    
-    </callback>     
- </multi_callbacks>  
- */
  
 // called @ onStartup
 function load_modeScriptCallbacks($aseco) {
-	global $ms_callbacks;
+  global $singe_callbacks, $multi_callbacks;
   $msfile = "configs/modescriptcallbacks.xml"
      /*
      begin modescriptcallback config
@@ -176,16 +176,22 @@ function load_modeScriptCallbacks($aseco) {
     $callback = new SingleCallback($callback['NAME'][0]);
     $callback->database = $callback['DATABASE'][0];
     $callback->mincntPlayers = $callback['MINCNT_PLAYERS'][0];
-    $ms_callbacks[$callback['NAME'][0]] = $callback;
+    $single_callbacks[$callback['NAME'][0]] = $callback;
   }    
   
   foreach ($xml['MULTI_CALLBACKS'][0]['CALLBACK'] as $callback) {
-  /*  $callback = new SingleCallback($callback['NAME'][0]);
-    $callback->database = $callback['DATABASE'][0];
+    $callback = new MultiCallback($callback['NAME'][0]);
+    foreach ($callback['INDEX'] as $index){
+        $id = $index['ID'][0];
+        $callback->addIndex($index['NAME'][0], $id);
+        $database = $index['DATABASE'][0];
+        if($database > 0)
+          $callback->index[$id]->database = $database;
+    }
     $callback->mincntPlayers = $callback['MINCNT_PLAYERS'][0];
-    $ms_callbacks[$callback['NAME'][0]] = $callback; */
+    $multi_callbacks[$callback['NAME'][0]] = $callback; 
   }    
 
-}  // modescriptcallbacks
+}  // modescriptcallbacks onStartup
 
 ?>
