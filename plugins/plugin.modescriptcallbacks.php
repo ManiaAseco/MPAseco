@@ -16,11 +16,12 @@ function release_modeScriptCallbacks($aseco, $data) {
 	$params = isset($data[1]) ? $data[1] : '';
 	$playercnt = count($aseco->server->players->player_list);
 
-      /*
-  foreach($single_callbacks as $callback){
+  
+    foreach($single_callbacks as $callback){
     if($callback->name == $name){
-        if($playercnt > $callback->mincntPlayers)
+        if($playercnt >= $callback->mincntPlayers)
            $aseco->releaseEvent('on'.ucfirst($callback->name), $params);      
+        $name = false; //Avoid switch-case    
     }
   }
 	
@@ -34,11 +35,12 @@ function release_modeScriptCallbacks($aseco, $data) {
            $indexArr[strtolower($index->name)] = $index;
            $i++;
         }     
-        if($playercnt > $callback->mincntPlayers)
-           $aseco->releaseEvent('on'.ucfirst($callback->name), $indexArr);          
+        if($playercnt >= $callback->mincntPlayers)
+           $aseco->releaseEvent('on'.ucfirst($callback->name), $indexArr);       
+        $name = false;  //Avoid switch-case  
      } 
-  }                   */
-	               
+  }         
+                          
 	switch($name) {
 		case 'playerDeath':
 			$aseco->releaseEvent('onPlayerDeath', $params);
@@ -166,12 +168,8 @@ class CallIndex(){
 // called @ onStartup
 function load_modeScriptCallbacks($aseco) {
   global $singe_callbacks, $multi_callbacks;
-  $msfile = "configs/modescriptcallbacks.xml"
-     /*
-     begin modescriptcallback config
-     idea: read xml file and set callback settings (which users can be edit)
-     localdb / widgets should read the config file to permit the possabilites for the database
-     ... more will come soon                */
+  $msfile = "configs/core/modescriptcallbacks.xml"
+
 	$aseco->console('[LocalDB] Load config file ['.$msfile.']');
 	if (!$xml = $aseco->xml_parser->parseXml($msfile)) {
 		trigger_error('Could not read/parse Modescript config file '.$msfile.' !', E_USER_ERROR);
