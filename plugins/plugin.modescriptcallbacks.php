@@ -15,8 +15,8 @@ function release_modeScriptCallbacks($aseco, $data) {
 	$name = $data[0];
 	$params = isset($data[1]) ? $data[1] : '';
 	$playercnt = count($aseco->server->players->player_list);
-/*
-  
+
+      /*
   foreach($single_callbacks as $callback){
     if($callback->name == $name){
         if($playercnt > $callback->mincntPlayers)
@@ -26,14 +26,19 @@ function release_modeScriptCallbacks($aseco, $data) {
 	
 	foreach($multi_callbacks as $callback){
      if($callback->name == $name){
- 			  $players = explode(';', $params);
-        
-        foreach($callback->index as $index)     
+ 			  $vals = explode(';', $params);
+        $i = 0;
+        $indexArr = array();
+        foreach($callback->index as $index){
+           $index = str_replace($index->name, '', $vals[$i]);
+           $indexArr[strtolower($index->name)] = $index;
+           $i++;
+        }     
         if($playercnt > $callback->mincntPlayers)
-           $aseco->releaseEvent('on'.ucfirst($callback->name), $params);          
+           $aseco->releaseEvent('on'.ucfirst($callback->name), $indexArr);          
      } 
-  }
-	               */
+  }                   */
+	               
 	switch($name) {
 		case 'playerDeath':
 			$aseco->releaseEvent('onPlayerDeath', $params);
