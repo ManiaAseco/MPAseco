@@ -109,7 +109,9 @@ function release_modeScriptCallbacks($aseco, $data) {
 			$aseco->releaseEvent('onPlayerRespawn', $paramsObject->OnPlayerRequestRespawn->Player->Login);
 		break;
 		case 'OnFinish':
-			$aseco->releaseEvent('onPlayerFinish', $params);
+		  $paramsObject = json_decode($params);
+		  $finish = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time);
+			$aseco->playerFinish($finish);
 		break;
 	}
 }
