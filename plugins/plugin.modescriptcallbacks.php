@@ -123,7 +123,7 @@ class MultiCallback {
    var $mincnt_players;
    var $index;
    
-   function SingleCallback($name, $database, $mincntPlayers = 0){
+   function MultiCallback($name, $database, $mincntPlayers = 0){
       $this->name = name;
       $this->database = $database;
       $this->mincntPlayers = $mincntPlayers;
