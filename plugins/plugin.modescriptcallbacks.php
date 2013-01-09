@@ -7,23 +7,7 @@
 
 Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
 
-// called @ onStartup
-function load_modeScriptCallbacks($aseco) {
-	global $ms_callbacks;
-  $msfile = "configs/modescriptcallbacks.xml"
-     /*
-     begin modescriptcallback config
-     idea: read xml file and set callback settings (which users can be edit)
-     localdb / widgets should read the config file to permit the possabilites for the database
-     ... more will come soon     
-	$aseco->console('[LocalDB] Load config file ['.$msfile.']');
-	if (!$callbacks = $aseco->xml_parser->parseXml($msfile)) {
-		trigger_error('Could not read/parse Local database config file '.$ldbfile.' !', E_USER_ERROR);
-	}
-	$callbacks = $callbacks['CALLBACKS'];       */
 
-
-}  // modescriptcallbacks
 
 function release_modeScriptCallbacks($aseco, $data) {
 	$name = $data[0];
@@ -114,5 +98,94 @@ function updateRankings($data) {
 	}
 	array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);
 }
+
+
+
+/**
+ * Should insert in types.inc.php
+ */
+
+class SingleCallback{
+   var $name;
+   var $database;
+   var $mincnt_players;
+   
+   function SingleCallback($name, $database, $mincntPlayers = 0){
+       $this->name = name;
+       $this->database = $database;
+       $this->mincntPlayers = $mincntPlayers;
+   }
+}
+
+class MultiCallback {
+   var $name;
+   var $database;
+   var $mincnt_players;
+   var $index;
+   
+   function SingleCallback($name, $database, $mincntPlayers = 0){
+      $this->name = name;
+      $this->database = $database;
+      $this->mincntPlayers = $mincntPlayers;
+   }
+   function addIndex($indexName, $id){
+      $index[$id] = new CallIndex($indexName);
+   }
+}
+
+class CallIndex(){
+   var $name;
+   var $database;
+   function CallIndex($name){
+    $this->name = $name;
+   }
+}
+
+ /*
+ <multi_callbacks>
+    <callback>
+     <name>playerHit</name>
+     <index1>Victim</index1>    
+     <index2>Shooter</index2>  
+     <index3>Points</index3>   
+    <!-- <index1_type>String</index1_type>   
+     <index2_type>String</index2_type>  
+     <index3_type>Int</index3_type>     -->      
+     <database_index1>GotHits</database_index1>                
+     <database_index2>Hits</database_index2>        
+     <mincnt_players>3</mincnt_players>    
+    </callback>     
+ </multi_callbacks>  
+ */
+ 
+// called @ onStartup
+function load_modeScriptCallbacks($aseco) {
+	global $ms_callbacks;
+  $msfile = "configs/modescriptcallbacks.xml"
+     /*
+     begin modescriptcallback config
+     idea: read xml file and set callback settings (which users can be edit)
+     localdb / widgets should read the config file to permit the possabilites for the database
+     ... more will come soon                */
+	$aseco->console('[LocalDB] Load config file ['.$msfile.']');
+	if (!$xml = $aseco->xml_parser->parseXml($msfile)) {
+		trigger_error('Could not read/parse Modescript config file '.$msfile.' !', E_USER_ERROR);
+	}
+	$xml = $xml['CALLBACKS'];      
+  foreach ($xml['SINGLE_CALLBACKS'][0]['CALLBACK'] as $callback) {
+    $callback = new SingleCallback($callback['NAME'][0]);
+    $callback->database = $callback['DATABASE'][0];
+    $callback->mincntPlayers = $callback['MINCNT_PLAYERS'][0];
+    $ms_callbacks[$callback['NAME'][0]] = $callback;
+  }    
+  
+  foreach ($xml['MULTI_CALLBACKS'][0]['CALLBACK'] as $callback) {
+  /*  $callback = new SingleCallback($callback['NAME'][0]);
+    $callback->database = $callback['DATABASE'][0];
+    $callback->mincntPlayers = $callback['MINCNT_PLAYERS'][0];
+    $ms_callbacks[$callback['NAME'][0]] = $callback; */
+  }    
+
+}  // modescriptcallbacks
 
 ?>
