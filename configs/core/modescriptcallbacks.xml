@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<callbacks>
+ <single_callbacks>
+   <callback>
+     <name>playerDeath</name>
+     <database>Deaths</database>    
+     <mincnt_players>0</mincnt_players>     
+   </callback> 
+ </single_callbacks>
+ 
+ <multi_callbacks>
+    <callback>
+     <name>playerHit</name>
+     <index1>Victim</index1>    
+     <index2>Shooter</index2>  
+     <index3>Points</index3>   
+    <!-- <index1_type>String</index1_type>   
+     <index2_type>String</index2_type>  
+     <index3_type>Int</index3_type>     -->      
+     <database_index1>GotHits</database_index1>                
+     <database_index2>Hits</database_index2>        
+     <mincnt_players>3</mincnt_players>    
+    </callback>     
+ </multi_callbacks>  
+ 
+</callbacks>

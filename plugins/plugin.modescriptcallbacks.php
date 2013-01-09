@@ -7,6 +7,24 @@
 
 Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
 
+// called @ onStartup
+function load_modeScriptCallbacks($aseco) {
+	global $ms_callbacks;
+  $msfile = "configs/modescriptcallbacks.xml"
+     /*
+     begin modescriptcallback config
+     idea: read xml file and set callback settings (which users can be edit)
+     localdb / widgets should read the config file to permit the possabilites for the database
+     ... more will come soon     
+	$aseco->console('[LocalDB] Load config file ['.$msfile.']');
+	if (!$callbacks = $aseco->xml_parser->parseXml($msfile)) {
+		trigger_error('Could not read/parse Local database config file '.$ldbfile.' !', E_USER_ERROR);
+	}
+	$callbacks = $callbacks['CALLBACKS'];       */
+
+
+}  // modescriptcallbacks
+
 function release_modeScriptCallbacks($aseco, $data) {
 	$name = $data[0];
 	$params = isset($data[1]) ? $data[1] : '';
