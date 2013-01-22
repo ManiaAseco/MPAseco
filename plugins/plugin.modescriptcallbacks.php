@@ -16,30 +16,30 @@ function release_modeScriptCallbacks($aseco, $data) {
 	$params = isset($data[1]) ? $data[1] : '';
 	$playercnt = count($aseco->server->players->player_list);
 
-  
+  /* For future purpose:   
     foreach($single_callbacks as $callback){
-    if($callback->name == $name){
-        if($playercnt >= $callback->mincntPlayers)
-           $aseco->releaseEvent('on'.ucfirst($callback->name), $params);      
-        $name = false; //Avoid switch-case    
+      if($callback->name == $name){
+          if($playercnt >= $callback->mincntPlayers)
+             $aseco->releaseEvent('on'.ucfirst($callback->name), $params);      
+          $name = false; //Avoid switch-case    
+      }
     }
-  }
-	
-	foreach($multi_callbacks as $callback){
-     if($callback->name == $name){
- 			  $vals = explode(';', $params);
-        $i = 0;
-        $indexArr = array();
-        foreach($callback->index as $index){
-           $index = str_replace($index->name, '', $vals[$i]);
-           $indexArr[strtolower($index->name)] = $index;
-           $i++;
-        }     
-        if($playercnt >= $callback->mincntPlayers)
-           $aseco->releaseEvent('on'.ucfirst($callback->name), $indexArr);       
-        $name = false;  //Avoid switch-case  
-     } 
-  }         
+  	
+  	foreach($multi_callbacks as $callback){
+       if($callback->name == $name){
+   			  $vals = explode(';', $params);
+          $i = 0;
+          $indexArr = array();
+          foreach($callback->index as $index){
+             $index = str_replace($index->name, '', $vals[$i]);
+             $indexArr[strtolower($index->name)] = $index;
+             $i++;
+          }     
+          if($playercnt >= $callback->mincntPlayers)
+             $aseco->releaseEvent('on'.ucfirst($callback->name), $indexArr);       
+          $name = false;  //Avoid switch-case  
+       } 
+   }   */     
                           
 	switch($name) {
 		case 'playerDeath':
@@ -158,7 +158,7 @@ class MultiCallback {
    }
 }
 
-class CallIndex(){
+class CallIndex{
    var $name;
    var $database;
    function CallIndex($name){
@@ -166,13 +166,13 @@ class CallIndex(){
    }
 }
 
- 
+      /*
 // called @ onStartup
 function load_modeScriptCallbacks($aseco) {
   global $singe_callbacks, $multi_callbacks;
   $msfile = "configs/core/modescriptcallbacks.xml"
 
-	$aseco->console('[LocalDB] Load config file ['.$msfile.']');
+//	$aseco->console('[LocalDB] Load config file ['.$msfile.']');
 	if (!$xml = $aseco->xml_parser->parseXml($msfile)) {
 		trigger_error('Could not read/parse Modescript config file '.$msfile.' !', E_USER_ERROR);
 	}
@@ -198,5 +198,5 @@ function load_modeScriptCallbacks($aseco) {
   }    
 
 }  // modescriptcallbacks onStartup
-
+      */
 ?>
