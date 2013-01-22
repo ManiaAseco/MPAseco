@@ -357,7 +357,6 @@ class Rasp {
     //$command=array();
 		// check for relay server
 		if ($aseco->server->isrelay) return;
-    $feature_ranks=true;
 		if ($feature_ranks) {
 		//	if (!$mxplayed) {
 				$this->resetRanks();
