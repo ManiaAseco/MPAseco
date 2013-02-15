@@ -81,12 +81,14 @@ function release_modeScriptCallbacks($aseco, $data) {
 			updateRankings($params);
 			$aseco->releaseEvent('onEndRound', $aseco->smrankings);
 		break;
+		case 'endMap1': 		
 		case 'endMap': 
       $aseco->console_text('End Map');
 			$aseco->releaseEvent('onEndMap1', $aseco->smrankings);
-			updateRankings($params);   
+			updateRankings($params); 
+      var_dump($aseco->smrankings);  
 			$aseco->displayEndMapRecords(); 
-			$aseco->endMapRanking($aseco->smrankings);    //temporary fix  
+			$aseco->endMapRanking($aseco->smrankings);    //temporary fix    
 			$aseco->endmapvar=1;
 			$aseco->releaseEvent('onEndMap', $aseco->smrankings);
 		break;
@@ -127,7 +129,10 @@ function updateRankings($data) {
 			$aseco->smrankings[$tmp[0]] = $tmp[1];
 		}
 	}
-	array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);
+	if($aseco->settings['records_activated'])
+  	array_multisort($aseco->smrankings, SORT_ASC, SORT_NUMERIC);
+  else
+  	array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);  
 }
 
 
