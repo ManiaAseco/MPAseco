@@ -531,8 +531,10 @@ class Aseco {
 		  }			                                                                                           
 		}	
     /* Set Points as Ranking value when mode without records */
-    if(!$this->settings['records_activated'])
-   	  $minrank = $minpoints; 		
+    if(!$this->settings['records_activated']){
+   	  $minrank = $minpoints;
+   	  define('INHIBIT_RECCMDS', true);
+    } 		
                                                            
 	}  // loadSettings
 
@@ -1409,20 +1411,67 @@ class Aseco {
 		               stripColors($this->server->map->name, false),
 		               stripColors($map_item->name, false));
 
-
-				// replace parameters
-				$message = formatText($this->getChatMessage('MAP_BEGIN'),
-				                      stripColors($map_item->name));
+		// replace parameters
+		$message = formatText($this->getChatMessage('MAP_BEGIN'),
+				                  stripColors($map_item->name));
 
     $this->client->query('ChatSendServerMessage', $this->formatColors($message));
     
+		if (!$this->server->isrelay && $this->settings['records_activated']){
+		
+		 // check if record exists on new map
+			$cur_record = $this->server->records->getRecord(0);
+			if ($cur_record !== false && $cur_record->score > 0) {
+				$score = formatTime($cur_record->score);
+
+				// log console message of current record
+				$this->console('current record on {1} is {2} and held by {3}',
+				               stripColors($map_item->name, false),
+				               trim($score),
+				               stripColors($cur_record->player->nickname, false));
+
+
+				// replace parameters
+				$message = formatText($this->getChatMessage('RECORD_CURRENT'),
+				                      stripColors($map_item->name),
+				                      trim($score),
+				                      stripColors($cur_record->player->nickname));
+      
+			} else {
+				$score = '   --.--';      
+				// log console message of no record
+				$this->console('currently no record on {1}',
+				               stripColors($map_item->name, false));                              		
+				// replace parameters
+				$message = formatText($this->getChatMessage('RECORD_NONE'),
+				                      stripColors($map_item->name));
+			}
+       /*RecordsPanel deactivated
+       	if (function_exists('setRecordsPanel'))
+				 setRecordsPanel('local', $score);
+       */
+  		// if no maprecs, show the original record message to all players
+  			if (($this->settings['show_recs_before'] & 1) == 1) {
+  				if (($this->settings['show_recs_before'] & 4) == 4 && function_exists('send_window_message'))
+  					send_window_message($this, $message, false);
+  				else
+  					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
+  			}
+  	}       
+
 		// update the field which contains current map
 		$this->server->map = $map_item;
 
 		// throw postfix 'begin map' event (various)
 		$this->releaseEvent('onBeginMap2', $map_item);
-	}  // newMap
 
+
+		// show top-8 & records of all online players before map
+		if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs') && $this->settings['records_activated']) {
+			show_maprecs($this, false, 1, $this->settings['show_recs_before']);  // from chat.records2.php
+		}
+		
+	}  // newMap
 
 	/**
 	 * End of current map.
@@ -1480,105 +1529,105 @@ class Aseco {
 	 * Check out who won the current map and increment his/her wins by one.
 	 */
 	function endMapRanking($ranking) {    /* temporary fixed */
-   $multiple=0;
-   $first=0;
-   $second=0;
-   $firstpts=0;
-   $secondpts=0;    
   
-   /* ADD ALLTIMEPTS TO DB -> new part */
-   $cnt=1;
-   foreach($ranking as $login => $pts)
-   {
-      if($cnt==1){      //for rankings
-        $first=$login;
-        $firstpts=$pts;
-      }elseif($cnt==2){
-        $second=$login;
-        $secondpts=$pts;      
-      }
-      if($pts > 0)
-      {
-          $query = 'UPDATE players SET allpoints = allpoints+'.$pts.' WHERE login = '.quotedString($login);  
-          mysql_query($query);    
-
-      }     
-      $cnt++;      
-   } 
+   if(!$this->settings['records_activated']){  //Point Based Ranking
+     $multiple=0;
+     $first=0;
+     $second=0;
+     $firstpts=0;
+     $secondpts=0;    
+    
+     /* ADD ALLTIMEPTS TO DB -> new part */
+     $cnt=1;
+     foreach($ranking as $login => $pts)
+     {
+        if($cnt==1){      //for rankings
+          $first=$login;
+          $firstpts=$pts;
+        }elseif($cnt==2){
+          $second=$login;
+          $secondpts=$pts;      
+        }
+        if($pts > 0)
+        {
+            $query = 'UPDATE players SET allpoints = allpoints+'.$pts.' WHERE login = '.quotedString($login);  
+            mysql_query($query);    
+  
+        }     
+        $cnt++;      
+     } 
+     	
+    /* end(ADD ALLTIMEPTS */
+    
+     if($firstpts==$secondpts)
+      $multiple=1;
+          
+     if(isset($ranking) && $multiple == false && $secondpts > 20  &&   //min 2 player, max 1 pl sametime win
+  		    ($player = $this->server->players->getPlayer($first)) !== false) {    
+  
+          $player->newwins++;
    
-
-	
-  /* end(ADD ALLTIMEPTS */
+   				// log console message
+  				$this->console('{1} won for the {2}. time!',
+  				               $player->login, $player->getWins());
   
-   if($firstpts==$secondpts)
-    $multiple=1;
-        
-   if(isset($ranking) && $multiple == false && $secondpts > 20  &&   //min 2 player, max 1 pl sametime win
-		    ($player = $this->server->players->getPlayer($first)) !== false) {    
-
-        $player->newwins++;
- 
- 				// log console message
-				$this->console('{1} won for the {2}. time!',
-				               $player->login, $player->getWins());
-
-				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
-					// replace parameters
-					$message = formatText($this->getChatMessage('WIN_MULTI'),
-					                      stripColors($player->nickname), $player->getWins());
-
-					// show chat message
-					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
-				} else {
-					// replace parameters
-					$message = formatText($this->getChatMessage('WIN_NEW'),
-					                      $player->getWins());
-
-					// show chat message
-					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
-				}
-
-				// throw 'player wins' event
-				$this->releaseEvent('onPlayerWins', $player);                        
-  }   
-
-  /*  
-  if (isset($ranking[0]['Login']) &&
-		    ($player = $this->server->players->getPlayer($ranking[0]['Login'])) !== false) {
-			// check for winner if there's more than one player
-			if ($ranking[0]['Rank'] == 1 && count($ranking) > 1 &&
-			    ($this->server->gameinfo->mode == Gameinfo::STNT ?
-			     ($ranking[0]['Score'] > 0) : ($ranking[0]['BestTime'] > 0))) {
-				// increase the player's wins
-				$player->newwins++;
-
-				// log console message
-				$this->console('{1} won for the {2}. time!',
-				               $player->login, $player->getWins());
-
-				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
-					// replace parameters
-					$message = formatText($this->getChatMessage('WIN_MULTI'),
-					                      stripColors($player->nickname), $player->getWins());
-
-					// show chat message
-					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
-				} else {
-					// replace parameters
-					$message = formatText($this->getChatMessage('WIN_NEW'),
-					                      $player->getWins());
-
-					// show chat message
-					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
-				}
-
-				// throw 'player wins' event
-				$this->releaseEvent('onPlayerWins', $player);
-			}
-		}      */               
+  				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
+  					// replace parameters
+  					$message = formatText($this->getChatMessage('WIN_MULTI'),
+  					                      stripColors($player->nickname), $player->getWins());
+  
+  					// show chat message
+  					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
+  				} else {
+  					// replace parameters
+  					$message = formatText($this->getChatMessage('WIN_NEW'),
+  					                      $player->getWins());
+  
+  					// show chat message
+  					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
+  				}
+  
+  				// throw 'player wins' event
+  				$this->releaseEvent('onPlayerWins', $player);                        
+      }   
+    }else{     //Record  Based Ranking
+     if (isset($ranking[0]['Login']) &&
+  		    ($player = $this->server->players->getPlayer($ranking[0]['Login'])) !== false) {
+  			// check for winner if there's more than one player
+  			if ($ranking[0]['Rank'] == 1 && count($ranking) > 1 &&
+  			    ($this->server->gameinfo->mode == Gameinfo::STNT ?
+  			     ($ranking[0]['Score'] > 0) : ($ranking[0]['BestTime'] > 0))) {
+  				// increase the player's wins
+  				$player->newwins++;
+  
+  				// log console message
+  				$this->console('{1} won for the {2}. time!',
+  				               $player->login, $player->getWins());
+  
+  				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
+  					// replace parameters
+  					$message = formatText($this->getChatMessage('WIN_MULTI'),
+  					                      stripColors($player->nickname), $player->getWins());
+  
+  					// show chat message
+  					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
+  				} else {
+  					// replace parameters
+  					$message = formatText($this->getChatMessage('WIN_NEW'),
+  					                      $player->getWins());
+  
+  					// show chat message
+  					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
+  				}
+  
+  				// throw 'player wins' event
+  				$this->releaseEvent('onPlayerWins', $player);
+  			}
+  		} 
+    }                    
 	}  // endMapRanking
 
-
+   
 	/**
 	 * Handles connections of new players.
 	 */

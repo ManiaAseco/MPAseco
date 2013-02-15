@@ -16,8 +16,8 @@ Aseco::registerEvent('onBeginMap2', 'event_beginmap');  // use 2nd event for log
 Aseco::registerEvent('onEndMap', 'event_endmap');
 Aseco::registerEvent('onPlayerFinish', 'event_finish');
 Aseco::registerEvent('onPlayerConnect', 'event_playerjoin');
-
-if (!INHIBIT_RECCMDS && $aseco->records_active) {
+                                        
+if (!INHIBIT_RECCMDS) {
 	Aseco::addChatCommand('pb', 'Shows your personal best on current map');
 }
 Aseco::addChatCommand('rank', 'Shows your current server rank');
@@ -645,7 +645,7 @@ function event_playerjoin($aseco, $data) { global $rasp; $rasp->onPlayerjoin($as
 
 function chat_pb($aseco, $command) {
 	global $rasp, $feature_stats;
-  if(!$aseco->records_active)
+  if(!$aseco->settings['records_activated'])
     return;
 	// check for relay server
 	if ($aseco->server->isrelay) {
