@@ -154,9 +154,9 @@ function formatTime($MwTime, $tsec = true) {
 	} else {
 		$minutes = floor($MwTime/(1000*60));
 		$seconds = floor(($MwTime - $minutes*60*1000)/1000);
-		$tseconds = substr($MwTime, strlen($MwTime)-3);
+		$tseconds = substr($MwTime, strlen($MwTime) - 3, 2);
 		if ($tsec) {
-			$tm = sprintf('%02d:%02d.%03d', $minutes, $seconds, $tseconds);
+			$tm = sprintf('%02d:%02d.%02d', $minutes, $seconds, $tseconds);
 		} else {
 			$tm = sprintf('%02d:%02d', $minutes, $seconds);
 		}
@@ -184,7 +184,7 @@ function formatTimeH($MwTime, $tsec = true) {
 		$MwTime = $MwTime - ($minutes * 60);
 		$seconds = floor($MwTime);
 		if ($tsec) {
-			return sprintf('%02d:%02d:%02d.%03d', $hours, $minutes, $seconds, $tseconds);
+			return sprintf('%02d:%02d:%02d.%02d', $hours, $minutes, $seconds, $tseconds);
 		} else {
 			return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 		}
