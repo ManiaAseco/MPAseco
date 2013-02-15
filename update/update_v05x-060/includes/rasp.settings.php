@@ -49,7 +49,6 @@ if (file_exists($config_file)) {
 
     /***************************** PERFORMANCE VARIABLES ***************************/
     $minpoints = $rasp_settings['RASP_SETTINGS']['MIN_POINTS'][0];
-    
     if(isset($rasp_settings['RASP_SETTINGS']['MIN_RANK'][0]))    
       $minrecs = $rasp_settings['RASP_SETTINGS']['MIN_RANK'][0];  
     else
