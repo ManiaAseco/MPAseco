@@ -35,7 +35,6 @@ function ldb_loadSettings($aseco) {
 	global $ldb_settings;
   global $argv,$argc;
 
-
   if(strpos($argv[$argc-2],".xml") && strpos($argv[$argc-1],".xml"))
     $ldbfile='configs/'.$argv[$argc-1];
   else if(file_exists('localdatabase.xml'))
@@ -56,6 +55,27 @@ function ldb_loadSettings($aseco) {
 	$ldb_settings['mysql']['database'] = $settings['MYSQL_DATABASE'][0];
 	$ldb_settings['mysql']['connection'] = false;
 
+	// read additional records settings from records.xml
+  if(file_exists('configs/records.xml'))
+    $recsfile='configs/records.xml'; 
+  else if(file_exists('configs/core/records.xml'))
+    $recsfile='configs/core/records.xml'; 
+  else
+    $recsfile='records.xml'; 
+   
+	$aseco->console('[LocalDB] Load config file ['.$recsfile.']');
+	if (!$settings = $aseco->xml_parser->parseXml($recsfile)) {
+		trigger_error('Could not read/parse Local database config file '.$recsfile.' !', E_USER_ERROR);
+	}
+	$settings = $settings['RECORDS'];
+	// display records in game?
+	if (strtoupper($settings['SETTINGS'][0]['DISPLAY'][0]) == 'TRUE')
+		$ldb_settings['display'] = true;
+	else
+		$ldb_settings['display'] = false;
+
+	// set highest record still to be displayed
+	$ldb_settings['limit'] = $settings['SETTINGS'][0]['LIMIT'][0];
 	$ldb_settings['messages'] = $settings['MESSAGES'][0];
 }  // ldb_loadSettings
 
@@ -65,6 +85,9 @@ function ldb_connect($aseco) {
 
 	// get the settings
 	global $ldb_settings;
+	// create data fields
+	global $ldb_records;
+	$ldb_records = new RecordList($maxrecs);
 	global $ldb_map;
 	$ldb_map = new Map();
 
@@ -123,6 +146,19 @@ function ldb_connect($aseco) {
 	          ) ENGINE=MyISAM DEFAULT CHARSET=utf8";
 	mysql_query($query);
 
+	$query = "CREATE TABLE IF NOT EXISTS `records` (
+	            `Id` int(11) NOT NULL auto_increment,
+	            `MapId` mediumint(9) NOT NULL default 0,
+	            `PlayerId` mediumint(9) NOT NULL default 0,
+	            `Score` int(11) NOT NULL default 0,
+	            `Date` datetime NOT NULL default '0000-00-00 00:00:00',
+	            `Checkpoints` text NOT NULL,
+	            PRIMARY KEY (`Id`),
+	            UNIQUE KEY `PlayerId` (`PlayerId`,`MapId`),
+	            KEY `MapId` (`MapId`)
+	          ) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+	mysql_query($query);
+	
 	$query = "CREATE TABLE IF NOT EXISTS `players_extra` (
 	            `PlayerId` mediumint(9) NOT NULL default 0,
 	            `Cps` smallint(3) NOT NULL default -1,
@@ -145,9 +181,9 @@ function ldb_connect($aseco) {
 	$check = array();
 	$check[1] = in_array('maps', $tables);
 	$check[2] = in_array('players', $tables);
-	//$check[3] = in_array('records', $tables);
+	$check[3] = in_array('records', $tables);
 	$check[4] = in_array('players_extra', $tables);
-	if (!($check[1] && $check[2] && $check[4])) {
+	if (!($check[1] && $check[2] && $check[3] && $check[4])) {
 		trigger_error('[LocalDB] Table structure incorrect!  Use localdb/aseco.sql to correct this', E_USER_ERROR);
 	}
 
@@ -197,8 +233,7 @@ function ldb_connect($aseco) {
     $aseco->console("[LocalDB] Add shootmania-related columns to 'players' ...");
     mysql_query("ALTER TABLE players ".$update);
   }
-  
-
+ 
 	$aseco->console('[LocalDB] ...Structure OK!');
 }  // ldb_connect
 
@@ -339,6 +374,7 @@ function ldb_playerConnect($aseco, $player) {
 		           quotedString($aseco->settings['window_style']) . ', ' .
 		           quotedString($aseco->settings['admin_panel'] . '/' .
 		                        $aseco->settings['donate_panel'] . '/' .
+		                     //   $aseco->settings['records_panel'] . '/' .
 		                        $aseco->settings['vote_panel']) . ', ' .
 		           quotedString($aseco->settings['panel_bg']) . ')';
 		$result = mysql_query($query);
@@ -401,6 +437,36 @@ function ldb_updateDonations($aseco, $login, $donation) {
 	}
 }  // ldb_updateDonations
 
+function ldb_getCPs($aseco, $login) {
+
+	// get player's CPs settings
+	$query = 'SELECT Cps, DediCps FROM players_extra
+	          WHERE PlayerId=' . $aseco->getPlayerId($login);
+	$result = mysql_query($query);
+
+	if (mysql_num_rows($result) === false || mysql_num_rows($result) == 0) {
+		mysql_free_result($result);
+		trigger_error('Could not get player\'s CPs! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		return false;
+	} else {
+		$dbextra = mysql_fetch_object($result);
+		mysql_free_result($result);
+
+		return array('cps' => $dbextra->Cps, 'dedicps' => $dbextra->DediCps);
+	}
+}  // ldb_getCPs
+
+function ldb_setCPs($aseco, $login, $cps, $dedicps) {
+
+	$query = 'UPDATE players_extra
+	          SET Cps=' . $cps . ', DediCps=' . $dedicps . '
+	          WHERE PlayerId=' . $aseco->getPlayerId($login);
+	$result = mysql_query($query);
+
+	if (mysql_affected_rows() == -1) {
+		trigger_error('Could not update player\'s CPs! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	}
+}  // ldb_setCPs
 
 function ldb_getStyle($aseco, $login) {
 
@@ -506,46 +572,403 @@ function ldb_setPanelBG($aseco, $login, $panelbg) {
 	}
 }  // ldb_setPanelBG
 
+// called @ onPlayerFinish
+function ldb_playerFinish($aseco, $finish_item) {
+	global $ldb_records, $ldb_settings,
+	       $checkpoints;  // from plugin.checkpoints.php
 
+	// if no actual finish, bail out immediately
+	if ($finish_item->score == 0) return;
+
+	// in Laps mode on real PlayerFinish event, bail out too
+	if ($aseco->server->gameinfo->mode == Gameinfo::LAPS && !$finish_item->new) return;
+
+	$login = $finish_item->player->login;
+	if (isset($finish_item->player->nickname)) {
+		$nickname = stripColors($finish_item->player->nickname);
+	} else {
+		$nickname = stripColors($finish_item->Player->Name);
+	}
+
+	// reset lap 'Finish' flag & add checkpoints
+	$finish_item->new = false;
+	$finish_item->checks = (isset($checkpoints[$login]) ? $checkpoints[$login]->curr_cps : array());
+
+	// drove a new record?
+	// go through each of the XX records
+	for ($i = 0; $i < $ldb_records->max; $i++) {
+		$cur_record = $ldb_records->getRecord($i);
+
+		// if player's time/score is better, or record isn't set (thanks eyez)
+		if ($cur_record === false || ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
+		                              $finish_item->score > $cur_record->score :
+		                              $finish_item->score < $cur_record->score)) {
+
+			// does player have a record already?
+			$cur_rank = -1;
+			$cur_score = 0;
+			for ($rank = 0; $rank < $ldb_records->count(); $rank++) {
+				$rec = $ldb_records->getRecord($rank);
+
+				if ($rec->player->login == $login) {
+
+					// new record worse than old one
+					if ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
+					    $finish_item->score < $rec->score :
+					    $finish_item->score > $rec->score) {
+						return;
+
+					// new record is better than or equal to old one
+					} else {
+						$cur_rank = $rank;
+						$cur_score = $rec->score;
+						break;
+					}
+				}
+			}
+
+			$finish_time = $finish_item->score;
+			if ($aseco->server->gameinfo->mode != Gameinfo::STNT)
+				$finish_time = formatTime($finish_time);
+
+			if ($cur_rank != -1) {  // player has a record in topXX already
+
+				// compute difference to old record
+				if ($aseco->server->gameinfo->mode != Gameinfo::STNT) {
+					$diff = $cur_score - $finish_item->score;
+					$sec = floor($diff/1000);
+					$ths = $diff - ($sec * 1000);
+				} else {  // Stunts
+					$diff = $finish_item->score - $cur_score;
+				}
+
+				// update record if improved
+				if ($diff > 0) {
+					$finish_item->new = true;
+					$ldb_records->setRecord($cur_rank, $finish_item);
+				}
+
+				// player moved up in LR list
+				if ($cur_rank > $i) {
+
+					// move record to the new position
+					$ldb_records->moveRecord($cur_rank, $i);
+
+					// do a player improved his/her LR rank message
+					$message = formatText($ldb_settings['messages']['RECORD_NEW_RANK'][0],
+					                      $nickname,
+					                      $i+1,
+					                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'Score' : 'Time'),
+					                      $finish_time,
+					                      $cur_rank+1,
+					                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
+					                       '+' . $diff : sprintf('-%d.%03d', $sec, $ths)));
+
+					// show chat message to all or player
+					if ($ldb_settings['display']) {
+						if ($i < $ldb_settings['limit']) {
+							if ($aseco->settings['recs_in_window'] && function_exists('send_window_message'))
+								send_window_message($aseco, $message, false);
+							else
+								$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+						} else {
+							$message = str_replace('{#server}>> ', '{#server}> ', $message);
+							$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
+						}
+					}
+
+				} else {
+
+					if ($diff == 0) {
+						// do a player equaled his/her record message
+						$message = formatText($ldb_settings['messages']['RECORD_EQUAL'][0],
+						                      $nickname,
+						                      $cur_rank+1,
+						                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'Score' : 'Time'),
+						                      $finish_time);
+					} else {
+						// do a player secured his/her record message
+						$message = formatText($ldb_settings['messages']['RECORD_NEW'][0],
+						                      $nickname,
+						                      $i+1,
+						                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'Score' : 'Time'),
+						                      $finish_time,
+						                      $cur_rank+1,
+						                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
+						                       '+' . $diff : sprintf('-%d.%03d', $sec, $ths)));
+					}
+
+					// show chat message to all or player
+					if ($ldb_settings['display']) {
+						if ($i < $ldb_settings['limit']) {
+							if ($aseco->settings['recs_in_window'] && function_exists('send_window_message'))
+								send_window_message($aseco, $message, false);
+							else
+								$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+						} else {
+							$message = str_replace('{#server}>> ', '{#server}> ', $message);
+							$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
+						}
+					}
+				}
+
+			} else {  // player hasn't got a record yet
+
+				// if previously tracking own/last local record, now track new one
+				if (isset($checkpoints[$login]) &&
+				    $checkpoints[$login]->loclrec == 0 && $checkpoints[$login]->dedirec == -1) {
+					$checkpoints[$login]->best_fin = $checkpoints[$login]->curr_fin;
+					$checkpoints[$login]->best_cps = $checkpoints[$login]->curr_cps;
+				}
+
+				// insert new record at the specified position
+				$finish_item->new = true;
+				$ldb_records->addRecord($finish_item, $i);
+
+				// do a player drove first record message
+				$message = formatText($ldb_settings['messages']['RECORD_FIRST'][0],
+				                      $nickname,
+				                      $i+1,
+				                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ? 'Score' : 'Time'),
+				                      $finish_time);
+
+				// show chat message to all or player
+				if ($ldb_settings['display']) {
+					if ($i < $ldb_settings['limit']) {
+						if ($aseco->settings['recs_in_window'] && function_exists('send_window_message'))
+							send_window_message($aseco, $message, false);
+						else
+							$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+					} else {
+						$message = str_replace('{#server}>> ', '{#server}> ', $message);
+						$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
+					}
+				}
+			}
+
+			// update aseco records
+			$aseco->server->records = $ldb_records;
+
+			// log records when debugging is set to true
+			//if ($aseco->debug) $aseco->console('ldb_playerFinish records:' . CRLF . print_r($ldb_records, true));
+
+			// insert and log a new local record (not an equalled one)
+			if ($finish_item->new) {
+				ldb_insert_record($finish_item);
+
+				// update all panels if new #1 record
+				if ($i == 0) {
+					setRecordsPanel('local', ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
+					                          str_pad($finish_item->score, 5, ' ', STR_PAD_LEFT) :
+					                          formatTime($finish_item->score)));
+					if (function_exists('update_allrecpanels'))
+						update_allrecpanels($aseco, null);  // from plugin.panels.php
+				}
+
+				// log record message in console
+				$aseco->console('[LocalDB] player {1} finished with {2} and took the {3}. LR place!',
+				                $login, $finish_item->score, $i+1);
+
+				// throw 'local record' event
+				$finish_item->pos = $i+1;
+				$aseco->releaseEvent('onLocalRecord', $finish_item);
+			}
+
+			// got the record, now stop!
+			return;
+		}
+	}
+}  // ldb_playerFinish
+
+function ldb_insert_record($record) {
+	global $aseco, $ldb_map;
+
+	$playerid = $record->player->id;
+	$cps = implode(',', $record->checks);
+
+	// insert new record
+	$query = 'INSERT INTO records
+	          (MapId, PlayerId, Score, Date, Checkpoints)
+	          VALUES
+	          (' . $ldb_map->id . ', ' . $playerid . ', ' .
+	           $record->score . ', NOW(), ' . quotedString($cps) . ')';
+	$result = mysql_query($query);
+
+	if (mysql_affected_rows() == -1) {
+		$error = mysql_error();
+		if (!preg_match('/Duplicate entry.*for key/', $error))
+			trigger_error('Could not insert record! (' . $error . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	}
+
+	// could not be inserted?
+	if (mysql_affected_rows() != 1) {
+		// update existing record
+		$query = 'UPDATE records
+		          SET Score=' . $record->score . ', Date=NOW(), Checkpoints=' . quotedString($cps) . '
+		          WHERE MapId=' . $ldb_map->id . ' AND PlayerId=' . $playerid;
+		$result = mysql_query($query);
+
+		// could not be updated?
+		if (mysql_affected_rows() != 1) {
+			trigger_error('Could not update record! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		}
+	}
+}  // ldb_insert_record
+
+function ldb_removeRecord($aseco, $cid, $pid, $recno) {
+	global $ldb_records;
+
+	// remove record
+	$query = 'DELETE FROM records WHERE MapId=' . $cid . ' AND PlayerId=' . $pid;
+	$result = mysql_query($query);
+	if (mysql_affected_rows() != 1) {
+		trigger_error('Could not remove record! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	}
+
+	// remove record from specified position
+	$ldb_records->delRecord($recno);
+
+	// check if fill up is needed
+	if ($ldb_records->count() == ($ldb_records->max - 1)) {
+		// get max'th time
+		$query = 'SELECT DISTINCT PlayerId,Score FROM rs_times t1 WHERE MapId=' . $cid .
+		         ' AND Score=(SELECT MIN(t2.Score) FROM rs_times t2 WHERE MapId=' . $cid .
+		         '            AND t1.PlayerId=t2.PlayerId) ORDER BY Score,Date LIMIT ' . ($ldb_records->max - 1) . ',1';
+		$result = mysql_query($query);
+		if (mysql_num_rows($result) == 1) {
+			$timerow = mysql_fetch_object($result);
+
+			// get corresponding date/time & checkpoints
+			$query = 'SELECT Date,Checkpoints FROM rs_times WHERE MapId=' . $cid .
+			         ' AND PlayerId=' . $timerow->PlayerId . ' ORDER BY Score,Date LIMIT 1';
+			$result2 = mysql_query($query);
+			$timerow2 = mysql_fetch_object($result2);
+			$datetime = date('Y-m-d H:i:s', $timerow2->Date);
+			mysql_free_result($result2);
+
+			// insert new max'th record
+			$query = "INSERT INTO records
+			          (MapId, PlayerId, Score, Date, Checkpoints)
+			          VALUES
+			          (" . $cid . ", " . $timerow->PlayerId . ", " .
+			           $timerow->Score . ", '" . $datetime . "', '" .
+			           $timerow2->Checkpoints . "')";
+			$result2 = mysql_query($query);
+
+			// couldn't be inserted? then player had a record already
+			if (mysql_affected_rows() != 1) {
+				// update max'th record just to be sure it's correct
+				$query = "UPDATE records
+				          SET Score=" . $timerow->Score . ", Checkpoints='" . $timerow2->Checkpoints . "', Date='" . $datetime . "'
+				          WHERE MapId=" . $cid . " AND PlayerId=" . $timerow->PlayerId;
+				$result2 = mysql_query($query);
+			}
+
+			// get player info
+			$query = 'SELECT * FROM players WHERE Id=' . $timerow->PlayerId;
+			$result2 = mysql_query($query);
+			$playrow = mysql_fetch_array($result2);
+			mysql_free_result($result2);
+
+			// create record object
+			$record_item = new Record();
+			$record_item->score = $timerow->Score;
+			$record_item->checks = ($timerow2->Checkpoints != '' ? explode(',', $timerow2->Checkpoints) : array());
+			$record_item->new = false;
+
+			// create a player object to put it into the record object
+			$player_item = new Player();
+			$player_item->nickname = $playrow['NickName'];
+			$player_item->login = $playrow['Login'];
+			$record_item->player = $player_item;
+
+			// add the map information to the record object
+			$record_item->map = clone $aseco->server->map;
+			unset($record_item->map->gbx);  // reduce memory usage
+			unset($record_item->map->mx);
+
+			// add the created record to the list
+			$ldb_records->addRecord($record_item);
+		}
+		mysql_free_result($result);
+	}
+
+	// update aseco records
+	$aseco->server->records = $ldb_records;
+}  // ldb_remove_record
 
 // called @ onBeginMap
 function ldb_beginMap($aseco, $map) {
 	global $ldb_map, $ldb_records, $ldb_settings;
 
+  if($aseco->settings['records_activated']){
+	  $ldb_records->clear();
+	  $aseco->server->records->clear();
+	}
+	
 	// on relay, ignore master server's map
 	if ($aseco->server->isrelay) {
 		$map->id = 0;
 		return;
 	}                               //0TsolhrmTzlR43CtotyiHr_Tec
 
-	$order =  'ASC';
-	$query =  'SELECT m.Id AS MapId FROM maps m WHERE m.Uid=' . quotedString($map->uid) . ' GROUP BY m.Id';
-/*	$query = 'SELECT m.Id AS MapId, p.NickName, p.Login
-	          FROM maps m
-	          LEFT JOIN players p ON (r.PlayerId=p.Id)
-	          WHERE m.Uid=' . quotedString($map->uid) . '
-	          GROUP BY r.Id
-	          ORDER BY r.Score ' . $order . ',r.Date ASC
-	          LIMIT ' . $ldb_records->max;            */
-	$result = mysql_query($query);
-
+  $order =  'ASC';
+  if($aseco->settings['records_activated']){
+  	$query = 'SELECT m.Id AS MapId, r.Score, p.NickName, p.Login, r.Date, r.Checkpoints
+  	          FROM maps m
+  	          LEFT JOIN records r ON (r.MapId=m.Id)
+  	          LEFT JOIN players p ON (r.PlayerId=p.Id)
+  	          WHERE m.Uid=' . quotedString($map->uid) . '
+  	          GROUP BY r.Id
+  	          ORDER BY r.Score ' . $order . ',r.Date ASC
+  	          LIMIT ' . $ldb_records->max;
+  }else{
+  	$query =  'SELECT m.Id AS MapId FROM maps m WHERE m.Uid=' . quotedString($map->uid) . ' GROUP BY m.Id';
+  }
+  	$result = mysql_query($query);  
+  
 	if (mysql_num_rows($result) === false) {
 		trigger_error('Could not get map info! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
-	
 	// map found?
 	if (mysql_num_rows($result) > 0) {
 
- 		while ($record = mysql_fetch_array($result)) {   
-    $record_item = new Record();
- 		$record_item->map = clone $map;
-		unset($record_item->map->gbx);  // reduce memory usage
-		unset($record_item->map->mx);
-      
-      // get map info
-      $map->id = $record['MapId'];
-		$ldb_map->id = $map->id;
-    }     
+		// get each record
+		while ($record = mysql_fetch_array($result)) {
+
+			// create record object
+			$record_item = new Record();
+			$record_item->score = $record['Score'];
+			$record_item->checks = ($record['Checkpoints'] != '' ? explode(',', $record['Checkpoints']) : array());
+			$record_item->new = false;
+
+			// create a player object to put it into the record object
+			$player_item = new Player();
+			$player_item->nickname = $record['NickName'];
+			$player_item->login = $record['Login'];
+			$record_item->player = $player_item;
+
+			// add the map information to the record object
+			$record_item->map = clone $map;
+			unset($record_item->map->gbx);  // reduce memory usage
+			unset($record_item->map->mx);
+
+			// add the created record to the list
+			if($aseco->settings['records_activated'])
+			 $ldb_records->addRecord($record_item);
+
+			$ldb_map->id = $record['MapId'];
+
+			// get map info
+			$map->id = $record['MapId'];
+		}
+
+		// update aseco records
+		if($aseco->settings['records_activated'])
+		  $aseco->server->records = $ldb_records;
+
+		// log records when debugging is set to true
+		//if ($aseco->debug) $aseco->console('ldb_beginMap records:' . CRLF . print_r($ldb_records, true));
 		mysql_free_result($result);
 	// map isn't in database yet
 	} else {
@@ -627,34 +1050,6 @@ function ldb_playerSurvival($aseco, $login) {
 function ldb_playerDeath($aseco, $login) {
   $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
   mysql_query($query);
-}
-
-function ldb_playerFinish($aseco, $data) {
-	global $ldb_map;
-	
-	// create map_records table if necessary
-	$query = "CREATE TABLE IF NOT EXISTS `map_records` (
-					`index` int(11) NOT NULL AUTO_INCREMENT,
-					`map_id` int(11) NOT NULL,
-					`player` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-					`time` int(11) NOT NULL,
-					`respawncount` int(11) NOT NULL,
-					PRIMARY KEY (`index`),
-					KEY (`map_id`)
-					) AUTO_INCREMENT=1";
-	mysql_query($query);
-
-	// save new record
-	$data = json_decode($data);
-	$login = $data->Player->Login;
-	$time = $data->Run->Time;
-	$respawns = $data->Run->RespawnCount;
-	$query = "INSERT INTO `map_records` (
-					`map_id`, `player`, `time`, `respawncount`
-					) VALUES (
-					$ldb_map->id, '$login', $time, $respawns
-					)";
-	mysql_query($query);
 }
 
 ?>
