@@ -1,7 +1,7 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
-// Updated by Xymph
+// Updated by kremsy
 
 /**
  * Structure of a Record.
@@ -544,4 +544,36 @@ class Gameinfo {
 		}
 	}
 }  // class Gameinfo
+
+/**
+ * Contains information about MPAseco Plugin.
+ */
+class Plugin{
+	var $author, $version, $description, $Aseco, $dependencies;
+	function setAuthor($auth){
+		$this->author = $auth;
+	}
+	function setVersion($version){
+		$this->version = $version;
+	}
+	function setDescription($description){
+		$this->description = $description;
+	}
+	function addDependence($plugin_name, $id_variable){
+		if (!$this->dependencies) $this->dependencies = array();
+		$this->dependencies[$id_variable] = $plugin_name;
+	}
+	function checkDependencies(){
+		if (!$this->dependencies) return;
+		foreach ($this->dependencies as $id_variable => $plugin_name) {
+			$checkFor = null;
+			eval('global $'.$id_variable.'; $checkFor = $'.$id_variable.';');
+			if (!$checkFor){
+				$this->Aseco->console('['.get_class($this).'] Unmet Dependency! With your current configuration you need to activate "'.$plugin_name.'" to run this plugin!');
+				die();
+			}
+		}
+	}
+} //class Plugin
+	
 ?>

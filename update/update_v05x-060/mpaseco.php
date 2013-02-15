@@ -1423,7 +1423,7 @@ class Aseco {
 			$cur_record = $this->server->records->getRecord(0);
 			if ($cur_record !== false && $cur_record->score > 0) {
 				$score = formatTime($cur_record->score);
-
+                                                                  
 				// log console message of current record
 				$this->console('current record on {1} is {2} and held by {3}',
 				               stripColors($map_item->name, false),
@@ -1473,6 +1473,61 @@ class Aseco {
 		
 	}  // newMap
 
+
+	/**
+	 * Displays Records on EndMap
+	 */
+  function displayEndMapRecords(){
+    if($this->settings['records_activated']){
+    	// show top-8 & all new records after map
+    	if (($this->settings['show_recs_after'] & 2) == 2 && function_exists('show_maprecs')) {
+    		show_maprecs($this, false, 3, $this->settings['show_recs_after']);  // from chat.records2.php
+    	} elseif (($this->settings['show_recs_after'] & 1) == 1) {
+    		// fall back on old top-5
+    		$records = '';
+    
+    		if ($this->server->records->count() == 0) {
+    			// display a no-new-record message
+    			$message = formatText($this->getChatMessage('RANKING_NONE'),
+    			                      stripColors($this->server->map->name),
+    			                      'after');
+    		} else {
+    			// display new records set up this round
+    			$message = formatText($this->getChatMessage('RANKING'),
+    			                      stripColors($this->server->map->name),
+    			                      'after');
+    
+    			// go through each record
+    			for ($i = 0; $i < 5; $i++) {
+    				$cur_record = $this->server->records->getRecord($i);
+    
+    				// if the record is set then display it
+    				if ($cur_record !== false && $cur_record->score > 0) {
+    					// replace parameters
+    					$record_msg = formatText($this->getChatMessage('RANKING_RECORD_NEW'),
+    					                         $i+1,
+    					                         stripColors($cur_record->player->nickname),
+    					                         ($this->server->gameinfo->mode == Gameinfo::STNT ?
+    					                          $cur_record->score : formatTime($cur_record->score)));
+    					$records .= $record_msg;
+    				}
+    			}
+    		}
+    
+    		// append the records if any
+    		if ($records != '') {
+    			$records = substr($records, 0, strlen($records)-2);  // strip trailing ", "
+    			$message .= LF . $records;
+    		}
+    
+   			// show ranking message to all players
+   			if (($this->settings['show_recs_after'] & 4) == 4 && function_exists('send_window_message'))
+    			send_window_message($this, $message, true);
+    		else
+    			$this->client->query('ChatSendServerMessage', $this->formatColors($message));
+    	}
+	  } 
+  }
 	/**
 	 * End of current map.
 	 * Write records to database and/or display final statistics.
@@ -1516,7 +1571,8 @@ class Aseco {
         
         //$race[0] is not ranking anymore but challengeinfo
   
-        $race[1]=$race[0];   //to make it compatible with other Plugins
+
+      $race[1]=$race[0];   //to make it compatible with other Plugins
   
   		// throw prefix 'end map' event (chat-based votes)
   		$this->releaseEvent('onEndMap1', $race);
@@ -1529,102 +1585,64 @@ class Aseco {
 	 * Check out who won the current map and increment his/her wins by one.
 	 */
 	function endMapRanking($ranking) {    /* temporary fixed */
-  
-   if(!$this->settings['records_activated']){  //Point Based Ranking
-     $multiple=0;
-     $first=0;
-     $second=0;
-     $firstpts=0;
-     $secondpts=0;    
+    $multiple=0;
+    $first=0;
+    $second=0;
+    $firstpts=0;
+    $secondpts=0;    
     
-     /* ADD ALLTIMEPTS TO DB -> new part */
-     $cnt=1;
-     foreach($ranking as $login => $pts)
-     {
-        if($cnt==1){      //for rankings
-          $first=$login;
-          $firstpts=$pts;
-        }elseif($cnt==2){
-          $second=$login;
-          $secondpts=$pts;      
-        }
-        if($pts > 0)
-        {
-            $query = 'UPDATE players SET allpoints = allpoints+'.$pts.' WHERE login = '.quotedString($login);  
-            mysql_query($query);    
-  
-        }     
+    /* ADD ALLTIMEPTS TO DB -> new part */
+    $cnt=1;
+    foreach($ranking as $login => $pts){
+      if($cnt==1){      //for rankings
+        $first=$login;
+        $firstpts=$pts;
+      }elseif($cnt==2){
+        $second=$login;
+        $secondpts=$pts;      
+      }
+        
+        
+      if($pts > 0 && !$this->settings['records_activated']){
+          $query = 'UPDATE players SET allpoints = allpoints+'.$pts.' WHERE login = '.quotedString($login);  
+          mysql_query($query);    
+      }     
         $cnt++;      
-     } 
-     	
+     } 	
     /* end(ADD ALLTIMEPTS */
     
-     if($firstpts==$secondpts)
-      $multiple=1;
-          
-     if(isset($ranking) && $multiple == false && $secondpts > 20  &&   //min 2 player, max 1 pl sametime win
-  		    ($player = $this->server->players->getPlayer($first)) !== false) {    
+    if($firstpts==$secondpts)
+      $multiple = 1;
+     
+    if(isset($ranking) && ($player = $this->server->players->getPlayer($first)) !== false){
+      if(($this->settings['records_activated'] && $cnt > 1 && $firstpts > 0)|| //Time Related
+        (!$this->settings['records_activated'] && $multiple == false && $secondpts > 20)) //Point Related
   
-          $player->newwins++;
-   
-   				// log console message
-  				$this->console('{1} won for the {2}. time!',
-  				               $player->login, $player->getWins());
+        $player->newwins++;
+         
+   			// log console message
+  			$this->console('{1} won for the {2}. time!',
+  				              $player->login, $player->getWins());
   
-  				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
-  					// replace parameters
-  					$message = formatText($this->getChatMessage('WIN_MULTI'),
-  					                      stripColors($player->nickname), $player->getWins());
+  			if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
+  				// replace parameters
+  				$message = formatText($this->getChatMessage('WIN_MULTI'),
+  				                      stripColors($player->nickname), $player->getWins());
   
-  					// show chat message
-  					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
-  				} else {
-  					// replace parameters
-  					$message = formatText($this->getChatMessage('WIN_NEW'),
+  				// show chat message
+  				$this->client->query('ChatSendServerMessage', $this->formatColors($message));
+  			} else {
+  				// replace parameters
+  				$message = formatText($this->getChatMessage('WIN_NEW'),
   					                      $player->getWins());
   
-  					// show chat message
-  					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
-  				}
-  
-  				// throw 'player wins' event
-  				$this->releaseEvent('onPlayerWins', $player);                        
-      }   
-    }else{     //Record  Based Ranking
-     if (isset($ranking[0]['Login']) &&
-  		    ($player = $this->server->players->getPlayer($ranking[0]['Login'])) !== false) {
-  			// check for winner if there's more than one player
-  			if ($ranking[0]['Rank'] == 1 && count($ranking) > 1 &&
-  			    ($this->server->gameinfo->mode == Gameinfo::STNT ?
-  			     ($ranking[0]['Score'] > 0) : ($ranking[0]['BestTime'] > 0))) {
-  				// increase the player's wins
-  				$player->newwins++;
-  
-  				// log console message
-  				$this->console('{1} won for the {2}. time!',
-  				               $player->login, $player->getWins());
-  
-  				if ($player->getWins() % $this->settings['global_win_multiple'] == 0) {
-  					// replace parameters
-  					$message = formatText($this->getChatMessage('WIN_MULTI'),
-  					                      stripColors($player->nickname), $player->getWins());
-  
-  					// show chat message
-  					$this->client->query('ChatSendServerMessage', $this->formatColors($message));
-  				} else {
-  					// replace parameters
-  					$message = formatText($this->getChatMessage('WIN_NEW'),
-  					                      $player->getWins());
-  
-  					// show chat message
-  					$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
-  				}
-  
-  				// throw 'player wins' event
-  				$this->releaseEvent('onPlayerWins', $player);
+  				// show chat message
+  				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player->login);
   			}
-  		} 
-    }                    
+  
+  			// throw 'player wins' event
+  			$this->releaseEvent('onPlayerWins', $player);       
+     }
 	}  // endMapRanking
 
    
