@@ -46,6 +46,8 @@ require_once('includes/rasp.settings.php');  // specific to the RASP plugins
 // add abbreviations for some chat commands?
 // /admin -> /ad, /jukebox -> /jb, /autojuke -> /aj
 define('ABBREV_COMMANDS', false);
+// disable local & Dedi record relations commands from help lists?
+define('INHIBIT_RECCMDS', false);
 // separate logs by month in logs/ dir?
 define('MONTHLY_LOGSDIR', false);
 // keep UTF-8 encoding in config.xml?
@@ -190,7 +192,7 @@ class Aseco {
 	 * Initializes the server.
 	 */
 	function Aseco($debug) {
-		global $maxrecs;  // from rasp.settings.php
+		global $maxrecs, $minrank, $minpoints;  // from rasp.settings.php
 
 		echo '# initialize MPASECO ###########################################################' . CRLF;
 
@@ -481,12 +483,26 @@ class Aseco {
 			trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_ERROR);
 		}
 
-    $this->settings['records_config'] = 'configs/core/records.xml';
-    if(file_exists($this->settings['records_config'])){
-  		if ($settings = $this->xml_parser->parseXml($this->settings['records_config'], true, CONFIG_UTF8ENCODE)) {
+    $this->settings['records_activated'] = false; //standart value (in case records.xml not exists)
+    
+    $records_config = 'configs/core/records.xml';
+    if(file_exists_nocase($records_config)){
+  		if ($settings = $this->xml_parser->parseXml($records_config, true, CONFIG_UTF8ENCODE)) {
   			// read the XML structure into an array
   			$records = $settings['RECORDS']['SETTINGS'][0];
-        	
+
+  			// Messages
+  			foreach($settings['RECORDS']['MESSAGES'][0] as $key => $value)
+  			   $this->chat_messages[$key] = $value; 
+        
+        //Check if Records System is activated
+  			if (strtoupper($records['RECORDS_ACTIVATED'][0]) == 'TRUE') {
+  				$this->settings['records_activated'] = true;
+  			} else {
+  				$this->settings['records_activated'] = false;
+   				$minrank = $minpoints; 				
+  			}
+                           	
   			// set minimum number of records to be displayed
   			$this->settings['show_min_recs'] = $records['SHOW_MIN_RECS'][0];
   			// show records before start of map?
@@ -495,7 +511,7 @@ class Aseco {
   			$this->settings['show_recs_after'] = $records['SHOW_RECS_AFTER'][0];
   			// show MX world record?
   			$this->settings['show_mxrec'] = $records['SHOW_MXREC'][0];			
-  			  
+  			
         	// show records range?
   			if (strtoupper($records['SHOW_RECS_RANGE'][0]) == 'TRUE') {
   				$this->settings['show_recs_range'] = true;
@@ -511,9 +527,13 @@ class Aseco {
   			}
   		} else {
   			// could not parse XML file
-  			trigger_error('Could not read/parse records config file ' . $this->settings['records_config'] . ' !', E_USER_ERROR);
+  			trigger_error('Could not read/parse records config file ' . $records_config . ' !', E_USER_ERROR);
 		  }			                                                                                           
-		}	                                                
+		}	
+    /* Set Points as Ranking value when mode without records */
+    if(!$this->settings['records_activated'])
+   	  $minrank = $minpoints; 		
+                                                           
 	}  // loadSettings
 
 
@@ -1697,21 +1717,17 @@ class Aseco {
 				                      stripColors($cur_record->player->nickname));
 			} else {  // if there should be no record to display
 				// display a no-record message
-				if(file_exists($this->settings['records_config'])){
-				  $message = formatText($this->getChatMessage('RECORD_NONE'),
+				$message = formatText($this->getChatMessage('RECORD_NONE'),
 				                      stripColors($this->server->map->name));
-				}
 			}
 
-      if(file_exists($this->settings['records_config'])){
-  			// show top-8 & records of all online players before map
-  			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
-  				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
-  			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
-  				// or show original record message
-  				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
-  			} 
-  		}
+			// show top-8 & records of all online players before map
+			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
+				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
+			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
+				// or show original record message
+				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
+			}
 			// throw main 'player connects' event
 			$this->releaseEvent('onPlayerConnect', $player_item);
 			// throw postfix 'player connects' event (access control)
