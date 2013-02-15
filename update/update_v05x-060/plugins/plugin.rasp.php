@@ -348,7 +348,7 @@ class Rasp {
 			$this->showRank($player->login);
 			chat_nextrank($aseco, 1, $player->login, $player->id);
 		}
-		if ($feature_stats)
+		if ($feature_stats && $this->records_active)
 			$this->showPb($player, $aseco->server->map->id, $always_show_pb);   
 	}  // onPlayerjoin
 
@@ -501,12 +501,15 @@ class Rasp {
 			                      $rank, mysql_num_rows($res2),
 			                      $row['Avg']);      
       }
-
+			if($this->records_active)
+			 $message = str_replace("Points", "Average", $message);
 			$message = $this->aseco->formatColors($message);
 			$this->aseco->client->query('ChatSendServerMessageToLogin', $message, $login);
 			mysql_free_result($res2);
 		} else {
 			$message = formatText($this->messages['RANK_NONE'][0], $minrank); //40 -> minrank
+			if($this->records_active)
+			 $message = str_replace("Points", "Records", $message);
 			$message = $this->aseco->formatColors($message);
 			$this->aseco->client->query('ChatSendServerMessageToLogin', $message, $login);
 		}
@@ -567,7 +570,7 @@ class Rasp {
 	function onBeginMap($aseco, $map) {
 		global $feature_karma, $feature_stats, $always_show_pb, $karma_show_start, $karma_show_votes;
 
-		if ($feature_stats && !$aseco->server->isrelay) {
+		if ($feature_stats && !$aseco->server->isrelay && $this->records_active) {
 			foreach ($aseco->server->players->player_list as $pl)
 				$this->showPb($pl, $map->id, $always_show_pb);
 		}

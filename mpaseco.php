@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.60');
+define('MPASECO_VERSION', '0.61');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -192,7 +192,7 @@ class Aseco {
 	 * Initializes the server.
 	 */
 	function Aseco($debug) {
-		global $maxrecs, $minrank, $minpoints;  // from rasp.settings.php
+		global $maxrecs;  // from rasp.settings.php
 
 		echo '# initialize MPASECO ###########################################################' . CRLF;
 
@@ -223,7 +223,7 @@ class Aseco {
 		$this->restarting = 0;
 		$this->changingmode = false;
 		$this->currstatus = 0;
-    	$this->endmapvar=0;   
+    $this->endmapvar=0;   
 	}  // Aseco
 
 
@@ -231,7 +231,7 @@ class Aseco {
 	 * Load settings and apply them on the current instance.
 	 */
 	function loadSettings($config_file) {
-
+    global $minrank, $minpoints;  // from rasp.settings.php
 		if ($settings = $this->xml_parser->parseXml($config_file, true, CONFIG_UTF8ENCODE)) {
 			// read the XML structure into an array
 			$aseco = $settings['SETTINGS']['MPASECO'][0];
@@ -1613,10 +1613,9 @@ class Aseco {
     
     if($firstpts==$secondpts)
       $multiple = 1;
-     
     if(isset($ranking) && ($player = $this->server->players->getPlayer($first)) !== false){
       if(($this->settings['records_activated'] && $cnt > 1 && $firstpts > 0)|| //Time Related
-        (!$this->settings['records_activated'] && $multiple == false && $secondpts > 20)) //Point Related
+        (!$this->settings['records_activated'] && $multiple == false && $secondpts > 5)) //Point Related
   
         $player->newwins++;
          
@@ -1789,7 +1788,7 @@ class Aseco {
 			}
 
 			// show top-8 & records of all online players before map
-			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
+			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs') && $this->settings['records_activated']) {
 				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
 			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
 				// or show original record message

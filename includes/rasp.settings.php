@@ -49,9 +49,8 @@ if (file_exists($config_file)) {
 
     /***************************** PERFORMANCE VARIABLES ***************************/
     $minpoints = $rasp_settings['RASP_SETTINGS']['MIN_POINTS'][0];
-    
     if(isset($rasp_settings['RASP_SETTINGS']['MIN_RANK'][0]))    
-      $minrecs = $rasp_settings['RASP_SETTINGS']['MIN_RANK'][0];  
+      $minrank = $rasp_settings['RASP_SETTINGS']['MIN_RANK'][0];  
     else
       $minrank = 3;
       
@@ -65,10 +64,6 @@ if (file_exists($config_file)) {
     else
       $maxavg = 10;
                     
-    /* unused Settings in MPAseco: */
-    $minrank = 3; //Temporary
-    $maxrecs = 50; 
-    $maxavg = 10;
     
     /***************************** JUKEBOX VARIABLES *******************************/  
     $buffersize  = $rasp_settings['RASP_SETTINGS']['BUFFER_SIZE'][0];        
