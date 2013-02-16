@@ -1602,7 +1602,6 @@ class Aseco {
         $secondpts=$pts;      
       }
         
-        
       if($pts > 0 && !$this->settings['records_activated']){
           $query = 'UPDATE players SET allpoints = allpoints+'.$pts.' WHERE login = '.quotedString($login);  
           mysql_query($query);    
@@ -1614,8 +1613,8 @@ class Aseco {
     if($firstpts==$secondpts)
       $multiple = 1;
     if(isset($ranking) && ($player = $this->server->players->getPlayer($first)) !== false){
-      if(($this->settings['records_activated'] && $cnt > 1 && $firstpts > 0)|| //Time Related
-        (!$this->settings['records_activated'] && $multiple == false && $secondpts > 5)) //Point Related
+      if(($this->settings['records_activated'] && $cnt > 1 && $firstpts > 0) || //Time Related
+        (!$this->settings['records_activated'] && $multiple == false && $secondpts > 20)){ //Point Related
   
         $player->newwins++;
          
@@ -1642,6 +1641,7 @@ class Aseco {
   			// throw 'player wins' event
   			$this->releaseEvent('onPlayerWins', $player);       
      }
+   }
 	}  // endMapRanking
 
    
