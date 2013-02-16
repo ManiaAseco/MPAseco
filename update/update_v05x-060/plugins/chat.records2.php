@@ -9,7 +9,7 @@
  * Dependencies: used by chat.stats.php, plugin.rasp_jukebox.php
  */
 
-if (!INHIBIT_RECCMDS) {
+if (!INHIBIT_RECCMDS || !DISABLE_RECCMDS) {
 	Aseco::addChatCommand('newrecs', 'Shows newly driven records');
 	Aseco::addChatCommand('liverecs', 'Shows records of online players');   
   Aseco::addChatCommand('best', 'Displays your best records');
@@ -471,6 +471,7 @@ function chat_summary($aseco, $command) {
 			                      $show)
 			         . $message;
 			         
+			         var_dump($message);
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $player->login);
 		} else {
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No ranked records found!'), $player->login);

@@ -9,7 +9,7 @@
  * Dependencies: none
  */
 
-if (!INHIBIT_RECCMDS) {
+if (!INHIBIT_RECCMDS || !DISABLE_RECCMDS) {
 	Aseco::addChatCommand('firstrec', 'Shows first ranked record on current map');
 	Aseco::addChatCommand('lastrec', 'Shows last ranked record on current map');
 	Aseco::addChatCommand('nextrec', 'Shows next better ranked record to beat');
@@ -121,13 +121,13 @@ function chat_nextrec($aseco, $command) {
 			                                              stripColors($record->player->nickname),
 			                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 			                                               $record->score : formatTime($record->score)));
-			$message1 = substr($message1, 0, strlen($message1)-2);  // strip trailing ", "
+			$message1 = substr($message1, 0, strlen($message1)-1);  // strip trailing ", "
 			$message2 = formatText($aseco->getChatMessage('RANKING_RECORD_NEW'),
 			                                              $nextrank+1,
 			                                              stripColors($next->player->nickname),
 			                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 			                                               $record->score : formatTime($next->score)));
-			$message2 = substr($message2, 0, strlen($message2)-2);  // strip trailing ", "
+			$message2 = substr($message2, 0, strlen($message2)-1);  // strip trailing ", "
 			$message = formatText($aseco->getChatMessage('DIFF_RECORD'),
 			                      $message1, $message2,
 			                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
@@ -167,13 +167,13 @@ function chat_nextrec($aseco, $command) {
 				                                              stripColors($command['author']->nickname),
 				                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 				                                               $unranked->Score : formatTime($unranked->Score)));
-				$message1 = substr($message1, 0, strlen($message1)-2);  // strip trailing ", "
+				$message1 = substr($message1, 0, strlen($message1)-1);  // strip trailing ", "
 				$message2 = formatText($aseco->getChatMessage('RANKING_RECORD_NEW'),
 				                                              $total,
 				                                              stripColors($last->player->nickname),
 				                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 				                                               $last->score : formatTime($last->score)));
-				$message2 = substr($message2, 0, strlen($message2)-2);  // strip trailing ", "
+				$message2 = substr($message2, 0, strlen($message2)-1);  // strip trailing ", "
 				$message = formatText($aseco->getChatMessage('DIFF_RECORD'),
 				                      $message1, $message2,
 				                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
@@ -233,13 +233,13 @@ function chat_diffrec($aseco, $command) {
 			                                              stripColors($record->player->nickname),
 			                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 			                                               $record->score : formatTime($record->score)));
-			$message1 = substr($message1, 0, strlen($message1)-2);  // strip trailing ", "
+			$message1 = substr($message1, 0, strlen($message1)-1);  // strip trailing ", "
 			$message2 = formatText($aseco->getChatMessage('RANKING_RECORD_NEW'),
 			                                              1,
 			                                              stripColors($first->player->nickname),
 			                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 			                                               $first->score : formatTime($first->score)));
-			$message2 = substr($message2, 0, strlen($message2)-2);  // strip trailing ", "
+			$message2 = substr($message2, 0, strlen($message2)-1);  // strip trailing ", "
 			$message = formatText($aseco->getChatMessage('DIFF_RECORD'),
 			                      $message1, $message2,
 			                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
@@ -286,13 +286,13 @@ function chat_recrange($aseco, $command) {
 		                                              stripColors($first->player->nickname),
 		                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 		                                               $first->score : formatTime($first->score)));
-		$message1 = substr($message1, 0, strlen($message1)-2);  // strip trailing ", "
+		$message1 = substr($message1, 0, strlen($message1)-1);  // strip trailing ", "
 		$message2 = formatText($aseco->getChatMessage('RANKING_RECORD_NEW'),
 		                                              $total,
 		                                              stripColors($last->player->nickname),
 		                                              ($aseco->server->gameinfo->mode == Gameinfo::STNT ?
 		                                               $last->score : formatTime($last->score)));
-		$message2 = substr($message2, 0, strlen($message2)-2);  // strip trailing ", "
+		$message2 = substr($message2, 0, strlen($message2)-1);  // strip trailing ", "
 		$message = formatText($aseco->getChatMessage('DIFF_RECORD'),
 		                      $message1, $message2,
 		                      ($aseco->server->gameinfo->mode == Gameinfo::STNT ?

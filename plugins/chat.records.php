@@ -8,7 +8,7 @@
  *
  * Dependencies: none
  */
-if (!INHIBIT_RECCMDS) 
+if (!INHIBIT_RECCMDS || !DISABLE_RECCMDS) 
   Aseco::addChatCommand('recs', 'Displays all records on current map');
 
 function chat_recs($aseco, $command) {

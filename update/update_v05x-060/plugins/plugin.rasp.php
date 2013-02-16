@@ -17,7 +17,7 @@ Aseco::registerEvent('onEndMap', 'event_endmap');
 Aseco::registerEvent('onPlayerFinish', 'event_finish');
 Aseco::registerEvent('onPlayerConnect', 'event_playerjoin');
                                         
-if (!INHIBIT_RECCMDS) {
+if (!INHIBIT_RECCMDS || !DISABLE_RECCMDS) {
 	Aseco::addChatCommand('pb', 'Shows your personal best on current map');
 }
 Aseco::addChatCommand('rank', 'Shows your current server rank');

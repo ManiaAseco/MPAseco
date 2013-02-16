@@ -533,7 +533,7 @@ class Aseco {
     /* Set Points as Ranking value when mode without records */
     if(!$this->settings['records_activated']){
    	  $minrank = $minpoints;
-   	  define('INHIBIT_RECCMDS', true);
+   	  define('DISABLE_RECCMDS', true);
     } 		
                                                            
 	}  // loadSettings
