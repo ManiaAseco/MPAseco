@@ -35,6 +35,7 @@ require_once('includes/manialinks.inc.php');  // provides ManiaLinks windows
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_admin');
 Aseco::registerEvent('onBeginMap', 'setscript'); //for /admin setscript
 Aseco::registerEvent('onBeginRound', 'requestShutdown'); //for /admin requestshutdown
+Aseco::registerEvent('onBeginMap', 'requestShutdown'); //for /admin setscript
 
 Aseco::addChatCommand('admin', 'Provides admin commands (see: /admin help)');
 if (ABBREV_COMMANDS) {
@@ -122,8 +123,10 @@ Aseco::addChatCommand('listops', 'Displays current operator list', true);
 //Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
 //Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
 Aseco::addChatCommand('wall/mta', 'Displays popup message to all players', true);
-//Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
-//Aseco::addChatCommand('prunerecs', 'Deletes records for specified map', true);
+if (!DISABLE_RECCMDS){
+  Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
+  Aseco::addChatCommand('prunerecs', 'Deletes records for specified map', true);
+}
 //Aseco::addChatCommand('rpoints', 'Sets custom Rounds points (see: /admin rpoints help)', true);
 Aseco::addChatCommand('match', '{begin/end} to start/stop match tracking', true);
 Aseco::addChatCommand('amdl', 'Sets AllowMapDownload {ON/OFF}', true);
@@ -3555,7 +3558,7 @@ function chat_admin($aseco, $command) {
 	} elseif ($command['params'][0] == 'forceteam' && $command['params'][1] != '') {
 
 		// check for Team mode
-		if ($aseco->server->gameinfo->mode == Gameinfo::TEAM) {
+		//if ($aseco->server->gameinfo->mode == Gameinfo::TEAM) {
 			// get player information
 			if ($target = $aseco->getPlayerParam($admin, $command['params'][1])) {
 				// get player's team
@@ -3615,11 +3618,11 @@ function chat_admin($aseco, $command) {
 					           '{#admin} team';
 					$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
 				}
-			}
+			}        /*
 		} else {
 			$message = '{#server}> {#error}Command only available in {#highlite}$i Team {#error}mode!';
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
-		}
+		}     */
 
 	/**
 	 * Forces player into free camera spectator.

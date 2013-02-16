@@ -34,6 +34,8 @@ require_once('includes/manialinks.inc.php');  // provides ManiaLinks windows
 // handles action id's "-7901"-"-8100" for /admin unbanip
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_admin');
 Aseco::registerEvent('onBeginMap', 'setscript'); //for /admin setscript
+Aseco::registerEvent('onBeginRound', 'requestShutdown'); //for /admin requestshutdown
+Aseco::registerEvent('onBeginMap', 'requestShutdown'); //for /admin setscript
 
 Aseco::addChatCommand('admin', 'Provides admin commands (see: /admin help)');
 if (ABBREV_COMMANDS) {
@@ -121,8 +123,10 @@ Aseco::addChatCommand('listops', 'Displays current operator list', true);
 //Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
 //Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
 Aseco::addChatCommand('wall/mta', 'Displays popup message to all players', true);
-//Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
-//Aseco::addChatCommand('prunerecs', 'Deletes records for specified map', true);
+if (!DISABLE_RECCMDS){
+  Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
+  Aseco::addChatCommand('prunerecs', 'Deletes records for specified map', true);
+}
 //Aseco::addChatCommand('rpoints', 'Sets custom Rounds points (see: /admin rpoints help)', true);
 Aseco::addChatCommand('match', '{begin/end} to start/stop match tracking', true);
 Aseco::addChatCommand('amdl', 'Sets AllowMapDownload {ON/OFF}', true);
@@ -150,6 +154,7 @@ Aseco::addChatCommand('call', 'Executes direct server call (see: /admin call hel
 Aseco::addChatCommand('debug', 'Toggles debugging output', true);
 Aseco::addChatCommand('shutdown', 'Shuts down MPASECO', true);
 Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
+Aseco::addChatCommand('requestshutdown', 'Shuts down Server & MPASECO the next time the server is empty', true);
 Aseco::addChatCommand('teambalance/autoteambalance', 'Team balance', true);
 Aseco::addChatCommand('scriptsettings/scriptset','Set Scriptsettings. $i/admin scriptsettings$i displays a list of available settings', true);
 
@@ -3553,7 +3558,7 @@ function chat_admin($aseco, $command) {
 	} elseif ($command['params'][0] == 'forceteam' && $command['params'][1] != '') {
 
 		// check for Team mode
-		if ($aseco->server->gameinfo->mode == Gameinfo::TEAM) {
+		//if ($aseco->server->gameinfo->mode == Gameinfo::TEAM) {
 			// get player information
 			if ($target = $aseco->getPlayerParam($admin, $command['params'][1])) {
 				// get player's team
@@ -3613,11 +3618,11 @@ function chat_admin($aseco, $command) {
 					           '{#admin} team';
 					$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
 				}
-			}
+			}        /*
 		} else {
 			$message = '{#server}> {#error}Command only available in {#highlite}$i Team {#error}mode!';
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
-		}
+		}     */
 
 	/**
 	 * Forces player into free camera spectator.
@@ -4406,22 +4411,23 @@ function chat_admin($aseco, $command) {
 	 */
 	} elseif ($command['params'][0] == 'shutdownall') {
 
-		$message = '{#server}>> {#error}$wShutting down server now!';
-		$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+		shutdownServer($aseco);
 
-		$rtn = $aseco->client->query('StopServer');
-		if (!$rtn) {
-			trigger_error('[' . $aseco->client->getErrorCode() . '] StopServer - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
+	/**
+	 * Requests server shutdown (as soon as the server is empty the next time)
+	 */ 
+	} elseif ($command['params'][0] == 'requestshutdown') {
+		// Activate/deactivate shutdown request
+		global $requestshutdown;
+		$requestshutdown = !$requestshutdown;
+		// Send activation message
+		if ($requestshutdown) {
+			$message = "{#server}> The server will shutdown as soon as it's empty!";
 		} else {
-			// test for /noautoquit
-			sleep(2);
-			$autoquit = new IXR_ClientMulticall_Gbx();
-			if ($autoquit->InitWithIp($aseco->server->ip, $aseco->server->port))
-				$aseco->client->query('QuitGame');
-
-			trigger_error('Shutdown ' . $aseco->server->getGame() . ' server & MPASECO!', E_USER_ERROR);
+			$message = '{#server}> Shutdown request cancelled!';
 		}
-
+		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
+		
 	/**
 	 * Checks current version of MPASECO.
 	 */
@@ -4513,6 +4519,43 @@ function setscript($aseco) {
     //unset($scriptchange); 
   }             
    //$aseco->console(print_r($scriptchange)."test5");
+}
+
+/*
+Performs server shutdown if it has been requested
+*/
+function requestShutdown($aseco) {
+	global $requestshutdown;
+	
+	// Check if request is active
+	if ($requestshutdown == true) {
+		// Check if server is empty
+		$playercnt = count($aseco->server->players->player_list);
+		if ($playercnt <= 0) {
+			// Perform shutdown
+			shutdownServer($aseco);
+		}
+	}
+}
+/*
+Performs server shutdown
+*/
+function shutdownServer($aseco) {
+	$message = '{#server}>> {#error}$wShutting down server now!';
+	$aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+
+	$rtn = $aseco->client->query('StopServer');
+	if (!$rtn) {
+		trigger_error('[' . $aseco->client->getErrorCode() . '] StopServer - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
+	} else {
+		// test for /noautoquit
+		sleep(2);
+		$autoquit = new IXR_ClientMulticall_Gbx();
+		if ($autoquit->InitWithIp($aseco->server->ip, $aseco->server->port))
+			$aseco->client->query('QuitGame');
+
+		trigger_error('Shutdown ' . $aseco->server->getGame() . ' server & MPASECO!', E_USER_ERROR);
+	}
 }
 
 function get_ignorelist($aseco) {
