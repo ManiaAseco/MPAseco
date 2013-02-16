@@ -97,7 +97,6 @@ function release_modeScriptCallbacks($aseco, $data) {
 		break;   /* Begin JSON Events: */
 		case 'OnShoot':
 			$paramsObject = json_decode($params);
-			var_dump($paramsObject);
 			$aseco->releaseEvent('onPlayerShoot', $paramsObject->Event->Shooter->Login);
 		break; 
 		case 'OnHit':
