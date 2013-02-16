@@ -97,8 +97,7 @@ function getAllMaps($player, $wildcard, $env) {
 
 	$player->maplist = array();
   $recsActive = $aseco->settings['records_activated'];
-  $recsActive = false;
-  var_dump($recsActive);
+
 	// get list of ranked records
   if($recsActive)
 	 $reclist = get_recs($player->id);
@@ -114,8 +113,7 @@ function getAllMaps($player, $wildcard, $env) {
 		$msg[] = array('Id', 'Rec', 'Name', 'Author');
 	else	
 		$msg[] = array('Id', 'Name', 'Author');
-  
-  var_dump($msg);  		
+   		
 	$tid = 1;
 	$lines = 0;
 	$player->msgs = array();
