@@ -11,14 +11,13 @@
 
 if (!INHIBIT_RECCMDS) {
 	Aseco::addChatCommand('newrecs', 'Shows newly driven records');
-	Aseco::addChatCommand('liverecs', 'Shows records of online players');
+	Aseco::addChatCommand('liverecs', 'Shows records of online players');   
+  Aseco::addChatCommand('best', 'Displays your best records');
+  Aseco::addChatCommand('worst', 'Displays your worst records');
+  Aseco::addChatCommand('summary', 'Shows summary of all your records');
+  Aseco::addChatCommand('topsums', 'Displays top 100 of top-3 record holders');
+  Aseco::addChatCommand('toprecs', 'Displays top 100 ranked records holders');
 }
-Aseco::addChatCommand('best', 'Displays your best records');
-Aseco::addChatCommand('worst', 'Displays your worst records');
-Aseco::addChatCommand('summary', 'Shows summary of all your records');
-Aseco::addChatCommand('topsums', 'Displays top 100 of top-3 record holders');
-Aseco::addChatCommand('toprecs', 'Displays top 100 ranked records holders');
-
 /*
  * Universal function to generate list of records for current map.
  * Called by chat_newrecs, chat_liverecs, endMap & beginMap (xaseco2.php).
@@ -465,12 +464,13 @@ function chat_summary($aseco, $command) {
 			}
 
 			// show chat message
-			$message = substr($message, 0, strlen($message)-2);  // strip trailing ", "
+			$message = substr($message, 0, strlen($message)-1);  // strip trailing ", "
 			$message = formatText($aseco->getChatMessage('SUMMARY'),
 			                      $target->nickname,
 			                      $total, ($total > 1 ? 's' : ''),
 			                      $show)
 			         . $message;
+			         
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $player->login);
 		} else {
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No ranked records found!'), $player->login);

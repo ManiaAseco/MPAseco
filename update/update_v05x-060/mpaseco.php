@@ -1773,26 +1773,28 @@ class Aseco {
 				$this->client->query('ChatSendServerMessageToLogin', str_replace(LF.LF, LF, $message), $player_item->login);
 			}
 			// if there's a record on current map
-			$cur_record = $this->server->records->getRecord(0);
-			if ($cur_record !== false && $cur_record->score > 0) {
-				// set message to the current record
-				$message = formatText($this->getChatMessage('RECORD_CURRENT'),
-				                      stripColors($this->server->map->name),
-				                      ($this->server->gameinfo->mode == Gameinfo::STNT ?
-				                       $cur_record->score : formatTime($cur_record->score)),
-				                      stripColors($cur_record->player->nickname));
-			} else {  // if there should be no record to display
-				// display a no-record message
-				$message = formatText($this->getChatMessage('RECORD_NONE'),
-				                      stripColors($this->server->map->name));
-			}
-
-			// show top-8 & records of all online players before map
-			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs') && $this->settings['records_activated']) {
-				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
-			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
-				// or show original record message
-				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
+			if($this->settings['records_activated']){
+  			$cur_record = $this->server->records->getRecord(0);
+  			if ($cur_record !== false && $cur_record->score > 0) {
+  				// set message to the current record
+  				$message = formatText($this->getChatMessage('RECORD_CURRENT'),
+  				                      stripColors($this->server->map->name),
+  				                      ($this->server->gameinfo->mode == Gameinfo::STNT ?
+  				                       $cur_record->score : formatTime($cur_record->score)),
+  				                      stripColors($cur_record->player->nickname));
+  			} else {  // if there should be no record to display
+  				// display a no-record message
+  				$message = formatText($this->getChatMessage('RECORD_NONE'),
+  				                      stripColors($this->server->map->name));
+  			}
+  
+  			// show top-8 & records of all online players before map
+  			if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs') && $this->settings['records_activated']) {
+  				show_maprecs($this, $player_item->login, 1, 0);  // from chat.records2.php
+  			} elseif (($this->settings['show_recs_before'] & 1) == 1) {
+  				// or show original record message
+  				$this->client->query('ChatSendServerMessageToLogin', $this->formatColors($message), $player_item->login);
+  			}
 			}
 			// throw main 'player connects' event
 			$this->releaseEvent('onPlayerConnect', $player_item);

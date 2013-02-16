@@ -173,6 +173,7 @@
 		<unlock>true</unlock>
 		<debug>false</debug>
 		<shutdown>false</shutdown>
+		<requestshutdown>false</requestshutdown>		
 		<shutdownall>false</shutdownall>
 		<uptodate>true</uptodate>
 		<chat_pma>true</chat_pma>
@@ -332,6 +333,7 @@
 		<unlock>true</unlock>
 		<debug>false</debug>
 		<shutdown>false</shutdown>
+		<requestshutdown>false</requestshutdown>				
 		<shutdownall>false</shutdownall>
 		<uptodate>false</uptodate>
 		<chat_pma>false</chat_pma>
