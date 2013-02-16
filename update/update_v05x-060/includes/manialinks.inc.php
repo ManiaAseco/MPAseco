@@ -151,7 +151,7 @@ function display_manialink($login, $header, $icon, $data, $widths, $button) {
 	$lines = count($data);
 
 	// build manialink header & window
-	$xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 0">' .
+	$xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -100">' .
 	        '<quad size="' . $widths[0] . ' ' . (0.11+$hsize+$lines*$bsize) .
 	        '" style="' . $style['WINDOW'][0]['STYLE'][0] .
 	        '" substyle="' . $style['WINDOW'][0]['SUBSTYLE'][0] . '"/>' . LF;
@@ -260,7 +260,7 @@ function display_manialink_map($login, $header, $icon, $links, $data, $widths, $
 	$lines = count($data);
 
 	// build manialink header & window
-	$xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 0">' .
+	$xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -100">' .
 	        '<quad size="' . $widths[0] . ' ' . (0.42+($square?0.1:0)+2*$hsize+$lines*$bsize) .
 	        '" style="' . $style['WINDOW'][0]['STYLE'][0] .
 	        '" substyle="' . $style['WINDOW'][0]['SUBSTYLE'][0] . '"/>' . LF;
@@ -699,7 +699,7 @@ function event_manialink($aseco, $answer) {
 		$lines = max($lines, count($player->msgs[1]));
 
 	// build manialink header & window
-	$xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 0">' .
+	$xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -100">' .
 	        '<quad size="' . $widths[0] . ' ' . (0.11+$hsize+$lines*$bsize) .
 	        '" style="' . $style['WINDOW'][0]['STYLE'][0] .
 	        '" substyle="' . $style['WINDOW'][0]['SUBSTYLE'][0] . '"/>' . LF;
