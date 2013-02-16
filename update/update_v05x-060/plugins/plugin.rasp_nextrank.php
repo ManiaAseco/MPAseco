@@ -63,6 +63,8 @@ function chat_nextrank($aseco, $command, $login = false, $player_id = false) {
   				$avg2 = $row2['Avg'];
         }
       }
+      
+      if (mysql_num_rows($res2) > 0) {
 			// obtain next player's info
 			$query = 'SELECT Login,NickName FROM players
 				         WHERE Id=' . $pid;
@@ -75,16 +77,17 @@ function chat_nextrank($aseco, $command, $login = false, $player_id = false) {
 			// show chat message
 			$message = formatText($rasp->messages['NEXTRANK'][0],
 			                      stripColors($row3['NickName']), $rank);
-			// show difference in record positions too?
-			if ($nextrank_show_rp) {
-	 		// compute difference in record positions
-				if($aseco->settings['records_activated'])
-				  $diff = ($avg - $avg2) / 10000 * $aseco->server->gameinfo->numchall;
-				else
-          $diff = ($avg - $avg2);
-				$message .= formatText($rasp->messages['NEXTRANK_RP'][0], ceil($diff));
-				if($aseco->settings['records_activated'])
-				 $message = str_replace("Points", "RP", $message);
+			 // show difference in record positions too?
+  			if ($nextrank_show_rp) {
+  	 		// compute difference in record positions
+  				if($aseco->settings['records_activated'])
+  				  $diff = ($avg - $avg2) / 10000 * $aseco->server->gameinfo->numchall;
+  				else
+            $diff = ($avg - $avg2);
+  				$message .= formatText($rasp->messages['NEXTRANK_RP'][0], ceil($diff));
+  				if($aseco->settings['records_activated'])
+  				 $message = str_replace("Points", "RP", $message);
+  			}
 		  	$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
 			  mysql_free_result($res3);
 			} else {

@@ -932,41 +932,40 @@ function ldb_beginMap($aseco, $map) {
 	}
 	// map found?
 	if (mysql_num_rows($result) > 0) {
-
-		// get each record
-		while ($record = mysql_fetch_array($result)) {
-
-			// create record object
-			$record_item = new Record();
-			$record_item->score = $record['Score'];
-			$record_item->checks = ($record['Checkpoints'] != '' ? explode(',', $record['Checkpoints']) : array());
-			$record_item->new = false;
-
-			// create a player object to put it into the record object
-			$player_item = new Player();
-			$player_item->nickname = $record['NickName'];
-			$player_item->login = $record['Login'];
-			$record_item->player = $player_item;
-
-			// add the map information to the record object
-			$record_item->map = clone $map;
-			unset($record_item->map->gbx);  // reduce memory usage
-			unset($record_item->map->mx);
-
-			// add the created record to the list
-			if($aseco->settings['records_activated'])
-			 $ldb_records->addRecord($record_item);
-
-			$ldb_map->id = $record['MapId'];
-
-			// get map info
-			$map->id = $record['MapId'];
+    if($aseco->settings['records_activated']){
+  		// get each record
+  		while ($record = mysql_fetch_array($result)) {
+  
+  			// create record object
+  			$record_item = new Record();
+  			$record_item->score = $record['Score'];
+  			$record_item->checks = ($record['Checkpoints'] != '' ? explode(',', $record['Checkpoints']) : array());
+  			$record_item->new = false;
+  
+  			// create a player object to put it into the record object
+  			$player_item = new Player();
+  			$player_item->nickname = $record['NickName'];
+  			$player_item->login = $record['Login'];
+  			$record_item->player = $player_item;
+  
+  			// add the map information to the record object
+  			$record_item->map = clone $map;
+  			unset($record_item->map->gbx);  // reduce memory usage
+  			unset($record_item->map->mx);
+  
+  			// add the created record to the list
+  			if($aseco->settings['records_activated'])
+  			 $ldb_records->addRecord($record_item);
+  
+  			$ldb_map->id = $record['MapId'];
+  
+  			// get map info
+  			$map->id = $record['MapId'];
 		}
 
 		// update aseco records
-		if($aseco->settings['records_activated'])
-		  $aseco->server->records = $ldb_records;
-
+		$aseco->server->records = $ldb_records;
+    }
 		// log records when debugging is set to true
 		//if ($aseco->debug) $aseco->console('ldb_beginMap records:' . CRLF . print_r($ldb_records, true));
 		mysql_free_result($result);

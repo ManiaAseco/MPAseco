@@ -97,7 +97,8 @@ function getAllMaps($player, $wildcard, $env) {
 
 	$player->maplist = array();
   $recsActive = $aseco->settings['records_activated'];
-  
+  $recsActive = false;
+  var_dump($recsActive);
 	// get list of ranked records
   if($recsActive)
 	 $reclist = get_recs($player->id);
@@ -107,21 +108,22 @@ function getAllMaps($player, $wildcard, $env) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = 'Maps On This Server:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env');
-	else if($recsActive)
+	else*/ if($recsActive)
 		$msg[] = array('Id', 'Rec', 'Name', 'Author');
 	else	
 		$msg[] = array('Id', 'Name', 'Author');
-    		
+  
+  var_dump($msg);  		
 	$tid = 1;
 	$lines = 0;
 	$player->msgs = array();
 	// reserve extra width for $w tags
 	$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$player->msgs[0] = array(1, $head, array(1.39+$extra, 0.12, 0.1, 0.6+$extra, 0.4, 0.17), array('Icons128x128_1', 'NewTrack', 0.02));
-	else if($recsActive)
+	else */if($recsActive)
 		$player->msgs[0] = array(1, $head, array(1.22+$extra, 0.12, 0.1, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
   else
 		$player->msgs[0] = array(1, $head, array(1.22+$extra, 0.1, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
@@ -181,10 +183,10 @@ function getAllMaps($player, $wildcard, $env) {
 			$pos = isset($reclist[$row['UId']]) ? $reclist[$row['UId']] : 0;
 			$pos = ($pos >= 1 && $pos <= $maxrecs) ? str_pad($pos, 2, '0', STR_PAD_LEFT) : '-- ';
 
-			if ($aseco->server->packmask != 'SMStorm')
+		/*	if ($aseco->server->packmask != 'SMStorm')
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				               $pos . '.', $mapname, $mapauthor, $mapenv);
-			else if($recsActive)
+			else */ if($recsActive)
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				               $pos . '.', $mapname, $mapauthor);	
 			else	               
@@ -196,9 +198,9 @@ function getAllMaps($player, $wildcard, $env) {
 				$player->msgs[] = $msg;
 				$lines = 0;
 				$msg = array();
-				if ($aseco->server->packmask != 'SMStorm')
+				/*if ($aseco->server->packmask != 'SMStorm')
 					$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env');
-      	else if($recsActive)
+      	else */if($recsActive)
       		$msg[] = array('Id', 'Rec', 'Name', 'Author');
       	else	
       		$msg[] = array('Id', 'Name', 'Author');
@@ -253,9 +255,9 @@ function getMapsByKarma($player, $karmaval) {
 	$player->msgs = array();
 	// reserve extra width for $w tags
 	$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$player->msgs[0] = array(1, $head, array(1.44+$extra, 0.12, 0.15, 0.6+$extra, 0.4, 0.17), array('Icons128x128_1', 'NewTrack', 0.02));
-	else
+	else     */
 		$player->msgs[0] = array(1, $head, array(1.27+$extra, 0.12, 0.15, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
 
 	while ($dbrow = mysql_fetch_array($result)) {
@@ -298,10 +300,10 @@ function getMapsByKarma($player, $karmaval) {
 				$mapkarma = array($mapkarma, -6000-$tid);
 			}
 
-			if ($aseco->server->packmask != 'SMStorm')
+		/*	if ($aseco->server->packmask != 'SMStorm')
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				               $mapkarma, $mapname, $mapauthor, $mapenv);
-			else
+			else   */
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				               $mapkarma, $mapname, $mapauthor);
 			$tid++;
@@ -309,9 +311,9 @@ function getMapsByKarma($player, $karmaval) {
 				$player->msgs[] = $msg;
 				$lines = 0;
 				$msg = array();
-				if ($aseco->server->packmask != 'SMStorm')
+				/*if ($aseco->server->packmask != 'SMStorm')
 					$msg[] = array('Id', 'Karma', 'Name', 'Author', 'Env');
-				else
+				else    */
 					$msg[] = array('Id', 'Karma', 'Name', 'Author');
 			}
 		}
@@ -359,18 +361,18 @@ function getMapsNoFinish($player) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = 'Maps You Haven\'t Finished:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Name', 'Author', 'Env');
-	else
+	else*/
 		$msg[] = array('Id', 'Name', 'Author');
 	$tid = 1;
 	$lines = 0;
 	$player->msgs = array();
 	// reserve extra width for $w tags
 	$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$player->msgs[0] = array(1, $head, array(1.29+$extra, 0.12, 0.6+$extra, 0.4, 0.17), array('Icons128x128_1', 'NewTrack', 0.02));
-	else
+	else  */
 		$player->msgs[0] = array(1, $head, array(1.12+$extra, 0.12, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
 
 	while ($dbrow = mysql_fetch_array($result)) {
@@ -421,9 +423,9 @@ function getMapsNoFinish($player) {
 				$player->msgs[] = $msg;
 				$lines = 0;
 				$msg = array();
-				if ($aseco->server->packmask != 'SMStorm')
+				/*if ($aseco->server->packmask != 'SMStorm')
 					$msg[] = array('Id', 'Name', 'Author', 'Env');
-				else
+				else*/
 					$msg[] = array('Id', 'Name', 'Author');
 			}
 		}
@@ -505,9 +507,9 @@ function getMapsNoRank($player) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = 'Maps You Have No Rank On:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Name', 'Author', 'Env');
-	else
+	else*/
 		$msg[] = array('Id', 'Name', 'Author');
 	$tid = 1;
 	$lines = 0;
@@ -555,11 +557,11 @@ function getMapsNoRank($player) {
 			// add clickable button
 			if ($aseco->settings['clickable_lists'])
 				$mapenv = array($mapenv, $envids[$row['Environnement']]);  // action id
-
+      /*
 			if ($aseco->server->packmask != 'SMStorm')
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				               $mapname, $mapauthor, $mapenv);
-			else
+			else   */
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				               $mapname, $mapauthor);
 			$tid++;
@@ -567,9 +569,9 @@ function getMapsNoRank($player) {
 				$player->msgs[] = $msg;
 				$lines = 0;
 				$msg = array();
-				if ($aseco->server->packmask != 'SMStorm')
+			/*	if ($aseco->server->packmask != 'SMStorm')
 					$msg[] = array('Id', 'Name', 'Author', 'Env');
-				else
+				else   */
 					$msg[] = array('Id', 'Name', 'Author');
 			}
 		}
@@ -664,11 +666,11 @@ function getMapsNoGold($player) {
 					$sec = floor($diff/1000);
 					$hun = ($diff - ($sec * 1000)) / 10;
 
-					if ($aseco->server->packmask != 'SMStorm')
+				/*	if ($aseco->server->packmask != 'SMStorm')
 						$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 						               $mapname, $mapauthor, $mapenv,
 						               '+' . sprintf("%d.%02d", $sec, $hun));
-					else
+					else  */
 						$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 						               $mapname, $mapauthor,
 						               '+' . sprintf("%d.%02d", $sec, $hun));
@@ -1001,9 +1003,9 @@ function getMapsNoRecent($player) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = 'Maps You Didn\'t Play Recently:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env', 'Date');
-	else if($recsActive)
+	else*/ if($recsActive)
 		$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Date');
 	else
 		$msg[] = array('Id', 'Name', 'Author', 'Date');	
@@ -1013,9 +1015,9 @@ function getMapsNoRecent($player) {
 	$player->msgs = array();
 	// reserve extra width for $w tags
 	$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$player->msgs[0] = array(1, $head, array(1.58+$extra, 0.12, 0.1, 0.6+$extra, 0.4, 0.15, 0.21), array('Icons128x128_1', 'NewTrack', 0.02));
-	else if($recsActive)
+	else*/ if($recsActive)
 		$player->msgs[0] = array(1, $head, array(1.43+$extra, 0.12, 0.1, 0.6+$extra, 0.4, 0.21), array('Icons128x128_1', 'NewTrack', 0.02));
   else
 		$player->msgs[0] = array(1, $head, array(1.43+$extra, 0.1, 0.6+$extra, 0.4, 0.21), array('Icons128x128_1', 'NewTrack', 0.02));  
@@ -1079,9 +1081,9 @@ function getMapsNoRecent($player) {
 				$player->msgs[] = $msg;
 				$lines = 0;
 				$msg = array();
-				if ($aseco->server->packmask != 'SMStorm')
+				/*if ($aseco->server->packmask != 'SMStorm')
 					$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env', 'Date');
-	      else if($recsActive)
+	      else*/ if($recsActive)
 					$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Date');
 				else	
 					$msg[] = array('Id', 'Name', 'Author', 'Date');
@@ -1117,9 +1119,9 @@ function getMapsByLength($player, $order) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = ($order ? 'Shortest' : 'Longest') . ' Maps On This Server:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+/*	if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Name', 'Author', 'Env', 'AuthTime');
-	else
+	else  */
 		$msg[] = array('Id', 'Name', 'Author', 'AuthTime');
 	$tid = 1;
 	$lines = 0;
@@ -1166,10 +1168,10 @@ function getMapsByLength($player, $order) {
 		if ($aseco->settings['clickable_lists'])
 			$mapenv = array($mapenv, $envids[$row['Environnement']]);  // action id
 
-		if ($aseco->server->packmask != 'SMStorm')
+		/*if ($aseco->server->packmask != 'SMStorm')
 			$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 			               $mapname, $mapauthor, $mapenv, formatTime($time));
-		else
+		else    */
 			$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 			               $mapname, $mapauthor, formatTime($time));
 		$tid++;
@@ -1177,9 +1179,9 @@ function getMapsByLength($player, $order) {
 			$player->msgs[] = $msg;
 			$lines = 0;
 			$msg = array();
-			if ($aseco->server->packmask != 'SMStorm')
+		/*	if ($aseco->server->packmask != 'SMStorm')
 				$msg[] = array('Id', 'Name', 'Author', 'Env', 'AuthTime');
-			else
+			else   */
 				$msg[] = array('Id', 'Name', 'Author', 'AuthTime');
 		}
 	}
@@ -1209,9 +1211,9 @@ function getMapsByAdd($player, $order, $count) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = ($order ? 'Newest' : 'Oldest') . ' Maps On This Server:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Name', 'Author', 'Env');
-	else
+	else */
 		$msg[] = array('Id', 'Name', 'Author');
 	$tid = 1;
 	$lines = 0;
@@ -1260,10 +1262,10 @@ function getMapsByAdd($player, $order, $count) {
 			if ($aseco->settings['clickable_lists'])
 				$mapenv = array($mapenv, $envids[$row['Environnement']]);  // action id
 
-			if ($aseco->server->packmask != 'SMStorm')
+			/*if ($aseco->server->packmask != 'SMStorm')
 				$msg[] =  array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				                $mapname, $mapauthor, $mapenv);
-			else
+			else */
 				$msg[] =  array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 				                $mapname, $mapauthor);
 			$tid++;
@@ -1271,9 +1273,9 @@ function getMapsByAdd($player, $order, $count) {
 				$player->msgs[] = $msg;
 				$lines = 0;
 				$msg = array();
-				if ($aseco->server->packmask != 'SMStorm')
+			/*	if ($aseco->server->packmask != 'SMStorm')
 					$msg[] = array('Id', 'Name', 'Author', 'Env');
-				else
+				else  */
 					$msg[] = array('Id', 'Name', 'Author');
 			}
 			// check if we have enough maps already
@@ -1312,9 +1314,9 @@ function getMapsNoVote($player) {
 	$envids = array('Canyon' => 11, 'Valley' => 12, 'Storm' => 13);
 	$head = 'Maps You Didn\'t Vote For:';
 	$msg = array();
-	if ($aseco->server->packmask != 'SMStorm')
+/*	if ($aseco->server->packmask != 'SMStorm')
 		$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env');
-	else if($recsActive)
+	else */ if($recsActive)
 		$msg[] = array('Id', 'Rec', 'Name', 'Author');
 	else
 		$msg[] = array('Id', 'Name', 'Author'); 
@@ -1324,9 +1326,9 @@ function getMapsNoVote($player) {
 	$player->msgs = array();
 	// reserve extra width for $w tags
 	$extra = ($aseco->settings['lists_colormaps'] ? 0.2 : 0);
-	if ($aseco->server->packmask != 'SMStorm')
+	/*if ($aseco->server->packmask != 'SMStorm')
 		$player->msgs[0] = array(1, $head, array(1.39+$extra, 0.12, 0.1, 0.6+$extra, 0.4, 0.17), array('Icons128x128_1', 'NewTrack', 0.02));
-	else if($recsActive)
+	else */if($recsActive)
 		$player->msgs[0] = array(1, $head, array(1.22+$extra, 0.12, 0.1, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
   else
 		$player->msgs[0] = array(1, $head, array(1.22+$extra, 0.1, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));  
@@ -1369,10 +1371,10 @@ function getMapsNoVote($player) {
 		$pos = isset($reclist[$row['UId']]) ? $reclist[$row['UId']] : 0;
 		$pos = ($pos >= 1 && $pos <= $maxrecs) ? str_pad($pos, 2, '0', STR_PAD_LEFT) : '-- ';
 
-		if ($aseco->server->packmask != 'SMStorm')
+	/*	if ($aseco->server->packmask != 'SMStorm')
 			$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 			               $pos . '.', $mapname, $mapauthor, $mapenv);
-	  else if($recsActive)
+	  else */ if($recsActive)
 			$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
 			               $pos . '.', $mapname, $mapauthor);
 		else	 
@@ -1384,9 +1386,9 @@ function getMapsNoVote($player) {
 			$player->msgs[] = $msg;
 			$lines = 0;
 			$msg = array();
-			if ($aseco->server->packmask != 'SMStorm')
+		/*	if ($aseco->server->packmask != 'SMStorm')
 				$msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env');
-	    else if($recsActive)
+	    else */ if($recsActive)
 				$msg[] = array('Id', 'Rec', 'Name', 'Author');
 	    else 
 				$msg[] = array('Id', 'Name', 'Author');				
