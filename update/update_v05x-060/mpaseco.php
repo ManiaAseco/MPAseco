@@ -1467,7 +1467,7 @@ class Aseco {
 
 
 		// show top-8 & records of all online players before map
-		if (($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs') && $this->settings['records_activated']) {
+		if ($this->settings['records_activated'] && ($this->settings['show_recs_before'] & 2) == 2 && function_exists('show_maprecs')) {
 			show_maprecs($this, false, 1, $this->settings['show_recs_before']);  // from chat.records2.php
 		}
 		

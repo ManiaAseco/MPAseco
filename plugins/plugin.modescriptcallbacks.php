@@ -40,7 +40,7 @@ function release_modeScriptCallbacks($aseco, $data) {
           $name = false;  //Avoid switch-case  
        } 
    }   */     
-                          
+                     
 	switch($name) {
 		case 'playerDeath':
 			$aseco->releaseEvent('onPlayerDeath', $params);
@@ -85,7 +85,8 @@ function release_modeScriptCallbacks($aseco, $data) {
 		case 'endMap': 
       $aseco->console_text('End Map');
 			$aseco->releaseEvent('onEndMap1', $aseco->smrankings);
-			updateRankings($params);  
+			updateRankings($params); 
+      var_dump($aseco->smrankings);  
 			$aseco->displayEndMapRecords(); 
 			$aseco->endMapRanking($aseco->smrankings);    //temporary fix    
 			$aseco->endmapvar=1;
@@ -96,20 +97,20 @@ function release_modeScriptCallbacks($aseco, $data) {
 		break;   /* Begin JSON Events: */
 		case 'OnShoot':
 			$paramsObject = json_decode($params);
-			$aseco->releaseEvent('onPlayerShoot', $paramsObject->OnShoot->Shooter->Login);
+			$aseco->releaseEvent('onPlayerShoot', $paramsObject->Event->Shooter->Login);
 		break; 
 		case 'OnHit':
 			$paramsObject = json_decode($params);
 			if($playercnt > 2) //only if more than 2 Player on the Server
-        $aseco->releaseEvent('onPlayerHit', array('victim' => $paramsObject->OnHit->Victim->Login, 'shooter' => $paramsObject->OnHit->Shooter->Login, 'points' => 1));
+        $aseco->releaseEvent('onPlayerHit', array('victim' => $paramsObject->Event->Victim->Login, 'shooter' => $paramsObject->Event->Shooter->Login, 'points' => 1));
 		break;
 		case 'OnArmorEmpty':
 			$paramsObject = json_decode($params);
-			$aseco->releaseEvent('onPlayerDeath', $paramsObject->OnArmorEmpty->Victim->Login);
+			$aseco->releaseEvent('onPlayerDeath', $paramsObject->Event->Victim->Login);
 		break;
 		case 'OnPlayerRequestRespawn':
 			$paramsObject = json_decode($params);
-			$aseco->releaseEvent('onPlayerRespawn', $paramsObject->OnPlayerRequestRespawn->Player->Login);
+			$aseco->releaseEvent('onPlayerRespawn', $paramsObject->Event->Player->Login);
 		break;
 		case 'OnFinish':
 		  $paramsObject = json_decode($params);

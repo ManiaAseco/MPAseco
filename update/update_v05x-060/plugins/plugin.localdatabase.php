@@ -8,7 +8,8 @@
  *
  * Updated by Xymph
  * edited for SM 20.07.2012 by the MPAseco team
- * 
+ * added full record Support 01.02.2013 by the MPAseco Team
+ *  
  * Dependencies: requires plugin.panels.php
  *  
  */
@@ -62,21 +63,23 @@ function ldb_loadSettings($aseco) {
     $recsfile='configs/core/records.xml'; 
   else
     $recsfile='records.xml'; 
-   
-	$aseco->console('[LocalDB] Load config file ['.$recsfile.']');
-	if (!$settings = $aseco->xml_parser->parseXml($recsfile)) {
-		trigger_error('Could not read/parse Local database config file '.$recsfile.' !', E_USER_ERROR);
+  
+  if(file_exists($recsfile)){ 
+  	$aseco->console('[LocalDB] Load records config file ['.$recsfile.']');
+  	if (!$settings = $aseco->xml_parser->parseXml($recsfile)) {
+  		trigger_error('Could not read/parse records config file '.$recsfile.' !', E_USER_ERROR);
+  	}
+  	$settings = $settings['RECORDS'];
+  	// display records in game?
+  	if (strtoupper($settings['SETTINGS'][0]['DISPLAY'][0]) == 'TRUE')
+  		$ldb_settings['display'] = true;
+  	else
+  		$ldb_settings['display'] = false;
+  
+  	// set highest record still to be displayed
+  	$ldb_settings['limit'] = $settings['SETTINGS'][0]['LIMIT'][0];
+	  $ldb_settings['messages'] = $settings['MESSAGES'][0];
 	}
-	$settings = $settings['RECORDS'];
-	// display records in game?
-	if (strtoupper($settings['SETTINGS'][0]['DISPLAY'][0]) == 'TRUE')
-		$ldb_settings['display'] = true;
-	else
-		$ldb_settings['display'] = false;
-
-	// set highest record still to be displayed
-	$ldb_settings['limit'] = $settings['SETTINGS'][0]['LIMIT'][0];
-	$ldb_settings['messages'] = $settings['MESSAGES'][0];
 }  // ldb_loadSettings
 
 // called @ onStartup
