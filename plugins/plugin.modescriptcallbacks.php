@@ -85,8 +85,7 @@ function release_modeScriptCallbacks($aseco, $data) {
 		case 'endMap': 
       $aseco->console_text('End Map');
 			$aseco->releaseEvent('onEndMap1', $aseco->smrankings);
-			updateRankings($params); 
-      var_dump($aseco->smrankings);  
+			updateRankings($params);  
 			$aseco->displayEndMapRecords(); 
 			$aseco->endMapRanking($aseco->smrankings);    //temporary fix    
 			$aseco->endmapvar=1;
