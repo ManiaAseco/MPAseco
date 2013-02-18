@@ -167,21 +167,22 @@ class ScriptSettings extends Plugin {
     $cnt = count($scriptSettings);
     $rowsPerColums = 13;
     
-    $xml= '<frame pos="0.71 0.47 -0.5">
+    $xml= '<frame pos="0.71 0.47 -0.6">
               <quad size="1.42 0.82" style="BgsPlayerCard" substyle="BgCard"/>
               <quad pos="-0.71 -0.01 -0.1" size="1.4 0.07" halign="center" style="Bgs1InRace" substyle="BgCardList"/>
               <quad pos="-0.055 -0.045 -0.3" size="0.09 0.09" halign="center" valign="center" style="Icons128x128_1" substyle="ProfileAdvanced"/>
               <label pos="-0.10 -0.025 -0.2" size="1.17 0.07" halign="left" style="TextValueMedium" text="Scriptsettings:"/>
               <quad pos="-0.71 -0.09 -0.1" size="1.4 0.655" halign="center" style="BgsPlayerCard" substyle="BgCard"/>
               <format style="TextCardSmallScores2"/>
-              <label pos="-0.025 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Name"/>
+              <label pos="-0.065 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Name"/>
               <label pos="-0.425 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Values"/>';
-    if($cnt > $rowsPerColums){
-      $xml=  '<label pos="-0.825 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Name"/>
+    //if($cnt > $rowsPerColums){
+      $xml .=  '<label pos="-0.865 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Name"/>
               <label pos="-1.225 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Values"/>';
-    }
+   // }
     $i = 0;
     //$cnt = count($scriptSettings);
+    //for($z = 0; $z < 4; $z++){
     foreach($scriptSettings as $key => $value) {
 			$substyle = 0;
       if($value === false){
@@ -201,15 +202,17 @@ class ScriptSettings extends Plugin {
         $py = (-0.162 - 0.04 * ($i - $rowsPerColums - 1));        
       }
       
-      $xml .= '<label pos="'.$px.' '.$py.' -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="'.$key.'"/>'; 
+      $xml .= '<label pos="'.$px.' '.$py.' -0.14" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="'.$key.'"/>'; 
         
       if($substyle)
-        $xml .= '<quad pos="'.($px-0.428).' '.$py.' -0.2" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="'.$substyle.'" action="'.$this->pluginMainId.$i.'"/>';   
+        $xml .= '<quad pos="'.($px-0.426).' '.$py.' -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="'.$substyle.'" action="'.$this->pluginMainId.$i.'"/>';   
       else
-        $xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.2" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="'.$value.'"/>';
-
-      $i++;      
-    }                                                        
+        $xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.14" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="'.$value.'"/>';
+      //$xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.2" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="S'.$i.'"/>';
+      $i++;   
+      
+ 
+    }//}                                                        
     
     $xml.= '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>
             <label pos="-1.281 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Apply Values" action="'.$this->pluginMainId.'999"/>
