@@ -7,11 +7,15 @@
 	</titles>
 
 	<admins>
-		<mplogin></mplogin> <ipaddress></ipaddress>
+<!-- format:
+		<mplogin>YOUR_ADMIN_LOGIN</mplogin> <ipaddress></ipaddress>
+-->
 	</admins>
 
 	<operators>
-		<mplogin></mplogin> <ipaddress></ipaddress>
+<!-- format:
+		<mplogin>YOUR_OPERATOR_LOGIN</mplogin> <ipaddress></ipaddress>
+-->
 	</operators>
 
 	<admin_abilities>
