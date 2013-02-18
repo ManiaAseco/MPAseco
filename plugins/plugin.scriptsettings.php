@@ -161,7 +161,6 @@ class ScriptSettings extends Plugin {
   }  
 
   function maniaLink(){
-  
     $this->Aseco->client->query('GetModeScriptSettings');
     $scriptSettings = $this->Aseco->client->getResponse();
     $cnt = count($scriptSettings);
@@ -176,13 +175,11 @@ class ScriptSettings extends Plugin {
               <format style="TextCardSmallScores2"/>
               <label pos="-0.065 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Name"/>
               <label pos="-0.425 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Values"/>';
-    //if($cnt > $rowsPerColums){
+    if($cnt > $rowsPerColums){
       $xml .=  '<label pos="-0.865 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Name"/>
-              <label pos="-1.225 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Values"/>';
-   // }
+                <label pos="-1.225 -0.102 -0.2" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="Values"/>';
+    }
     $i = 0;
-    //$cnt = count($scriptSettings);
-    //for($z = 0; $z < 4; $z++){
     foreach($scriptSettings as $key => $value) {
 			$substyle = 0;
       if($value === false){
@@ -208,11 +205,10 @@ class ScriptSettings extends Plugin {
         $xml .= '<quad pos="'.($px-0.426).' '.$py.' -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="'.$substyle.'" action="'.$this->pluginMainId.$i.'"/>';   
       else
         $xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.14" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="'.$value.'"/>';
-      //$xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.2" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="S'.$i.'"/>';
       $i++;   
       
  
-    }//}                                                        
+    }                                                       
     
     $xml.= '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>
             <label pos="-1.281 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Apply Values" action="'.$this->pluginMainId.'999"/>
