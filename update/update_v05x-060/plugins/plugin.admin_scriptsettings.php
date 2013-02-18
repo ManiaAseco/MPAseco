@@ -64,26 +64,24 @@ class ScriptSettings extends Plugin {
 
     $this->Aseco->client->query('GetModeScriptSettings');
     $oldSettings = $this->Aseco->client->getResponse();
-    
+
     $msg = '';
     $logmsg = '';
     $scriptSettings = array();
     foreach($settings as $sett){
       foreach($oldSettings as $okey => $ovalue){ //Build Messages
-         if($okey == $sett["Name"] && $ovalue != $sett["Value"]){ 
+         if($okey == $sett["Name"]){
+           if($ovalue != $sett["Value"]){
             $msg .= '{#highlite}'.$sett["Name"].' $z$s{#admin}to {#highlite}'.$sett["Value"].', ';
-            $logmsg .= $sett["Name"].' to '.$sett["Value"].', ';
-            break;
-         }     
-      }
-      
-      if(intval($sett["Value"]) == $sett["Value"]) 
-        $sett["Value"] = (int) $sett["Value"]; //Cast to Integer  
-      else if(floatval($sett["Value"]) == $sett["Value"]) 
-        $sett["Value"] = (float) $sett["Value"]; //Cast to Float
-         
+            $logmsg .= $sett["Name"].' to '.$sett["Value"].', ';                
+           }
+           settype($sett["Value"],gettype($ovalue)); //TypeCasts
+           break;
+         }
+      }     
       $scriptSettings[$sett["Name"]] = $sett["Value"]; 
     }
+
     $this->Aseco->client->query('SetModeScriptSettings', $scriptSettings);
     $this->showPlugin($login);  
     
