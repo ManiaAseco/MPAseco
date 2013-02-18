@@ -7,35 +7,11 @@
 	</titles>
 
 	<admins>
-		<mplogin>drachenfels</mplogin> <ipaddress></ipaddress>
-		<mplogin>wabbitface</mplogin> <ipaddress></ipaddress>
-		<mplogin>rsty</mplogin> <ipaddress></ipaddress>
-		<mplogin>bugiman1153</mplogin> <ipaddress></ipaddress>
-		<mplogin>steeffeen</mplogin> <ipaddress></ipaddress>
-		<mplogin>xanashea</mplogin> <ipaddress></ipaddress>
-		<mplogin>wurstigewurst</mplogin> <ipaddress></ipaddress>
+		<mplogin></mplogin> <ipaddress></ipaddress>
 	</admins>
 
 	<operators>
-		<mplogin>jojo95183</mplogin> <ipaddress></ipaddress>
-		<mplogin>sleepw_lker</mplogin> <ipaddress></ipaddress>
-		<mplogin>rockstar98</mplogin> <ipaddress></ipaddress>
-		<mplogin>bugiman1153</mplogin> <ipaddress></ipaddress>
-		<mplogin>drachenfels</mplogin> <ipaddress></ipaddress>
-		<mplogin>laracroftonline</mplogin> <ipaddress></ipaddress>
-		<mplogin>magnetik.org</mplogin> <ipaddress></ipaddress>
-		<mplogin>wawawawu</mplogin> <ipaddress></ipaddress>
-		<mplogin>mavchen</mplogin> <ipaddress></ipaddress>
-		<mplogin>eetu98</mplogin> <ipaddress></ipaddress>
-		<mplogin>tm-jinzo</mplogin> <ipaddress></ipaddress>
-		<mplogin>jojo0096</mplogin> <ipaddress></ipaddress>
-		<mplogin>bluetoothusb</mplogin> <ipaddress></ipaddress>
-		<mplogin>upsilon</mplogin> <ipaddress></ipaddress>
-		<mplogin>tstargermany</mplogin> <ipaddress></ipaddress>
-		<mplogin>xanashea</mplogin> <ipaddress></ipaddress>
-		<mplogin>glitchmob</mplogin> <ipaddress></ipaddress>
-		<mplogin>jodebra</mplogin> <ipaddress></ipaddress>
-		<mplogin>jenteace</mplogin> <ipaddress></ipaddress>
+		<mplogin></mplogin> <ipaddress></ipaddress>
 	</operators>
 
 	<admin_abilities>
@@ -173,6 +149,7 @@
 		<unlock>true</unlock>
 		<debug>false</debug>
 		<shutdown>false</shutdown>
+		<requestshutdown>false</requestshutdown>		
 		<shutdownall>false</shutdownall>
 		<uptodate>true</uptodate>
 		<chat_pma>true</chat_pma>
@@ -332,6 +309,7 @@
 		<unlock>true</unlock>
 		<debug>false</debug>
 		<shutdown>false</shutdown>
+		<requestshutdown>false</requestshutdown>				
 		<shutdownall>false</shutdownall>
 		<uptodate>false</uptodate>
 		<chat_pma>false</chat_pma>
