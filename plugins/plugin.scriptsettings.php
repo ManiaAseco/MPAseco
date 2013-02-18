@@ -6,11 +6,11 @@
  */
 
 class ScriptSettings extends Plugin {
-   private $xy; //private variables
-   private $manialinksID, $showWidgetID;
-   var $pluginVersion, $pluginAuthor; 
-   var $web;  //global vairables
-   var $Aseco;
+  private $xy; //private variables
+  private $manialinksID, $showWidgetID;
+  var $pluginVersion, $pluginAuthor; 
+  var $web;  //global vairables
+  var $Aseco;
   /**
    * Initializes the plugin, loads the XML settings
    */
