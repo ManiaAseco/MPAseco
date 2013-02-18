@@ -8,9 +8,8 @@
 class ScriptSettings extends Plugin {
   private $xy; //private variables
   private $manialinksID, $showWidgetID;
-  var $pluginVersion, $pluginAuthor; 
-  var $web;  //global vairables
-  var $Aseco;
+  public $pluginVersion, $pluginAuthor; 
+  public $Aseco;
   /**
    * Initializes the plugin, loads the XML settings
    */
@@ -18,7 +17,6 @@ class ScriptSettings extends Plugin {
     $this->pluginMainId = "99957";
     $this->showWidgetID = "1"; //mainwindow
     
-  //  $this->debug = false;        
     $this->pluginVersion = '0.01';  
     $this->pluginAuthor = 'Lukas Kremsmayr';
   }
