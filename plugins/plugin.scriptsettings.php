@@ -10,65 +10,65 @@ class ScriptSettings extends Plugin {
    private $manialinksID, $showWidgetID;
    var $pluginVersion, $pluginAuthor; 
    var $web;  //global vairables
-	 var $Aseco;
+   var $Aseco;
   /**
-	 * Initializes the plugin, loads the XML settings
-	 */
-	function init(){
-		$this->pluginMainId = "99957";
-		$this->showWidgetID = "1"; //mainwindow
+   * Initializes the plugin, loads the XML settings
+   */
+  function init(){
+    $this->pluginMainId = "99957";
+    $this->showWidgetID = "1"; //mainwindow
     
   //  $this->debug = false;        
-    $this->pluginVersion = '0.01';	
+    $this->pluginVersion = '0.01';  
     $this->pluginAuthor = 'Lukas Kremsmayr';
-	}
+  }
 
-	/**
-	 * Handles mouse clicks on the widgets
-	 *
-	 * @param mixed $command
-	 * $command[1] = login
-	 * $recipent == "Manialink addition"   	 
-	 */
-	function doHandleClick($command){
-		$action = $command[2].'';
-		if (substr($action, 0, strlen($this->pluginMainId)) == $this->pluginMainId){
+  /**
+   * Handles mouse clicks on the widgets
+   *
+   * @param mixed $command
+   * $command[1] = login
+   * $recipent == "Manialink addition"     
+   */
+  function doHandleClick($command){
+    $action = $command[2].'';
+    if (substr($action, 0, strlen($this->pluginMainId)) == $this->pluginMainId){
 
-			$action = substr($action, strlen($this->pluginMainId));
-			$recipient = intval(substr($action, 0, 3));
-			$action = substr($action, 3);
-			
-			if ($recipient==998){  //Show Plugin
-			  $this->showPlugin($command[1]);
-			}else if ($recipient==999){  //Apply Values
-			  $this->setScriptSettings($command[1], $command[3]);
-			} else {  //Checkboxes
+      $action = substr($action, strlen($this->pluginMainId));
+      $recipient = intval(substr($action, 0, 3));
+      $action = substr($action, 3);
+      
+      if ($recipient==998){  //Show Plugin
+        $this->showPlugin($command[1]);
+      }else if ($recipient==999){  //Apply Values
+        $this->setScriptSettings($command[1], $command[3]);
+      } else {  //Checkboxes
         $this->setScriptSettings($command[1], $command[3]); 
         $this->setCheckboxSetting($command[1], $recipient); 
-			}           
+      }           
 
-		}
-	} //onManiaPlayerPageAnswers
+    }
+  } //onManiaPlayerPageAnswers
 
   function setScriptSettings($login, $settings){
     $admin = $this->Aseco->server->players->getPlayer($login);
-  	// check if chat command was allowed for a masteradmin/admin/operator
-  	if ($this->Aseco->isMasterAdmin($admin)) {
-  		$logtitle = 'MasterAdmin';
-  		$chattitle = $this->Aseco->titles['MASTERADMIN'][0];
-  	} else if ($this->Aseco->isAdmin($admin)){
-  			$logtitle = 'Admin';
-  			$chattitle = $this->Aseco->titles['ADMIN'][0];
-  	} else if ($this->Aseco->isOperator($admin) /* && $aseco->allowOpAbility($command['params'][0] )*/) {
-  			$logtitle = 'Operator';
-  			$chattitle = $this->Aseco->titles['OPERATOR'][0];
-  	}
+    // check if chat command was allowed for a masteradmin/admin/operator
+    if ($this->Aseco->isMasterAdmin($admin)) {
+      $logtitle = 'MasterAdmin';
+      $chattitle = $this->Aseco->titles['MASTERADMIN'][0];
+    } else if ($this->Aseco->isAdmin($admin)){
+        $logtitle = 'Admin';
+        $chattitle = $this->Aseco->titles['ADMIN'][0];
+    } else if ($this->Aseco->isOperator($admin) /* && $aseco->allowOpAbility($command['params'][0] )*/) {
+        $logtitle = 'Operator';
+        $chattitle = $this->Aseco->titles['OPERATOR'][0];
+    }
 
     $this->Aseco->client->query('GetModeScriptSettings');
     $oldSettings = $this->Aseco->client->getResponse();
     
- 	  $msg = '';
- 	  $logmsg = '';
+    $msg = '';
+    $logmsg = '';
     $scriptSettings = array();
     foreach($settings as $sett){
       foreach($oldSettings as $okey => $ovalue){ //Build Messages
@@ -76,7 +76,7 @@ class ScriptSettings extends Plugin {
             $msg .= '{#highlite}'.$sett["Name"].' $z$s{#admin}to {#highlite}'.$sett["Value"].', ';
             $logmsg .= $sett["Name"].' to '.$sett["Value"].', ';
             break;
-         }
+         }     
       }
       
       if(intval($sett["Value"]) == $sett["Value"]) 
@@ -95,8 +95,8 @@ class ScriptSettings extends Plugin {
     $logmsg = str_replace("S_","",$logmsg);  
     if($msg != ''){
       $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} set Scriptsettings {3}$z$s{#admin}!',
-		  $chattitle, $admin->nickname,$msg);
-		  $this->Aseco->client->query('ChatSendServerMessage', $this->Aseco->formatColors($message));   
+      $chattitle, $admin->nickname,$msg);
+      $this->Aseco->client->query('ChatSendServerMessage', $this->Aseco->formatColors($message));   
       $this->Aseco->console('{1} [{2}] set Scriptsettings "{3}"!', $logtitle, $login, $logmsg);     
     }
  
@@ -105,17 +105,17 @@ class ScriptSettings extends Plugin {
 
   function setCheckboxSetting($login, $recipient){
     $admin = $this->Aseco->server->players->getPlayer($login);
-  	// check if chat command was allowed for a masteradmin/admin/operator
-  	if ($this->Aseco->isMasterAdmin($admin)) {
-  		$logtitle = 'MasterAdmin';
-  		$chattitle = $this->Aseco->titles['MASTERADMIN'][0];
-  	} else if ($this->Aseco->isAdmin($admin)){
-  			$logtitle = 'Admin';
-  			$chattitle = $this->Aseco->titles['ADMIN'][0];
-  	} else if ($this->Aseco->isOperator($admin)) {
-  			$logtitle = 'Operator';
-  			$chattitle = $this->Aseco->titles['OPERATOR'][0];
-  	}
+    // check if chat command was allowed for a masteradmin/admin/operator
+    if ($this->Aseco->isMasterAdmin($admin)) {
+      $logtitle = 'MasterAdmin';
+      $chattitle = $this->Aseco->titles['MASTERADMIN'][0];
+    } else if ($this->Aseco->isAdmin($admin)){
+        $logtitle = 'Admin';
+        $chattitle = $this->Aseco->titles['ADMIN'][0];
+    } else if ($this->Aseco->isOperator($admin)) {
+        $logtitle = 'Operator';
+        $chattitle = $this->Aseco->titles['OPERATOR'][0];
+    }
 
      
     $this->Aseco->client->query('GetModeScriptSettings');
@@ -136,8 +136,8 @@ class ScriptSettings extends Plugin {
    
     //Chat command    
     $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} set Scriptsettings {#highlite}{3} $z$s{#admin}to {#highlite}{4}$z$s{#admin}!',
-		$chattitle, $admin->nickname,str_replace("S_","",$key), bool2text($newVal));
-		$this->Aseco->client->query('ChatSendServerMessage', $this->Aseco->formatColors($message));                             
+    $chattitle, $admin->nickname,str_replace("S_","",$key), bool2text($newVal));
+    $this->Aseco->client->query('ChatSendServerMessage', $this->Aseco->formatColors($message));                             
     $this->Aseco->console('{1} [{2}] set Scriptsettings "{3}" to {4}!', $logtitle, $login, $key, bool2text($newVal));   
   }
   
@@ -181,12 +181,12 @@ class ScriptSettings extends Plugin {
     }
     $i = 0;
     foreach($scriptSettings as $key => $value) {
-			$substyle = 0;
+      $substyle = 0;
       if($value === false){
        $value = 'false';
        $substyle ='LvlRed';
       }
-			if($value === true){
+      if($value === true){
        $value = 'true';
        $substyle ='LvlGreen';
       }
@@ -206,8 +206,7 @@ class ScriptSettings extends Plugin {
       else
         $xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.14" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="'.$value.'"/>';
       $i++;   
-      
- 
+
     }                                                       
     
     $xml.= '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>
@@ -216,33 +215,34 @@ class ScriptSettings extends Plugin {
     return $xml; 
   }   
 }
-
-
-	global $scriptSettings;
-	$scriptSettings = new ScriptSettings();
-	$scriptSettings->init();
-	$scriptSettings->setAuthor($scriptSettings->pluginAuthor); 
-	$scriptSettings->setVersion($scriptSettings->pluginVersion);
-	$scriptSettings->setDescription('Manages Scriptsettings');
-	
-	global $ldb_settings;
+      
+   
+  global $scriptSettings;
+  $scriptSettings = new ScriptSettings();
+  $scriptSettings->init();
+  $scriptSettings->setAuthor($scriptSettings->pluginAuthor); 
+  $scriptSettings->setVersion($scriptSettings->pluginVersion);
+  $scriptSettings->setDescription('Manages Scriptsettings');
+  
+  
+  global $ldb_settings;
 
   /* Register the used Events */
-	Aseco::registerEvent('onStartup', 'scriptSettings_mpasecoStartup');  
+  Aseco::registerEvent('onStartup', 'scriptSettings_mpasecoStartup');  
   Aseco::registerEvent('onPlayerManialinkPageAnswer', 'scriptSettings_handleClick');
   
   /* Events: */  
-	function scriptSettings_mpasecoStartup($aseco){
-		global $scriptSettings;
-		if (!$scriptSettings->Aseco){
-			$scriptSettings->Aseco = $aseco;
-		}
-	}     
+  function scriptSettings_mpasecoStartup($aseco){
+    global $scriptSettings;
+    if (!$scriptSettings->Aseco){
+      $scriptSettings->Aseco = $aseco;
+    }
+  }     
 
-	function scriptSettings_handleClick($scriptSettings, $command){
-		global $scriptSettings;
-		$scriptSettings->doHandleClick($command);
-	}   //onPlayerManialinkPageAnswer
+  function scriptSettings_handleClick($scriptSettings, $command){
+    global $scriptSettings;
+    $scriptSettings->doHandleClick($command);
+  }   //onPlayerManialinkPageAnswer
   
-	
+  
 ?>
