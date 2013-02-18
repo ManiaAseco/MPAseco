@@ -217,32 +217,29 @@ class ScriptSettings extends Plugin {
 }
       
    
+global $scriptSettings;
+$scriptSettings = new ScriptSettings();
+$scriptSettings->init();
+$scriptSettings->setAuthor($scriptSettings->pluginAuthor); 
+$scriptSettings->setVersion($scriptSettings->pluginVersion);
+$scriptSettings->setDescription('Manages Scriptsettings');
+
+
+/* Register the used Events */
+Aseco::registerEvent('onStartup', 'scriptSettings_mpasecoStartup');  
+Aseco::registerEvent('onPlayerManialinkPageAnswer', 'scriptSettings_handleClick');
+
+/* Events: */  
+function scriptSettings_mpasecoStartup($aseco){
   global $scriptSettings;
-  $scriptSettings = new ScriptSettings();
-  $scriptSettings->init();
-  $scriptSettings->setAuthor($scriptSettings->pluginAuthor); 
-  $scriptSettings->setVersion($scriptSettings->pluginVersion);
-  $scriptSettings->setDescription('Manages Scriptsettings');
-  
-  
-  global $ldb_settings;
+  if (!$scriptSettings->Aseco){
+    $scriptSettings->Aseco = $aseco;
+  }
+}     
 
-  /* Register the used Events */
-  Aseco::registerEvent('onStartup', 'scriptSettings_mpasecoStartup');  
-  Aseco::registerEvent('onPlayerManialinkPageAnswer', 'scriptSettings_handleClick');
-  
-  /* Events: */  
-  function scriptSettings_mpasecoStartup($aseco){
-    global $scriptSettings;
-    if (!$scriptSettings->Aseco){
-      $scriptSettings->Aseco = $aseco;
-    }
-  }     
+function scriptSettings_handleClick($scriptSettings, $command){
+   global $scriptSettings;
+   $scriptSettings->doHandleClick($command);
+}   //onPlayerManialinkPageAnswer
 
-  function scriptSettings_handleClick($scriptSettings, $command){
-    global $scriptSettings;
-    $scriptSettings->doHandleClick($command);
-  }   //onPlayerManialinkPageAnswer
-  
-  
 ?>
