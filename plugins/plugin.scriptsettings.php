@@ -13,7 +13,7 @@ class ScriptSettings extends Plugin {
   /**
    * Initializes the plugin, loads the XML settings
    */
-  function init(){
+  public function init(){
     $this->pluginMainId = "99957";
     $this->showWidgetID = "1"; //mainwindow
     
@@ -28,7 +28,7 @@ class ScriptSettings extends Plugin {
    * $command[1] = login
    * $recipent == "Manialink addition"     
    */
-  function doHandleClick($command){
+  public function doHandleClick($command){
     $action = $command[2].'';
     if (substr($action, 0, strlen($this->pluginMainId)) == $this->pluginMainId){
 
@@ -48,7 +48,7 @@ class ScriptSettings extends Plugin {
     }
   } //onManiaPlayerPageAnswers
 
-  function setScriptSettings($login, $settings){
+  private function setScriptSettings($login, $settings){
     $admin = $this->Aseco->server->players->getPlayer($login);
     // check if chat command was allowed for a masteradmin/admin/operator
     if ($this->Aseco->isMasterAdmin($admin)) {
@@ -101,7 +101,7 @@ class ScriptSettings extends Plugin {
                   
   }
 
-  function setCheckboxSetting($login, $recipient){
+  private function setCheckboxSetting($login, $recipient){
     $admin = $this->Aseco->server->players->getPlayer($login);
     // check if chat command was allowed for a masteradmin/admin/operator
     if ($this->Aseco->isMasterAdmin($admin)) {
@@ -139,7 +139,7 @@ class ScriptSettings extends Plugin {
     $this->Aseco->console('{1} [{2}] set Scriptsettings "{3}" to {4}!', $logtitle, $login, $key, bool2text($newVal));   
   }
   
-  function showPlugin($login){  
+  public function showPlugin($login){  
                                              
     $xml  = '<?xml version="1.0" encoding="UTF-8"?>';                                       
     $xml .= '<manialinks>';
@@ -158,7 +158,7 @@ class ScriptSettings extends Plugin {
 
   }  
 
-  function maniaLink(){
+  private function maniaLink(){
     $this->Aseco->client->query('GetModeScriptSettings');
     $scriptSettings = $this->Aseco->client->getResponse();
     $cnt = count($scriptSettings);
