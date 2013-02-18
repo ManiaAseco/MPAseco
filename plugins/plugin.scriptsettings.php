@@ -144,7 +144,7 @@ class ScriptSettings extends Plugin {
     $xml  = '<?xml version="1.0" encoding="UTF-8"?>';                                       
     $xml .= '<manialinks>';
     $xml .= '  <manialink id='.$this->showWidgetID.'>';
-    $xml .= $this->maniaLink();
+    $xml .= $this->maniaLink($login);
     $xml .= '  </manialink>';  
     $xml .= getCustomUIBlock();
     $xml .= '</manialinks>';   
@@ -158,11 +158,22 @@ class ScriptSettings extends Plugin {
 
   }  
 
-  private function maniaLink(){
+  private function hasPermissions($login){
+    $admin = $this->Aseco->server->players->getPlayer($login);
+    if($this->Aseco->isMasterAdmin($admin) || 
+       $this->Aseco->isAdmin($admin) && $this->Aseco->allowAdminAbility("scriptsettings") || 
+       $this->Aseco->isOperator($admin) && $this->Aseco->allowOpAbility("scriptsettings"))
+      return true;
+    else
+      return false;
+  }
+  
+  private function maniaLink($login){
     $this->Aseco->client->query('GetModeScriptSettings');
     $scriptSettings = $this->Aseco->client->getResponse();
     $cnt = count($scriptSettings);
     $rowsPerColums = 13;
+    $changePermission = $this->hasPermissions($login);
     
     $xml= '<frame pos="0.71 0.47 -0.6">
               <quad size="1.42 0.82" style="BgsPlayerCard" substyle="BgCard"/>
@@ -198,18 +209,28 @@ class ScriptSettings extends Plugin {
       }
       
       $xml .= '<label pos="'.$px.' '.$py.' -0.14" size="0.75 0.06" halign="left" style="TextCardSmallScores2" text="'.$key.'"/>'; 
-        
-      if($substyle)
-        $xml .= '<quad pos="'.($px-0.426).' '.$py.' -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="'.$substyle.'" action="'.$this->pluginMainId.$i.'"/>';   
-      else
-        $xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.14" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="'.$value.'"/>';
+      
+      if($changePermission){  
+        if($substyle)
+          $xml .= '<quad pos="'.($px-0.426).' '.$py.' -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="'.$substyle.'" action="'.$this->pluginMainId.$i.'"/>';   
+        else
+          $xml .= '<entry pos="'.($px-0.43).' '.$py.' -0.14" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" name="'.$key.'" default="'.$value.'"/>';
+      }else{
+        if($substyle)
+          $xml .= '<quad pos="'.($px-0.426).' '.$py.' -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="'.$substyle.'"/>';   
+        else
+          $xml .= '<label pos="'.($px-0.43).' '.$py.' -0.14" sizen="10 2" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" text="'.$value.'"/>';
+      }
+      
       $i++;   
 
     }                                                       
     
-    $xml.= '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>
-            <label pos="-1.281 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Apply Values" action="'.$this->pluginMainId.'999"/>
-      </frame>';  
+    $xml.=   '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>';
+    if($changePermission){ 
+      $xml.= '<label pos="-1.281 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Apply Values" action="'.$this->pluginMainId.'999"/>';
+    }
+    $xml.='</frame>';  
     return $xml; 
   }   
 }
