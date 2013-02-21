@@ -551,8 +551,7 @@ foreach (Event in PendingEvents) {
 					Event.ShooterPoints = 0;
 					PassOn(Event);
 					continue;
-				}
-					
+				}	
 				
 				// declare Boolean GiveExraPointsForDefenseActions = True;
 				declare Integer PointsGivenToTheShooter = 1;
@@ -565,7 +564,8 @@ foreach (Event in PendingEvents) {
 				declare Integer Battle_ScoreAttackBonus  for Shooter;
 				
 				Battle_ScoreHit += PointsGivenToTheShooter;
-				
+				XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^PointsGivenToTheShooter);	
+        				
 				declare Boolean BonusGranted = False;
 				// 1. Check if the victim is currently taking a pole
 				if( Victim.BlockPole != Null ) {
