@@ -31,6 +31,8 @@ require_once('includes/manialinks.inc.php');  // provides ManiaLinks windows
 // handles action id's "4601"-"4800" for /admin unban in listbans
 // handles action id's "4801"-"5000" for /admin unblack in listblacks
 // handles action id's "5001"-"5200" for /admin removeguest in listguests
+// handles action id's "8001"-"8200" for /admin force player to blue
+// handles action id's "8201"-"8400" for /admin force player to red
 // handles action id's "-7901"-"-8100" for /admin unbanip
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_admin');
 Aseco::registerEvent('onBeginMap', 'setscript'); //for /admin setscript
@@ -1781,9 +1783,10 @@ function chat_admin($aseco, $command) {
             else
               $gst = array($gst, $pid+3800);
             $spc = $off;
+            $red = '';
+            $blue = '';
           }
         } else {
-          // no more buttons
           if (array_key_exists($lg, $ignores))
             $ign = $uig;
           if (array_key_exists($lg, $bans))
@@ -1798,6 +1801,8 @@ function chat_admin($aseco, $command) {
           } else {
             $spc = $off;
           }
+          $red = '';
+          $blue = '';
         }
 
         $msg[] = array(str_pad($pid, 2, '0', STR_PAD_LEFT) . '.', $ply,
@@ -1807,7 +1812,7 @@ function chat_admin($aseco, $command) {
           $admin->msgs[] = $msg;
           $lines = 0;
           $msg = array();
-          $msg[] = array('Id', '{#nick}Nick $g/{#login} Login', 'Warn', 'Ignore', 'Kick', 'Ban', 'Black', 'Guest', 'Spec');
+          $msg[] = array('Id', '{#nick}Nick $g/{#login} Login', 'Warn', 'Ignore', 'Kick', 'Ban', 'Black', 'Guest', 'Force');
         }
       }
       // add if last batch exists

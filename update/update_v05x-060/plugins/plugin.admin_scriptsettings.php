@@ -1,8 +1,9 @@
 <?php
 /**
- *   Plugin Information    v1 test //TODO  Rights
- *   Plugin Version
- *   Plugin Author 
+ *   This Plugin handles the Scriptsetttings graphically.
+ *   Version: v0.2
+ *   Author: Lukas Kremsmayr
+ *   Dependencies: none 
  */
 
 class ScriptSettings extends Plugin {
