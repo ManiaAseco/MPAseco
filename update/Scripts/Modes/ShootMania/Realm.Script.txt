@@ -1,7 +1,7 @@
 /**
  * Realm mode
  */
-#Extends "Modes/ShootMania/ModeBase2.Script.txt"
+#Extends "Modes/ShootMania/ModeBase.Script.txt"
 
 #Include "TextLib" as TL
 #Include "MathLib" as ML
@@ -291,7 +291,7 @@ foreach (Event in PendingEvents) {
 			Discard(Event);
 		} else {
 			declare Points = Event.Damage / 100;
-			XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^1);	
+			XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);	
 			Scores::AddPoints(Event.Shooter, Points);
 			Event.ShooterPoints = Points;
 			PassOn(Event);
