@@ -1,6 +1,6 @@
 <?php
 /**
- *   Plugin Information    v1 test //TODO  Rights
+ *   Plugin Information    v1 test 
  *   Plugin Version
  *   Plugin Author 
  */
@@ -246,7 +246,12 @@ $scriptSettings->setDescription('Manages Scriptsettings');
 Aseco::registerEvent('onStartup', 'scriptSettings_mpasecoStartup');  
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'scriptSettings_handleClick');
 
-/* Events: */  
+/* Events: */ 
+function scriptSettings_show($login){
+  global $scriptSettings;
+  $scriptSettings->showPlugin($login);
+}   
+ 
 function scriptSettings_mpasecoStartup($aseco){
   global $scriptSettings;
   if (!$scriptSettings->Aseco){

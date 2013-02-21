@@ -38,7 +38,8 @@
  *           "11": /list Env field Canyon         call "/list env:Canyon"
  *           "12": /list Env field Valley         call "/list env:Valley"
  *           "13": /list Env field Storm          call "/list env:Storm"          
- *      "14"-"17": reserved for future use
+ *      "14"-"16": reserved for future use
+ *           "17": Admin panel ProfileAdvanced button  call "/admin scriptsettings"
  *           "18": Vote panel Yes, F5 key         call "/y"
  *           "19": Vote panel No, F6 key
  *           "20": /jukebox display Clear button  call "/admin clearjukebox"
@@ -82,6 +83,8 @@
  *  "4601"-"4800": Player numbers for /admin listbans, handled in chat.admin.php
  *  "4801"-"5000": Player numbers for /admin listblacks, handled in chat.admin.php
  *  "5001"-"5200": Player numbers for /admin listguests, handled in chat.admin.php
+ *  "8001"-"8200": Player numbers for /admin force blue, handled in chat.admin.php
+ *  "8201"-"8400": Player numbers for /admin force red, handled in chat.admin.php  
  *  "5201"-"5700": MX numbers for /mxinfo, handled in plugin.rasp_jukebox.php
  *  "5701"-"6200": MX numbers for /add, handled in plugin.rasp_jukebox.php
  *  "6201"-"6700": MX numbers for /admin add, handled in plugin.rasp_jukebox.php
@@ -260,7 +263,7 @@ function display_manialink_map($login, $header, $icon, $links, $data, $widths, $
   $lines = count($data);
 
   // build manialink header & window
-  $xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -100">' .
+  $xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -0.6">' .
           '<quad size="' . $widths[0] . ' ' . (0.42+($square?0.1:0)+2*$hsize+$lines*$bsize) .
           '" style="' . $style['WINDOW'][0]['STYLE'][0] .
           '" substyle="' . $style['WINDOW'][0]['SUBSTYLE'][0] . '"/>' . LF;
@@ -491,7 +494,6 @@ function event_manialink($aseco, $answer) {
   case 14:
   case 15:
   case 16:
-  case 17:
     // reserved for future use
     return;
 
@@ -509,7 +511,7 @@ function event_manialink($aseco, $answer) {
     $aseco->console('player {1} clicked command "/n " (ignored)', $player->login);
     // /n on chat-based vote (ignored)
     return;
-
+    
   case 20:
     // log clicked command
     $aseco->console('player {1} clicked command "/admin clearjukebox"', $player->login);
@@ -586,7 +588,15 @@ function event_manialink($aseco, $answer) {
     $command['params'] = 'players live';
     chat_admin($aseco, $command);
     return;
-
+   case 17:
+    // log clicked command
+    $aseco->console('player {1} clicked command "/admin scriptsettings"', $player->login);
+    // admin panel ProfileAdvanced button
+    $command = array();
+    $command['author'] = $player;
+    $command['params'] = 'scriptsettings';
+    chat_admin($aseco, $command);
+    return;
   // Payment dialog buttons
   case 28:
     // log clicked command
@@ -699,7 +709,7 @@ function event_manialink($aseco, $answer) {
     $lines = max($lines, count($player->msgs[1]));
 
   // build manialink header & window
-  $xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -100">' .
+  $xml  = '<manialink id="1"><frame pos="' . ($widths[0]/2) . ' 0.47 -0.6">' .
           '<quad size="' . $widths[0] . ' ' . (0.11+$hsize+$lines*$bsize) .
           '" style="' . $style['WINDOW'][0]['STYLE'][0] .
           '" substyle="' . $style['WINDOW'][0]['SUBSTYLE'][0] . '"/>' . LF;
