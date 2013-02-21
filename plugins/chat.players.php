@@ -75,7 +75,6 @@ function chat_players($aseco, $command) {
 // Handles ManiaLink player responses
 // [0]=PlayerUid, [1]=Login, [2]=Answer, [3]=Entries
 function event_players($aseco, $answer) {
-
   // leave actions outside 2001 - 2200 to other handlers
   $action = (int) $answer[2];
   if ($action >= 2001 && $action <= 2200) {
@@ -93,7 +92,7 @@ function event_players($aseco, $answer) {
     $command = array();
     $command['author'] = $player;
     $command['params'] = $target;
-    //chat_stats($aseco, $command);
+    chat_stats($aseco, $command);
   }
 }  // event_players
 ?>
