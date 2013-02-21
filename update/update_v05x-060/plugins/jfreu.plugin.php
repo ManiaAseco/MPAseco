@@ -893,13 +893,10 @@ function player_connect($aseco, $player)
   $adm = $aseco->server->jfreu->admin;
 
   // abbreviate long nations
-  $nation = $player->zone;
-  $posB = strpos($nation,"|") + 1;
-  $posE = strpos($nation,"|", $posB);
-  $nation = substr($nation, $posB, $posE-$posB);
+  $nation = $player->nation;
   
-//  if (strlen($nation) > 14)
-  //  $nation = mapCountry($nation);
+  if (strlen($nation) > 14)
+    $nation = mapCountry($nation);
 
   if ($ban = isbanned($aseco, $player->login))
   {
