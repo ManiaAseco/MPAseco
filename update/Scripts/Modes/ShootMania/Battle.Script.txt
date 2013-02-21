@@ -266,7 +266,7 @@ declare Ident G_TimeLeftLayerId;
 /* -------------------------------------- */
 ***StartMap***
 ***
-  XmlRpc.SendCallback("beginMap",'');
+  XmlRpc.SendCallback("beginMap","");
 	// /////////	
 	// Scores Table
 	//declare ScoresBGImg 	= C_ImgBaseDir^"battle_tablescore_bg.dds"
