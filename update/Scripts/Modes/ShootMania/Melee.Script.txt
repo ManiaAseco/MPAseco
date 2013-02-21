@@ -1,463 +1,390 @@
-#RequireContext CSmMode
+/**
+ *	Mode melee
+ */
+
+#Extends "Modes/ShootMania/ModeBase.Script.txt"
+
+#Const	CompatibleMapTypes	"MeleeArena"
+#Const	Version				"2013-01-24"
 
 #Include "MathLib" as MathLib
 #Include "TextLib" as TextLib
-#Include "Libs/Nadeo/Mode.Script.txt" as Mode
 #Include "Libs/Nadeo/Layers.Script.txt" as Layers
 #Include "Libs/Nadeo/Message.Script.txt" as Message
 #Include "Libs/Nadeo/Interface.Script.txt" as Interface
 #Include "Libs/Nadeo/ShootMania/SM.Script.txt" as SM
-#Include "Libs/Nadeo/ShootMania/Rules.Script.txt" as Rules
 #Include "Libs/Nadeo/ShootMania/Score.Script.txt" as Score
-
-#Const	CompatibleMapTypes	"MeleeArena"
-#Const	Version				"2012-10-11"
+#Include "Libs/Nadeo/ShootMania/SpawnScreen.Script.txt" as SpawnScreen
+#Include "Libs/Nadeo/ShootMania/ScoresTable.Script.txt" as ScoresTable
 
 /* -------------------------------------- */
 // Settings
 /* -------------------------------------- */
-#Setting S_TimeLimit	600 as _("Time limit")	///< Time limit on a map
-#Setting S_PointLimit	25	as _("Point limit")	///< Point limit on a map
+#Setting S_TimeLimit	600 as _("Time limit")		///< Time limit on a map
+#Setting S_PointLimit	25	as _("Points limit")	///< Points limit on a map
 
-#Const C_UITickInterval	200	///< Time interval between UI update
 #Const C_NbBots			0	///< Number of bots
 
 /* -------------------------------------- */
 // Globales variables
 /* -------------------------------------- */
-declare Ident[]	G_SpawnsList;		///< Id of all the BlockSpawns of the map
-declare Ident	G_LatestSpawnId;	///< Id of the last BlockSpawn used
+declare Ident[]			G_SpawnsList;		///< Id of all the BlockSpawns of the map
+declare Ident			G_LatestSpawnId;	///< Id of the last BlockSpawn used
+declare Ident[Integer]	G_PrevScoreId;		///< Save the id of the first three scores
+
+/* -------------------------------------- */
+// Exstend
+/* -------------------------------------- */
+
+/* -------------------------------------- */
+// Server start
+/* -------------------------------------- */
+***StartServer***
+***
+/* -------------------------------------- */
+// Set mode options
+UseClans = False;
+G_PrevScoreId = [1 => NullId, 2 => NullId, 3 => NullId];
+
+/* -------------------------------------- */
+// Create the rules
+declare ModeName = "Melee";
+declare ModeRules = _("Free for all\n\n- Hit an opponent to score a point.\n- The player with the most points wins.");
+SpawnScreen::CreateRules(ModeName, ModeRules);
+
+SpawnScreen::CreateScores();
+SpawnScreen::CreateMapInfo();
+Interface::CreateRank();
+
+/* -------------------------------------- */
+// Create the scores table
+ScoresTable::Load();
+ScoresTable::SetColumnsWidth(2., 2., 3., 15., 2., 2., 0., 0., 0., 4., 5.);
+ScoresTable::SetTableFormat(2, 6);
+ScoresTable::Build();
+
+/* -------------------------------------- */
+// Create the UI layers
+declare LayerAttached	= False;
+declare LayerUpdated	= False;
+declare LayerDestroyed	= False;
+declare LayerMarkersId	= Layers::Create("Markers");
+Layers::GetFromId(LayerMarkersId).Type = CUILayer::EUILayerType::Markers;
+LayerAttached = Layers::Attach("Markers", NullId);
+***
+
+/* -------------------------------------- */
+// Map start
+/* -------------------------------------- */
+***StartMap***
+***	
+XmlRpc.SendCallback("beginMap","");
+SetNbFakePlayers(C_NbBots, 0);
+G_SpawnsList.clear();
+G_LatestSpawnId = NullId;
+Score::MatchBegin();
+Score::RoundBegin();
+
+LayerUpdated = Layers::Update("Markers", "");
+SM::SetupDefaultVisibility();
+
+// Init scores
+yield; ///< Allow the scores array to be sorted
+foreach (Score in Scores) {
+	declare Integer LastPoint for Score;
+	LastPoint = 0;
+}
+declare LeadId = NullId;
+if (Scores.existskey(0)) LeadId = Scores[0].User.Id;
+declare CurrentPointLimit = S_PointLimit;
+
+/* -------------------------------------- */
+// New map message
+UIManager.UIAll.SendNotice(
+	"",
+	CUIConfig::ENoticeLevel::MatchInfo, 
+	Null, CUIConfig::EAvatarVariant::Default, 
+	CUIConfig::EUISound::StartRound, 0
+);
+
+StartTime = Now;
+EndTime = StartTime + (S_TimeLimit * 1000);
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::Playing;
+***
+
+***OnNewPlayer***
+***
+ScoresTable::SetFooterStats(Player, TextLib::Compose(_("Points limit: %1"), TextLib::ToText(S_PointLimit)));
+***
+
+***OnNewSpectator***
+***
+ScoresTable::SetFooterStats(Spectator, TextLib::Compose(_("Points limit: %1"), TextLib::ToText(S_PointLimit)));
+***
+
+/* -------------------------------------- */
+// Play loop
+/* -------------------------------------- */
+***PlayLoop***
+***
+foreach (Event, PendingEvents) {
+	if (Event.Type == CSmModeEvent::EType::OnArmorEmpty) {
+		if (Event.Shooter == Event.Victim || Event.Shooter == Null) {
+			Score::RemovePoints(Event.Victim, 1);
+		}
+		XmlRpc.SendCallback("playerDeath", Event.Victim.Login);	
+		PassOn(Event);
+	} else if (Event.Type == CSmModeEvent::EType::OnHit) {
+		if (Event.Shooter == Event.Victim) {
+			Discard(Event);
+		} else {
+			declare Points = Event.Damage / 100;
+			// 1 bonus points for hitting the first player
+			// if (Scores.existskey(0) && Scores[0].User.Id == Event.Victim.User.Id) Points += 1;
+			Score::AddPoints(Event.Shooter, Points);
+			Event.ShooterPoints = Points;
+			XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);	
+			if (Event.Shooter != Null && Event.Shooter.Score != Null) {						
+				// Play sound and notice if someone is close to win
+				declare LastPoint for Event.Shooter.Score = 0;
+				declare Gap = S_PointLimit - Event.Shooter.Score.RoundPoints;
+				if (Gap <= 3 && Gap > 0) {
+					declare Variant = 3 - Gap;
+					declare Msg = "";
+					if (Gap > 1)
+						Msg = TextLib::Compose(_("$<%1$> is %2 points from victory!"), Event.Shooter.Name, TextLib::ToText(Gap));
+					else 
+						Msg = TextLib::Compose(_("$<%1$> is 1 point from victory!"), Event.Shooter.Name);
+
+					Message::SendBigMessage(
+						Msg,
+						3000,
+						2,
+						CUIConfig::EUISound::TieBreakPoint,
+						Variant
+					);
+				} else if (Gap <= 0) {
+					Message::SendBigMessage(
+						TextLib::Compose(_("$<%1$> gets the final hit!"), Event.Shooter.Name),
+						3000,
+						3,
+						CUIConfig::EUISound::VictoryPoint,
+						0
+					);
+				} else {
+					declare SoundGap = S_PointLimit / 5;
+					if(SoundGap < 5) SoundGap = 5;
+					if (Event.Shooter.Score.RoundPoints / SoundGap > LastPoint) {
+						LastPoint = Event.Shooter.Score.RoundPoints / SoundGap;
+						Message::SendBigMessage(
+							Event.Shooter,
+							TextLib::Compose(
+								_("$666Score : $fff%1 / %2"), 
+								TextLib::ToText(Event.Shooter.Score.RoundPoints), 
+								TextLib::ToText(S_PointLimit)
+							),
+							3000,
+							0,
+							CUIConfig::EUISound::ScoreProgress,
+							((Event.Shooter.Score.RoundPoints / SoundGap) - 1)
+						);
+					}
+				}
+			}
+			PassOn(Event);
+		}
+	} else if (Event.Type == CSmModeEvent::EType::OnPlayerRequestRespawn) {	
+    XmlRpc.SendCallback("playerRespawn", Event.Player.Login);						
+		Score::RemovePoints(Event.Player, 1);
+		PassOn(Event);
+	} else {
+		PassOn(Event);
+	}
+}	
+
+/* -------------------------------------- */
+// Spawn players
+foreach (Player in Players) {
+	if (Player.SpawnStatus == CSmPlayer::ESpawnStatus::NotSpawned && !Player.RequestsSpectate) {
+		MeleeSpawnPlayer(Player);
+	}
+}
+
+/* -------------------------------------- */
+// Play sound and notice if someone is taking the lead
+if (Scores.existskey(0) && Scores[0].User.Id != LeadId) {
+	LeadId = Scores[0].User.Id;
+	Message::SendBigMessage(
+		TextLib::Compose(
+			_("$<%1$> takes the lead!"),
+			Scores[0].User.Name
+		), 									///< Message
+		3000,								///< Duration
+		1,									///< Priority
+		CUIConfig::EUISound::PhaseChange,	///< Sound
+		1									///< Sound variant
+	);
+}
+
+/* -------------------------------------- */
+// Update UI points limit
+if (CurrentPointLimit != S_PointLimit) {
+	CurrentPointLimit = S_PointLimit;
+	foreach (Player in Players) ScoresTable::SetFooterStats(Player, TextLib::Compose(_("Points limit: %1"), TextLib::ToText(S_PointLimit)));
+	foreach (Spectator in Spectators) ScoresTable::SetFooterStats(Spectator, TextLib::Compose(_("Points limit: %1"), TextLib::ToText(S_PointLimit)));
+}
+
+Message::Loop();
+UpdateMarkers();
+
+/* -------------------------------------- */
+// victory conditions
+declare IsMatchOver = False;
+if (Now > EndTime) IsMatchOver = True;
+foreach (Player in Players) {
+	if (Player.Score != Null && Player.Score.RoundPoints >= S_PointLimit) IsMatchOver = True;
+}
+
+if (IsMatchOver) MB_StopMap = True;
+***
+
+/* -------------------------------------- */
+// Map end
+/* -------------------------------------- */
+***EndMap***
+***
+XmlRpc.SendCallback("endMap",GetRankings());
+EndTime = -1;
+Score::RoundEnd();
+Score::MatchEnd(True);
+LayerUpdated = Layers::Update("Markers", "");
+
+/* -------------------------------------- */
+// End match sequence
+declare CUser Winner <=> Null;
+declare MaxPoints = 0;
+foreach (Score in Scores) {
+	if (Score.Points > MaxPoints) {
+		MaxPoints = Score.Points;
+		Winner <=> Score.User;
+	} else if (Score.Points == MaxPoints) {
+		Winner <=> Null;
+	}
+}
+foreach (Player in Players) {
+	if (Player.User != Winner) UnspawnPlayer(Player);
+	Interface::UpdatePosition(Player);
+}
+
+sleep(1000);
+Message::CleanBigMessages();
+UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::EndRound;
+UIManager.UIAll.BigMessageSoundVariant = 0;
+if (Winner != Null) {
+	UIManager.UIAll.BigMessage = TextLib::Compose(_("$<%1$> wins the match!"), Winner.Name);
+} else {
+	UIManager.UIAll.BigMessage = _("|Match|Draw");
+}
+sleep(2000);
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
+UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
+sleep(5000);
+
+UIManager.UIAll.UISequence = CUIConfig::EUISequence::Podium;
+wait(UIManager.UIAll.UISequenceIsCompleted);
+
+UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::Normal;
+UIManager.UIAll.BigMessage = "";
+***
+
+/* -------------------------------------- */
+// Server end
+/* -------------------------------------- */
+***EndServer***
+***
+LayerDestroyed = Layers::Destroy("Info");
+ScoresTable::Unload();
+Interface::DestroyRank();
+SpawnScreen::DestroyRules();
+SpawnScreen::DestroyScores();
+SpawnScreen::DestroyMapInfo();
+***
 
 /* -------------------------------------- */
 // Functions
 /* -------------------------------------- */
-
-/* -------------------------------------- */
-/// Fill the SpawnsList with all the BlockSpawns of the map
-Void FillSpawnsList() {
-	foreach (BlockSpawn in BlockSpawns) { G_SpawnsList.add(BlockSpawn.Id); }
-}
 
 /* ------------------------------------- */
 /** Spawn a player
  *
  * @param	_Player		The player to spawn
  */
-Void SpawnPlayers(CSmPlayer _Player) {
-	if (G_SpawnsList.count == 0) FillSpawnsList();
+Void MeleeSpawnPlayer(CSmPlayer _Player) {
+	if (G_SpawnsList.count == 0) {
+		foreach (BlockSpawn in BlockSpawns) G_SpawnsList.add(BlockSpawn.Id);
+	}
+	
 	declare SpawnId = NullId;
 	while (True) {
 		SpawnId = G_SpawnsList[MathLib::Rand(0, G_SpawnsList.count - 1)];
 		if (SpawnId != G_LatestSpawnId) break;
 		if (G_SpawnsList.count == 1) break;
 	}
-	SM::SpawnPlayer(_Player, 0, BlockSpawns[SpawnId]);
 	G_LatestSpawnId = SpawnId;
-	declare Tmp = G_SpawnsList.remove(SpawnId);
+	SM::SpawnPlayer(_Player, 0, BlockSpawns[SpawnId]);
+	declare Removed = G_SpawnsList.remove(SpawnId);
 }
 
 /* ------------------------------------- */
-/** Create the Scores table manialink
+/** Update the markers above the players
  *
- *	@return		The ManiaLink string
+ *	@return		The markers manialink
  */
-Text CreateLayerScoresTable() {
-	return
-"""
-<frame posn="0 -47">
-	<quad posn="0 0 1" sizen="40 8" style="Bgs1InRace" halign="center" substyle="BgList"/>
-	<label posn="0 -2 2" sizen="40 8" halign="center" text="{{{_("Point limit")}}}: {{{ S_PointLimit }}}" />
-</frame>
-""";
+Text UpdateLayerMarkers() {
+	declare MarkersML = "";
+	
+	/*if (Scores.count >= 1) MarkersML ^= """<frame id="Marker_First"><quad posn="0 0 3" sizen="10 10" halign="center" style="Icons64x64_1" substyle="First"/></frame>""";
+	if (Scores.count >= 2) MarkersML ^= """<frame id="Marker_Second"><quad posn="0 0 2" sizen="10 10" halign="center" style="Icons64x64_1" substyle="Second"/></frame>""";
+	if (Scores.count >= 3) MarkersML ^= """<frame id="Marker_Third"><quad posn="0 0 1" sizen="10 10" halign="center" style="Icons64x64_1" substyle="Third"/></frame>""";*/
+	
+	return MarkersML;
 }
 
 /* ------------------------------------- */
-/** Update the Scores in Spawn manialink
- *
- *	@return		The manialink string
- */
-Text UpdateLayerScoresInSpawn() {
-	declare Top3 = "";
+/// Update the markers when necessary
+Void UpdateMarkers() {
 	declare I = 0;
-	declare Icons = ["First", "Second", "Third"];
+	declare ScoreUpdated = False;
 	
 	foreach (Score in Scores) {
-		declare Pseudo = TextLib::MLEncode(Score.User.Name);
-		
-		Top3 ^=
-"""
-<frame posn="-140 {{{ I * -30 }}} -25">
-	<quad posn="0 -2" sizen="30 30" valign="center" style="Icons64x64_1" substyle="{{{ Icons[I] }}}" />
-	<label posn="30 0" sizen="200 20" textsize="15" valign="center" text="{{{ Pseudo }}}" />
-	<label posn="270 0" sizen="20 20" textsize="15" halign="right" valign="center" text="{{{ Score.RoundPoints }}}" />
-</frame>
-""";
 		I += 1;
+		if (G_PrevScoreId[I] != Score.Id) {
+			G_PrevScoreId[I] = Score.Id;
+			ScoreUpdated = True;
+		}
 		if (I >= 3) break;
 	}
 	
-	return 
-"""
-<frame posn="0 85 -20">
-	<frame posn="0 -65">
-		<quad posn="0 15 -30" sizen="290 92" halign="center" bgcolor="222c" />
-		{{{ Top3 }}}
-	</frame>
-</frame>
-""";
-}
-
-/* ------------------------------------- */
-// Main
-/* ------------------------------------- */
-main() {
-	
-	/* -------------------------------------- */
-	// Set mode options
-	UseClans = False;
-	
-	/* -------------------------------------- */
-	// Create the rules
-	declare ModeName = "Melee";
-	declare ModeRules = _("Free for all\n\n- Hit an opponent to score a point.\n- The player with the most points wins.");
-	Rules::Create(ModeName, ModeRules);
-
-	/* -------------------------------------- */
-	// Create the UI layers
-	declare LayerAttached	= False;
-	declare LayerDetached	= False;
-	declare LayerUpdated	= False;
-	declare LayerDestroyed	= False;
-	// UI All
-	declare LayerScoresTableId		= Layers::Create("ScoresTable");
-	declare LayerScoresInSpawnId	= Layers::Create("ScoresInSpawn");
-	// UI Players
-	declare LayerInfoId				= Layers::Create("Info");
-	
-	Layers::GetFromId(LayerScoresTableId).Type = CUILayer::EUILayerType::ScoresTable;
-	Layers::GetFromId(LayerScoresInSpawnId).Type = CUILayer::EUILayerType::ScreenIn3d;
-	
-	while (!ServerShutdownRequested) {
-/* ------------------------------------- */
-// Map/Round begin
-/* ------------------------------------- */
-		Mode::LoadMap();	
-    XmlRpc.SendCallback("beginMap",MapName);   	
-		SetNbFakePlayers(C_NbBots, 0);
-		G_SpawnsList.clear();
-		G_LatestSpawnId = NullId;
-		XmlRpc.SendCallback("beginMatch",MapName);		
-		Score::MatchBegin();
-		XmlRpc.SendCallback("beginRound",fixGetRankings());		
-		MatchEndRequested = False;
-		
-		UIManager.ResetAll();
-		SM::SetupDefaultVisibility();
-		Rules::Attach();
-		
-		Mode::Synchro_DoBarrier();		
-
-		LayerUpdated = Layers::Update("ScoresTable", CreateLayerScoresTable());
-		LayerUpdated = Layers::Update("ScoresInSpawn", UpdateLayerScoresInSpawn());
-		LayerAttached = Layers::Attach("ScoresTable", NullId);
-		LayerAttached = Layers::Attach("ScoresInSpawn", NullId);
-		
-		UIManager.UIAll.UISequence = CUIConfig::EUISequence::Intro;
-		UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::StartRound;
-		UIManager.UIAll.BigMessageSoundVariant = 0;
-		UIManager.UIAll.BigMessage = _("New match");
-		wait(UIManager.UIAll.UISequenceIsCompleted);
-		UIManager.UIAll.BigMessage = "";
-		UIManager.UIAll.UISequence = CUIConfig::EUISequence::Playing;
-		
-		// Init scores
+	if (ScoreUpdated) {
+		declare LayerUpdated = Layers::Update("Markers", UpdateLayerMarkers());
+		UIManager.UIAll.Hud3dMarkers = "";
+		I = 0;
 		foreach (Score in Scores) {
-			declare Integer LastPoint for Score;
-			LastPoint = 0;
+			I += 1;
+			declare MarkerId = "First";
+			if (I == 2) MarkerId = "Second";
+			else if (I == 3) MarkerId = "Third";
+			UIManager.UIAll.Hud3dMarkers ^= """<marker playerlogin="{{{Score.User.Login}}}" manialinkframeid="Marker_{{{MarkerId}}}" visibility="WhenInMiddleOfScreen" />""";
+			if (I >= 3) break;
 		}
-		
-		declare LastUITick = 0;
-		declare PrevPosTotal = 0;
-		declare LeadPoints = 0;
-		declare LeadId = NullId;
-		
-		StartTime = Now;
-		EndTime = StartTime + (S_TimeLimit * 1000);
-		while (!MatchEndRequested && !ServerShutdownRequested) {
-/* ------------------------------------- */
-// Play loop
-/* ------------------------------------- */
-			yield;
-			
-			Message::Loop();
-			
-			foreach (Event, PendingEvents) {
-				if (Event.Type == CSmModeEvent::EType::OnArmorEmpty) {
-					if (Event.Shooter == Event.Victim || Event.Shooter == Null) {
-						Score::RemovePoints(Event.Victim, 1);
-					}
-					PassOn(Event);
-				  XmlRpc.SendCallback("playerDeath", Event.Victim.Login);		
-				} else if (Event.Type == CSmModeEvent::EType::OnHit) {
-					if (Event.Shooter == Event.Victim) {
-						Discard(Event);
-					} else {
-						declare Points = Event.Damage / 100;
-						Score::AddPoints(Event.Shooter, Points);
-						Event.ShooterPoints = Points;
-				    XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^Points);			
-						if (Event.Shooter != Null && Event.Shooter.Score != Null) {
-							// Play sound and notice if someone is taking the lead
-							if (Event.Shooter.Score.RoundPoints > LeadPoints && Event.Shooter.User.Id != LeadId) {
-								LeadId = Event.Shooter.User.Id;
-								Message::SendBigMessage(
-									TextLib::Compose(
-										_("$<%1$> takes the lead!"),
-										Event.Shooter.Name
-									), 									///< Message
-									3000,								///< Duration
-									1,									///< Priority
-									CUIConfig::EUISound::PhaseChange,	///< Sound
-									1									///< Sound variant
-								);
-							} else if (Event.Shooter.Score.RoundPoints == LeadPoints && Event.Shooter.User.Id != LeadId) {
-								LeadId = NullId;
-								Message::SendBigMessage(
-									TextLib::Compose(
-										_("$<%1$> tied the leader!"),
-										Event.Shooter.Name
-									), 									///< Message
-									3000,								///< Duration
-									1,									///< Priority
-									CUIConfig::EUISound::PhaseChange,	///< Sound
-									0									///< Sound variant
-								);
-							}
-							// Update the best current leading score
-							if (Event.Shooter.Score.RoundPoints > LeadPoints) {
-								LeadPoints = Event.Shooter.Score.RoundPoints;
-							}
-						
-							// Play sound and notice if someone is close to win
-							declare LastPoint for Event.Shooter.Score = 0;
-							declare Gap = S_PointLimit - Event.Shooter.Score.RoundPoints;
-							if (Gap <= 3 && Gap > 0) {
-								declare Variant = 3 - Gap;
-								declare Msg = "";
-								if (Gap > 1)
-									Msg = TextLib::Compose(_("$<%1$> is %2 points from victory!"), Event.Shooter.Name, TextLib::ToText(Gap));
-								else 
-									Msg = TextLib::Compose(_("$<%1$> is 1 point from victory!"), Event.Shooter.Name);
-
-								Message::SendBigMessage(
-									Msg,
-									3000,
-									2,
-									CUIConfig::EUISound::TieBreakPoint,
-									Variant
-								);
-							} else if (Gap <= 0) {
-								Message::SendBigMessage(
-									TextLib::Compose(_("$<%1$> gets the final hit!"), Event.Shooter.Name),
-									3000,
-									3,
-									CUIConfig::EUISound::VictoryPoint,
-									0
-								);
-							} else {
-								declare SoundGap = S_PointLimit / 5;
-								if(SoundGap < 5) SoundGap = 5;
-								if (Event.Shooter.Score.RoundPoints / SoundGap > LastPoint) {
-									LastPoint = Event.Shooter.Score.RoundPoints / SoundGap;
-									Message::SendBigMessage(
-										Event.Shooter,
-										TextLib::Compose(
-											_("$666Score : $fff%1 / %2"), 
-											TextLib::ToText(Event.Shooter.Score.RoundPoints), 
-											TextLib::ToText(S_PointLimit)
-										),
-										3000,
-										0,
-										CUIConfig::EUISound::Custom2,
-										((Event.Shooter.Score.RoundPoints / SoundGap) - 1)
-									);
-								}
-							}
-						}
-						PassOn(Event);
-					}
-				} else if (Event.Type == CSmModeEvent::EType::OnPlayerRequestRespawn) {
-					Score::RemovePoints(Event.Player, 1);
-			    XmlRpc.SendCallback("playerRespawn", Event.Player.Login);		
-      		if ((LeadId == NullId || Event.Player.User.Id == LeadId) && Event.Player.Score != Null) {
-						LeadPoints = Event.Player.Score.RoundPoints;
-						declare NewLead = False;
-						declare TieLead = False;
-						declare TieId = NullId;
-						foreach (Score in Scores) {
-							if (Score.RoundPoints > LeadPoints) {
-								LeadPoints = Score.RoundPoints;
-								LeadId = Score.User.Id;
-								NewLead = True;
-							} else if (Score.RoundPoints == LeadPoints && Score.User.Id != LeadId) {
-								TieLead = True;
-								TieId = Score.User.Id;
-								LeadId = NullId;
-							}
-						}
-						if (NewLead) {
-							declare Name = "Player";
-							if (Users.existskey(LeadId)) Name = Users[LeadId].Name;
-							Message::SendBigMessage(
-								TextLib::Compose(
-									_("$<%1$> takes the lead!"),
-									Name
-								), 									///< Message
-								3000,								///< Duration
-								1,									///< Priority
-								CUIConfig::EUISound::PhaseChange,	///< Sound
-								0									///< Sound variant
-							);
-						} else if (TieLead) {
-							declare Name = "Player";
-							if (Users.existskey(TieId)) Name = Users[TieId].Name;
-							Message::SendBigMessage(
-								TextLib::Compose(
-									_("$<%1$> tied the leader!"),
-									Name
-								), 									///< Message
-								3000,								///< Duration
-								0,									///< Priority
-								CUIConfig::EUISound::PhaseChange,	///< Sound
-								0									///< Sound variant
-							);
-						}
-					}
-					PassOn(Event);
-				} else {
-					PassOn(Event);
-				}
-			}	
-			
-			/* -------------------------------------- */
-			// Spawn players
-			foreach (Player in Players) {
-				if (Player.SpawnStatus == CSmPlayer::ESpawnStatus::NotSpawned && !Player.RequestsSpectate) {
-					SpawnPlayers(Player);
-				}
-			}
-			
-			/* -------------------------------------- */
-			// Update UI
-			if (LastUITick + C_UITickInterval < Now) {
-				declare ScoresTableUpdated = False;
-				declare PosTotalUpdated = False;
-				if (PrevPosTotal != Scores.count) {
-					PrevPosTotal = Scores.count;
-					PosTotalUpdated = True;
-				}
-				foreach (Player in Players) {
-					if (Layers::IsMissing("Info", Player.Id)) {
-						LayerAttached = Layers::Attach("Info", Player.Id);
-						Interface::SetLayerPosition(Layers::GetFromName("Info"));
-						PosTotalUpdated = True;
-					}
-					
-					declare PosCurrentUpdated = False;
-					declare PrevPosCurrent for Player = 0;
-					declare PrevRoundPoints for Player = 0;
-					if (PrevPosCurrent != Scores.keyof(Player.Score) + 1) {
-						PrevPosCurrent = Scores.keyof(Player.Score) + 1;
-						PosCurrentUpdated = True;
-					}
-					if (!ScoresTableUpdated && Player.Score != Null && PrevRoundPoints != Player.Score.RoundPoints) {
-						PrevRoundPoints = Player.Score.RoundPoints;
-						ScoresTableUpdated = True;
-					}
-					
-					if (PosTotalUpdated || PosCurrentUpdated) Interface::UpdatePosition(Player);
-				}
-				if (ScoresTableUpdated) LayerUpdated = Layers::Update("ScoresInSpawn", UpdateLayerScoresInSpawn());
-				LastUITick = Now;
-			}
-			
-			/* -------------------------------------- */
-			// victory conditions
-			declare IsMatchOver = False;
-			if (Now > StartTime + (S_TimeLimit * 1000)) 
-				IsMatchOver = True;
-			foreach (Player in Players) {
-				if (Player.Score != Null && Player.Score.RoundPoints >= S_PointLimit) IsMatchOver = True;
-			}
-			
-			if (IsMatchOver) break;
-		}
-		
-/* ------------------------------------- */
-// Map/Round end
-/* ------------------------------------- */
-		XmlRpc.SendCallback("endRound",fixGetRankings());
-		Score::RoundEnd();  
-		XmlRpc.SendCallback("endMap",fixGetRankings());
-		Score::MatchEnd(True);
-		
-		/* -------------------------------------- */
-		// End match sequence
-		declare CUser Winner <=> Null;
-		declare MaxPoints = 0;
-		foreach (Score in Scores) {
-			if (Score.Points > MaxPoints) {
-				MaxPoints = Score.Points;
-				Winner <=> Score.User;
-			} else if (Score.Points == MaxPoints) {
-				Winner <=> Null;
-			}
-		}
-		foreach (Player in Players) {
-			if (Player.User != Winner) UnspawnPlayer(Player);
-			Interface::UpdatePosition(Player);
-		}
-		
-		sleep(1000);
-		Message::CleanBigMessages();
-		UIManager.UIAll.BigMessageSound = CUIConfig::EUISound::EndRound;
-		UIManager.UIAll.BigMessageSoundVariant = 0;
-		if (Winner != Null) {
-			UIManager.UIAll.BigMessage = TextLib::Compose(_("$<%1$> wins the match!"), Winner.Name);
-		} else {
-			UIManager.UIAll.BigMessage = _("|Match|Draw");
-		}
-		sleep(2000);
-		UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
-		UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::ForcedVisible;
-		sleep(5000);
-		
-		UIManager.UIAll.UISequence = CUIConfig::EUISequence::Podium;
-		wait(UIManager.UIAll.UISequenceIsCompleted);
-		
-		UIManager.UIAll.ScoreTableVisibility = CUIConfig::EVisibility::Normal;
-		UIManager.UIAll.BigMessage = "";
-		
-		Mode::UnloadMap();
 	}
-	LayerDestroyed = Layers::Destroy("ScoresTable");
-	LayerDestroyed = Layers::Destroy("ScoresinSpawn");
-	Rules::Destroy();
 }
 
-
-/* ------------------------------------- */
-/** Get the rankings (temporary fix).
- *
- * @return		The rankings
- */
-Text fixGetRankings() {
+// Get the current rankings for xmlrpc callbacks
+Text GetRankings() {
 	declare PlayerList = "";
-        	foreach (Player in Players) {
-        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
-	        }
-        	foreach (Player in Spectators) {
-        		PlayerList = PlayerList^(Player.Login^":"^Player.Score.Points^";");
-	        }
-  return PlayerList;
+	foreach (Score in Scores) {
+		PlayerList ^= Score.User.Login^":"^Score.Points^";";
+	}
+	return PlayerList;
 }
