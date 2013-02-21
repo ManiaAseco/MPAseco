@@ -108,7 +108,7 @@ declare Integer PointsLimitShift;
 /* -------------------------------------- */
 // Add bots
 SetNbFakePlayers(C_BlueBots, C_RedBots);
-XmlRpc.SendCallback("beginMap", GetRankings());
+XmlRpc.SendCallback("beginMap", '');
 
 /* -------------------------------------- */
 // Init pole
