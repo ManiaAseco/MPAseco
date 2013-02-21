@@ -2,10 +2,10 @@
  * Mode Battle & Battle Waves
  */
  
-#Extends "Modes/ShootMania/ModeBase2.Script.txt"
+#Extends "Modes/ShootMania/ModeBase.Script.txt"
  
 #Const	CompatibleMapTypes	"BattleArena"
-#Const	Version				"2013-02-11"
+#Const	Version				"2013-02-19"
 
 #Include "MathLib" as MathLib
 #Include "TextLib" as TextLib
@@ -36,7 +36,7 @@
 #Setting 	S_AllowBeginners	False	as _("Is a Beginners Welcome server")
 
 #Setting 	S_UsePlayerClublinks False	as _("Use player clublinks")		///< Use the players clublinks, or otherwise use the default teams (Set false for an open public server, true for a team competition server)
-#Setting 	S_AutoManageAFK			True	as _("Switch inactive players to spectators")
+#Setting 	S_AutoManageAFK			False	as _("Switch inactive players to spectators")
 
 //Considering a pole, a hit to an attacker within a given range grants the defenser with a bonus.
 #Const	S_HotSpotsRadius			20.
@@ -77,11 +77,14 @@
 //#Const C_CountdownY	85.
 
 #Const 		C_AFKsCheckFrequency 			30000 //milli sec.
+#Const		C_ShowRollingTops				False
 
 #Const C_TopId_Hit 		"HIT"
 #Const C_TopId_Capture	"CAPTURE"
 #Const C_TopId_Defense 	"DEFENSE"
 #Const C_TopId_Attack	"ATTACK"
+
+#Const Description _("TYPE: Team versus Team\nOBJECTIVE:\nCapture all the poles of the opposing team before the end of the time limit.\nIn Waves mode you can only capture when your team is in attack.\nThe team with the more poles at the end of the round scores 1 point. If this team reaches the points limit she wins the map.")
 
 declare Text 					G_ScoreTeam1;
 declare Text 					G_ScoreTeam2;
@@ -133,7 +136,9 @@ declare Ident G_TimeLeftLayerId;
 	Top::Create(C_TopId_Defense, _("Top Defense"), NbPlayersPerTop, <TopXPosition, TopYPosition>);
 	TopXPosition += TopXOffset;
 	Top::Create(C_TopId_Attack, _("Top Attack"), NbPlayersPerTop, <TopXPosition, TopYPosition>);
-	Top::CreateRollingTops(5, 5, < 135. , 75.>);
+	if(C_ShowRollingTops) {
+		Top::CreateRollingTops(5, 5, < 135. , 75.>);
+	}
 	
 	declare Text TopBGImg		= C_ImgBaseDir^"topsBg.dds";
 	
@@ -260,8 +265,8 @@ declare Ident G_TimeLeftLayerId;
 // Map begin
 /* -------------------------------------- */
 ***StartMap***
-***     
-XmlRpc.SendCallback("beginMap", GetRankings());
+***
+  XmlRpc.SendCallback("beginMap", GetRankings());
 	// /////////	
 	// Scores Table
 	//declare ScoresBGImg 	= C_ImgBaseDir^"battle_tablescore_bg.dds"
@@ -536,10 +541,10 @@ foreach (Event in PendingEvents) {
 				Event.Damage = Beginners::GetDamage(Event.Shooter, Event.Victim, Event.Damage);
 			}
 
-			if (Event.Damage > 0) { 
+			if (Event.Damage > 0) {
 				declare CSmPlayer Victim  <=> Event.Victim;
 				declare CSmPlayer Shooter <=> Event.Shooter;
-
+				
 				if(S_AllowBeginners) Beginners::NotifyHit(Shooter);
 				declare Boolean GivePoints = (!S_AllowBeginners) || Beginners::ShouldGivePoints(Shooter, Victim);
 				if(! GivePoints) {
@@ -548,8 +553,7 @@ foreach (Event in PendingEvents) {
 					continue;
 				}
 					
-				XmlRpc.SendCallback("playerHit", "Victim:"^Event.Victim.Login^";Shooter:"^Event.Shooter.Login^";"^1);	
-        				
+				
 				// declare Boolean GiveExraPointsForDefenseActions = True;
 				declare Integer PointsGivenToTheShooter = 1;
 				declare Integer Battle_ScoreHit for Shooter;
@@ -622,9 +626,9 @@ foreach (Event in PendingEvents) {
 			}
 			PassOn(Event);
 		}
-	} else if (Event.Type == CSmModeEvent::EType::OnArmorEmpty) {
-		BalancedWeapons::OnOut(Event.Shooter, Event.Victim);    
-		XmlRpc.SendCallback("playerDeath", Event.Victim.Login);		
+	} else if (Event.Type == CSmModeEvent::EType::OnArmorEmpty){ 
+		XmlRpc.SendCallback("playerDeath", Event.Victim.Login);
+		BalancedWeapons::OnOut(Event.Shooter, Event.Victim);
 		PassOn(Event);
 	} else if (Event.Type == CSmModeEvent::EType::OnCapture) {
 		LastestCapturedGoalId = Event.BlockPole.Id;
@@ -1220,6 +1224,7 @@ MB_Sleep(7*1000);
 // -------------------------------------- //
 
 +++RoundEnd+++
+XmlRpc.SendCallback("endRound", GetRankings());
 Score::RoundEnd();
 BalancedWeapons::RoundEnd();
 Victory::RoundEnd();
@@ -1263,22 +1268,17 @@ if (Victory::IsMatchWinner(1)) {
 } else {
 	UIManager.UIAll.BigMessage = _("Draw match");
 }
-		
+
 if (WinnerClan != -1) {
-	foreach(Player in Players) {
-		declare Integer Battle_ScoreDefense 	 for Player;
-		declare Integer Battle_ScoreAttack  	 for Player;
-		// decide between tie players with Attk and Def scores.
-		Player.Score.LadderRankSortValue = (10000 * Player.Score.Points) + (Battle_ScoreDefense + Battle_ScoreAttack);
+	foreach(Score in Scores) {
+		Score.LadderRankSortValue = - 1 - Score.Points;
 	}
 	
 	Mode::Ladder_CloseMatch();
-	
 } else {
 	Mode::Ladder_CancelMatch();
 }
 
-Score::MatchEnd();
 BalancedWeapons::MatchEnd();
 
 UIManager.UIAll.UISequence = CUIConfig::EUISequence::EndRound;
@@ -1372,9 +1372,11 @@ UIManager.UILayerDestroy(LayerRoundInfo);
 	if(S_BattleWaves) {
 		ModeName = "Battle Waves";
 		ModeRules = TextLib::Compose(_("TYPE\n   Team versus Team\n\nOBJECTIVE\n   TEAMS must CAPTURE all their GOALS when they are in ATTACK.\n   If TIME LIMIT is reached, the winner is the team with the most GOALS CAPTURED.\n   1st TEAM to win %2 ROUNDS wins the MATCH\n\nCONDITIONS\n   1st TEAM to touch a GOAL or the ENGAGE goes first in ATTACK.\n   If a TEAM does not touch any GOAL during %1 secondes the other TEAM can ATTACK."), TextLib::ToText(S_WaveDuration), TextLib::ToText(S_RoundsToWin));
+		ModeStatusMessage = TextLib::Compose(_("TYPE: Team versus Team\nOBJECTIVE: Capture all the poles of the opposing teams.\n%1"), _("Waves mode: On"));
 	} else {
 		ModeName = "Battle";
 		ModeRules = TextLib::Compose(_("Two teams\n\n- Be the first to capture all the poles of the opposing team in the alloted time (%1 seconds) to score 1 point.\n- The first team to reach the point limit wins."), TextLib::ToText(S_TimeLimit));
+		ModeStatusMessage = TextLib::Compose(_("TYPE: Team versus Team\nOBJECTIVE: Capture all the poles of the opposing teams.\n%1"), _("Waves mode: Off"));
 	}
 ***
 
@@ -2029,14 +2031,7 @@ Void UpdateTimeLeftUI(CSmPlayer Player, Integer CurrentAckClan, Integer Duration
 }
 
 
-// Get the current rankings for xmlrpc callbacks
-Text GetRankings() {
-	declare PlayerList = "";
-	foreach (Score in Scores) {
-		PlayerList ^= Score.User.Login^":"^Score.Points^";";
-	}
-	return PlayerList;
-}
+
 
 Text BuildTimeLeftManialink(Integer _WavesDuration) {
 	// declare EmblemSize 	 = 18;
@@ -2135,4 +2130,13 @@ Text BuildTimeLeftManialink(Integer _WavesDuration) {
 	
 	
 	return MLText;
+}
+
+// Get the current rankings for xmlrpc callbacks
+Text GetRankings() {
+	declare PlayerList = "";
+	foreach (Score in Scores) {
+		PlayerList ^= Score.User.Login^":"^Score.Points^";";
+	}
+	return PlayerList;
 }
