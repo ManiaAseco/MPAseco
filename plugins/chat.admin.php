@@ -1711,7 +1711,7 @@ function chat_admin($aseco, $command) {
       $msg[] = array('Id', '{#nick}Nick $g/{#login} Login', 'Warn', 'Ignore', 'Kick', 'Ban', 'Black', 'Guest', 'Force');
       $pid = 1;
       $lines = 0;
-      $admin->msgs[0] = array(1, $head, array(1.5, 0.08, 0.45, 0.11, 0.12, 0.10, 0.12, 0.12, 0.1, 0.12, 0.09, 0.09), array('Icons128x128_1', 'Buddies'));
+      $admin->msgs[0] = array(1, $head, array(1.5, 0.08, 0.45, 0.11, 0.11, 0.10, 0.12, 0.12, 0.1, 0.11, 0.09, 0.09), array('Icons128x128_1', 'Buddies'));
 
       foreach ($playerlist as $lg => $pl) {
         $plarr = array();
@@ -1763,7 +1763,7 @@ function chat_admin($aseco, $command) {
             else
               $gst = array($gst, $pid+3800);
             if (!$onlinelist[$lg]['spec'])
-              $spc = array($spc, $pid+4200);
+              $spc = array($frc, $pid+4200);
             if ($onlinelist[$lg]['team'] != 0)
               $blue = array($blue, $pid+8000);              
             if ($onlinelist[$lg]['team'] != 1)
@@ -1806,7 +1806,7 @@ function chat_admin($aseco, $command) {
         }
 
         $msg[] = array(str_pad($pid, 2, '0', STR_PAD_LEFT) . '.', $ply,
-                       $wrn, $ign, $kck, $ban, $blk, $gst, $spc, $red, $blue);
+                       $wrn, $ign, $kck, $ban, $blk, $gst, $spc, $blue, $red);
         $pid++;
         if (++$lines > 14) {
           $admin->msgs[] = $msg;
