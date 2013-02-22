@@ -165,15 +165,9 @@ class Player {
       $this->isofficial = $rpc_infos['IsInOfficialMode'];
       $this->teamname = $rpc_infos['LadderStats']['TeamName'];
       $this->zone = substr($rpc_infos['Path'], 6);  // strip 'World|'
-
       //$this->nation = explode('|', $rpc_infos['Path']);      
-      $nation = $this->zone;
-      $posB = strpos($nation,"|") + 1;
-      $posE = strpos($nation,"|", $posB);
-      if($posE !== false)
-        $this->nation[1] = substr($nation, $posB, $posE-$posB);
-      else
-        $this->nation[1] = substr($nation, $posB);      
+      //$nation = $this->zone;
+      $this->nation = explode("|", $this->zone);
       if (isset($this->nation[1]))
         $this->nation = $this->nation[1];
       else
