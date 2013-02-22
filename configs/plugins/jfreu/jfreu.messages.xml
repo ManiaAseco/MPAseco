@@ -16,7 +16,7 @@
     <message>Use "/list" -> "/jukebox ##" to add a map in the jukebox.</message>
     <message>Please don't sound your horn throughout the entire map.</message>
     <message>When going AFK, please set your character to Spectator mode.</message>
-    <message>Don\'t use Enter to skip intros - instead use Space & Enter</message>
+    <message>Don't use Enter to skip intros - instead use Space & Enter</message>
     <message>For player & server info use the "/stats" and "/server" commands.</message>
     <message>Looking for the name of this server?  Use the "/server" command.</message>
     <message>Wondering which maps you haven't played recently?  Use "/list norecent" to find out!</message>
