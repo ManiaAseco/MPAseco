@@ -114,6 +114,11 @@ function release_modeScriptCallbacks($aseco, $data) {
       $paramsObject = json_decode($params);
       $aseco->releaseEvent('onPlayerRespawn', $paramsObject->Event->Player->Login);
     break;
+    case 'OnCheckpoint':
+      $paramsObject = json_decode($params);
+      $checkpoint = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time, 1, $paramsObject->CheckpointIndex);
+       $this->releaseEvent('onCheckpoint', $checkpoint);
+    break;    
     case 'OnFinish':
       $paramsObject = json_decode($params);
       $finish = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time);
