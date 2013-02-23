@@ -1740,7 +1740,10 @@ function chat_admin($aseco, $command) {
         $ubk = '$c03UnBlack';
         $gst = '$3c3Add';
         $ugt = '$393Remove';
-        $frc = '$09fForce';
+        if($teammode)
+          $frc = '$09fSpec';
+        else
+          $frc = '$09fForce';
         $off = '$09cOffln';
         $spc = '$09cSpec';
         $red = '$f00Red';
