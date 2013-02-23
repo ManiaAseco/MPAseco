@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <records>
   <settings>
-    <!-- Write true here if you want a time-Based Record system -->
+    <!-- write true if you want a time-based record system -->
     <records_activated>False</records_activated>
     <show_min_recs>8</show_min_recs>
     <!-- 2 = full report, 1 = only map record, 0 = none -->
@@ -18,7 +18,7 @@
 	 <!-- True = in message window, False = in chat       -->
     <recs_in_window>False</recs_in_window>
  	
-     <!-- Do you want XASECO2 to display newly driven records? -->
+     <!-- Do you want MPASECO to display newly driven records? -->
   	<display>true</display>
   	<!-- Limit the highest record that will be displayed to all? -->
   	<!-- If lower than $maxrecs, records above this limit will -->
