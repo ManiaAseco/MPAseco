@@ -77,10 +77,12 @@ function release_modeScriptCallbacks($aseco, $data) {
       updateRankings($params);
       $aseco->releaseEvent('onBeginRound', $aseco->smrankings);
     break;
+    case 'RoundEnded': //TimeTrial Mode
     case 'endRound':
       updateRankings($params);
       $aseco->releaseEvent('onEndRound', $aseco->smrankings);
     break;
+    case 'MatchEnded': //TimeTrial Mode
     case 'endMap1':     
     case 'endMap': 
       $aseco->console_text('End Map');
@@ -91,6 +93,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->endmapvar=1;
       $aseco->releaseEvent('onEndMap', $aseco->smrankings);
     break;
+    case 'MapLoaded': //TimeTrial Mode
     case 'beginMap':
       $aseco->smrankings = array();
     break;   
@@ -114,6 +117,21 @@ function release_modeScriptCallbacks($aseco, $data) {
       $paramsObject = json_decode($params);
       $aseco->releaseEvent('onPlayerRespawn', $paramsObject->Event->Player->Login);
     break;
+    case 'Checkpoint':  //TimeTrial Mode
+      $paramsObject = json_decode($params);
+      $checkpoint = array(1, $paramsObject->Login, $paramsObject->CpTime, 1, $paramsObject->CpId - 1);
+      $this->releaseEvent('onCheckpoint', $checkpoint);
+    break;
+    case 'OnCheckpoint':
+      $paramsObject = json_decode($params);
+      $checkpoint = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time, 1, $paramsObject->CheckpointIndex);
+      $this->releaseEvent('onCheckpoint', $checkpoint);
+    break;    
+    case 'Finished': //TimeTrial Mode
+      $paramsObject = json_decode($params);
+      $finish = array(1, $paramsObject->Login, $paramsObject->Score);
+      $aseco->playerFinish($finish);
+      break;      
     case 'OnFinish':
       $paramsObject = json_decode($params);
       $finish = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time);
