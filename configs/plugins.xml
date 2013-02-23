@@ -16,6 +16,7 @@
     <!-- <plugin>chat.records.php</plugin>
    <plugin>chat.records2.php</plugin>
    <plugin>chat.recrels.php</plugin> --> 
+   <plugin>plugin.admin_scriptsettings.php</plugin>
    <plugin>plugin.chatlog.php</plugin>
    <plugin>plugin.map.php</plugin>
    <plugin>plugin.mxinfo.php</plugin>
@@ -49,6 +50,7 @@
    <plugin>chat.me.php</plugin>
    <plugin>chat.stats.php</plugin>   
    <plugin>chat.server.php</plugin>    
+   <plugin>plugin.admin_scriptsettings.php</plugin>
    <plugin>plugin.chatlog.php</plugin>
    <plugin>plugin.map.php</plugin>
    <plugin>plugin.mxinfo.php</plugin>
@@ -60,17 +62,15 @@
    <plugin>plugin.modescriptcallbacks.php</plugin> -->  
 
 
-<!--	Untested Plugins:	   
+  <!--	Untested Plugins:	   
   <plugin>plugin.rounds.php</plugin>
  	<plugin>chat.players2.php</plugin>  	
 	<plugin>chat.songmod.php</plugin>
   <plugin>mistral.idlekick.php</plugin>	
--->
-	
-<!--	<plugin>plugin.musicserver.php</plugin> -->
-<!--	<plugin>plugin.msglog.php</plugin> -->
-<!--	<plugin>plugin.muting.php</plugin> -->
-<!--	<plugin>plugin.autotime.php</plugin> -->
-<!--	<plugin>plugin.access.php</plugin> -->	
+  <plugin>plugin.musicserver.php</plugin> 
+  <plugin>plugin.msglog.php</plugin> 
+  <plugin>plugin.muting.php</plugin>
+  <plugin>plugin.autotime.php</plugin> 
+  <plugin>plugin.access.php</plugin> 	
 
 </mpaseco_plugins>
