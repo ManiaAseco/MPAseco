@@ -954,27 +954,6 @@ function player_connect($aseco, $player)
     }
     $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));   
   }
-        
-        /* FIRST time joinPlanets:     */
-    $pid = $aseco->getPlayerId($player->login);    
-    $query = 'SELECT SpentSession, Spent, PlayerId FROM player_planets WHERE PlayerId='.$pid.' LIMIT 1';
-    $result = mysql_query($query);
-    if (mysql_num_rows($result) > 0) {
-       
-      $row = mysql_fetch_object($result);  
-        if($row->Spent < 5)
-        {
-              $query = 'UPDATE player_planets SET Spent = Spent+5, SpentSession = SpentSession+5 WHERE PlayerId = '.$pid;       //For statistics
-              mysql_query($query);
-              
-              $message='$ff0>> $fff'.$player->nickname.'$z$s$f0f got $fff5 $f0fplanets for playing the first time here! '; 
-              $aseco->client->query('ChatSendServerMessage', $message);     
-        
-        }                  
- 
-    }       
-    mysql_free_result($result);    
-    
 }  // player_connect
 
 // called @ onPlayerDisconnect
