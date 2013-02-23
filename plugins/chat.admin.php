@@ -1664,6 +1664,7 @@ function chat_admin($aseco, $command) {
     // create new list of online players
     $aseco->client->resetError();
     $onlinelist = array();
+    $teammode = false;
     // get current players on the server (hardlimited to 300)
     $aseco->client->query('GetPlayerList', 300, 0, 1);
     $players = $aseco->client->getResponse();
@@ -1677,6 +1678,8 @@ function chat_admin($aseco, $command) {
                                             'nick' => $pl['NickName'],
                                             'spec' => $pl['SpectatorStatus'],
                                             'team' => $pl['TeamId']);
+        if($pl['TeamId'] != -1)
+          $teammode = true;
       }
     }
 
@@ -1708,11 +1711,15 @@ function chat_admin($aseco, $command) {
     if (!empty($playerlist)) {
       $head = ($onlineonly ? 'Online' : 'Known') . ' Players On This Server:';
       $msg = array();
-      $msg[] = array('Id', '{#nick}Nick $g/{#login} Login', 'Warn', 'Ignore', 'Kick', 'Ban', 'Black', 'Guest', 'Force');
       $pid = 1;
       $lines = 0;
-      $admin->msgs[0] = array(1, $head, array(1.5, 0.08, 0.45, 0.11, 0.11, 0.10, 0.12, 0.12, 0.1, 0.11, 0.09, 0.09), array('Icons128x128_1', 'Buddies'));
-
+      if($teammode){
+        $msg[] = array('Id', '{#nick}Nick $g/{#login} Login', 'Warn', 'Ignore', 'Kick', 'Ban', 'Black', 'Guest', 'Force');
+        $admin->msgs[0] = array(1, $head, array(1.5, 0.08, 0.45, 0.11, 0.11, 0.10, 0.12, 0.12, 0.1, 0.11, 0.09, 0.09), array('Icons128x128_1', 'Buddies'));
+      }else{
+        $msg[] = array('Id', '{#nick}Nick $g/{#login} Login', 'Warn', 'Ignore', 'Kick', 'Ban', 'Black', 'Guest', 'Spec');
+        $admin->msgs[0] = array(1, $head, array(1.49, 0.15, 0.5, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12), array('Icons128x128_1', 'Buddies'));      
+      }
       foreach ($playerlist as $lg => $pl) {
         $plarr = array();
         $plarr['login'] = $lg;
@@ -1805,8 +1812,14 @@ function chat_admin($aseco, $command) {
           $blue = '';
         }
 
-        $msg[] = array(str_pad($pid, 2, '0', STR_PAD_LEFT) . '.', $ply,
-                       $wrn, $ign, $kck, $ban, $blk, $gst, $spc, $blue, $red);
+        if(!$teammode){
+           $msg[] = array(str_pad($pid, 2, '0', STR_PAD_LEFT) . '.', $ply,
+                         $wrn, $ign, $kck, $ban, $blk, $gst, $spc);          
+        }else{
+          $msg[] = array(str_pad($pid, 2, '0', STR_PAD_LEFT) . '.', $ply,
+                         $wrn, $ign, $kck, $ban, $blk, $gst, $spc, $blue, $red);        
+        }
+
         $pid++;
         if (++$lines > 14) {
           $admin->msgs[] = $msg;
