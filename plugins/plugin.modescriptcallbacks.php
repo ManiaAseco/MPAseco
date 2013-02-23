@@ -131,7 +131,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $paramsObject = json_decode($params);
       $finish = array(1, $paramsObject->Login, $paramsObject->Score);
       $aseco->playerFinish($finish);
-      break;      
+    break;      
     case 'OnFinish':
       $paramsObject = json_decode($params);
       $finish = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time);
