@@ -137,7 +137,7 @@ function release_modeScriptCallbacks($aseco, $data) {
     break;
     case 'OnCheckpoint':
       $paramsObject = json_decode($params);
-      $checkpoint = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time, 1, $paramsObject->CheckpointId);
+      $checkpoint = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time, 1, $paramsObject->Run->CheckpointId);
       $aseco->releaseEvent('onCheckpoint', $checkpoint);
     break;    
     case 'Finished': //TimeTrial Mode
