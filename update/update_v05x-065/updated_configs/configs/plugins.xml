@@ -71,6 +71,6 @@
   <plugin>plugin.msglog.php</plugin> 
   <plugin>plugin.muting.php</plugin>
   <plugin>plugin.autotime.php</plugin> 
-  <plugin>plugin.access.php</plugin> 	
+  <plugin>plugin.access.php</plugin> -->	
 
 </mpaseco_plugins>
