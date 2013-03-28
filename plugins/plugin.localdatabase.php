@@ -131,7 +131,6 @@ function ldb_connect($aseco) {
               `Login` varchar(50) NOT NULL default '',
               `Game` varchar(3) NOT NULL default '',
               `NickName` varchar(100) NOT NULL default '',
-              `Continent` tinyint(3) NOT NULL default 0,
               `Nation` varchar(3) NOT NULL default '',
               `UpdatedAt` datetime NOT NULL default '0000-00-00 00:00:00',
               `Wins` mediumint(9) NOT NULL default 0,
@@ -210,9 +209,7 @@ function ldb_connect($aseco) {
   while ($row = mysql_fetch_row($result))
     $fields[] = $row[0];
   mysql_free_result($result);
-  if (!in_array('Continent', $fields)) {
-    $update .= "ADD Respawns mediumint(9) unsigned NOT NULL DEFAULT 0,";
-  }
+
   if (!in_array('Respawns', $fields)) {
     $update .= "ADD Respawns mediumint(9) unsigned NOT NULL DEFAULT 0,";
   }
@@ -315,7 +312,6 @@ function ldb_playerConnect($aseco, $player) {
     $query = 'UPDATE players
               SET NickName=' . quotedString($player->nickname) . ',
                   Nation=' . quotedString($nation) . ',
-                  Continent=' . continent2cid($player->continent) . ',
                   TeamName=' . quotedString($player->teamname) . ',
                   UpdatedAt=NOW()
               WHERE Login=' . quotedString($player->login); // .
@@ -333,12 +329,11 @@ function ldb_playerConnect($aseco, $player) {
 
     // insert player
     $query = 'INSERT INTO players
-              (Login, Game, NickName, Nation, Continent, TeamName, UpdatedAt)
+              (Login, Game, NickName, Nation, TeamName, UpdatedAt)
               VALUES
               (' . quotedString($player->login) . ', ' .
                quotedString($aseco->server->getGame()) . ', ' .
                quotedString($player->nickname) . ', ' .
-               continent2cid($player->continent) . ', ' .
                quotedString($nation) . ', ' .
                quotedString($player->teamname) . ', NOW())';
 
@@ -987,7 +982,7 @@ function ldb_beginMap($aseco, $map) {
               (Uid, Name, Author, Environment)
               VALUES
               (' . quotedString($map->uid) . ', ' .
-               quotedString($map->name) . ', ' .
+               quotedString(stripColors($map->name)) . ', ' .
                quotedString($map->author) . ', ' .
                quotedString($map->environment) . ')';
     $result = mysql_query($query);

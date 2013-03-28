@@ -10,8 +10,6 @@
  * http://tm.mania-exchange.com/threads/view/218
  * Derived from TMXInfoSearcher
  *
- * v1.5: Added MXInfo $titlepack (TM2/SM); add support for environment matching
- * v1.4: Fixed an error checking bug
  * v1.3: Added MXInfo $maptype (TM2/SM)
  * v1.2: Updated to use MX API v2.0 and add/fix support for SM; added MXInfo
  *       $trkvalue (TM2, equals deprecated $lbrating), $unlimiter (TM2/SM),
@@ -37,8 +35,8 @@ class MXInfoSearcher implements Iterator {
 	 * @param String $author
 	 *        The map author to search for (partial, case-insensitive match)
 	 * @param String $env
-	 *        The environment to search for (exact case-sensitive match from:
-	 *        TMCanyon, TMStadium, TMValley, SMStorm, ...)
+	 *        The environment to search for (exact case-insensitive match
+	 *        from: Canyon, Valley, ...);
 	 * @param Boolean $recent
 	 *        If true, ignore search parameters and just return 10 newest maps
 	 *        (max. one per author)
@@ -134,18 +132,8 @@ class MXInfoSearcher implements Iterator {
 			$url .= '&trackname=' . $name;
 		if ($author != '')
 			$url .= '&author=' . $author;
-		switch ($env) {
-			case 'TMCanyon':
-			case 'SMStorm':
-				$url .= '&environments=1';
-				break;
-			case 'TMStadium':
-				$url .= '&environments=2';
-				break;
-			case 'TMValley':
-				$url .= '&environments=3';
-				break;
-		}
+		if ($env != '')
+			$url .= '&env=' . $env;
 		$url .= '&page=';
 
 		$maps = array();
@@ -162,12 +150,8 @@ class MXInfoSearcher implements Iterator {
 				$this->error = 'Timed out while reading data from ' . $url;
 				return array();
 			} elseif ($file == '') {
-				if (empty($maps)) {
-					$this->error = 'No data returned from ' . $url;
-					return array();
-				} else {
-					break;
-				}
+				$this->error = 'No data returned from ' . $url;
+				return array();
 			}
 
 			$mx = json_decode($file);
@@ -230,8 +214,7 @@ class MXInfo {
 
 	public $section, $prefix, $id,
 		$name, $userid, $author, $uploaded, $updated,
-		$type, $maptype, $titlepack, $style, $envir, $mood,
-		$dispcost, $lightmap, $modname,
+		$type, $maptype, $style, $envir, $mood, $dispcost, $lightmap, $modname,
 		$exever, $exebld, $routes, $length, $unlimiter, $laps, $diffic,
 		$lbrating, $trkvalue, $replaytyp, $replayid, $replaycnt,
 		$acomment, $awards, $comments, $rating, $ratingex, $ratingcnt,
@@ -266,7 +249,6 @@ class MXInfo {
 			$this->updated   = $mx->UpdatedAt;
 			$this->type      = $mx->TypeName;
 			$this->maptype   = isset($mx->MapType) ? $mx->MapType : '';
-			$this->titlepack = isset($mx->TitlePack) ? $mx->TitlePack : '';
 			$this->style     = isset($mx->StyleName) ? $mx->StyleName : '';
 			$this->envir     = $mx->EnvironmentName;
 			$this->mood      = $mx->Mood;

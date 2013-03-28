@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.66');
+define('MPASECO_VERSION', '0.65');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -747,8 +747,7 @@ class Aseco {
     $this->server->game = $response['version']['Name'];
     $this->server->version = $response['version']['Version'];
     $this->server->build = $response['version']['Build'];
-		$this->server->title = $response['version']['TitleId'];
-		
+
     // throw 'starting up' event
     $this->releaseEvent('onStartup', null);
 
@@ -2514,9 +2513,7 @@ class Aseco {
 // define process settings
 if (function_exists('date_default_timezone_get') && function_exists('date_default_timezone_set'))
   date_default_timezone_set(@date_default_timezone_get());
-$limit = ini_get('memory_limit');
-if (shorthand2bytes($limit) < 128 * 1048576)
-  ini_set('memory_limit', '128M');
+ini_set('memory_limit', '50M');
 setlocale(LC_NUMERIC, 'C');
 
 

@@ -10,7 +10,6 @@
  * http://tm.mania-exchange.com/threads/view/218
  * Derived from TMXInfoFetcher
  *
- * v1.7: Added $titlepack (TM2/SM)
  * v1.6: Allowed 24-char UIDs too
  * v1.5: Added $maptype (TM2/SM)
  * v1.4: Updated to use MX API v2.0 and add/fix support for SM; added
@@ -25,8 +24,7 @@ class MXInfoFetcher {
 
 	public $section, $prefix, $uid, $id, $records, $error,
 		$name, $userid, $author, $uploaded, $updated,
-		$type, $maptype, $titlepack, $style, $envir, $mood,
-		$dispcost, $lightmap, $modname,
+		$type, $maptype, $style, $envir, $mood, $dispcost, $lightmap, $modname,
 		$exever, $exebld, $routes, $length, $unlimiter, $laps, $diffic,
 		$lbrating, $trkvalue, $replaytyp, $replayid, $replaycnt,
 		$acomment, $awards, $comments, $rating, $ratingex, $ratingcnt,
@@ -94,7 +92,6 @@ class MXInfoFetcher {
 		$mx->updated   = $import['updated'];
 		$mx->type      = $import['type'];
 		$mx->maptype   = isset($import['maptype']) ? $import['maptype'] : '';
-		$mx->titlepack = isset($import['titlepack']) ? $import['titlepack'] : '';
 		$mx->style     = $import['style'];
 		$mx->envir     = $import['envir'];
 		$mx->mood      = $import['mood'];
@@ -176,7 +173,6 @@ class MXInfoFetcher {
 		$this->updated   = $mx->UpdatedAt;
 		$this->type      = $mx->TypeName;
 		$this->maptype   = isset($mx->MapType) ? $mx->MapType : '';
-		$this->titlepack = isset($mx->TitlePack) ? $mx->TitlePack : '';
 		$this->style     = isset($mx->StyleName) ? $mx->StyleName : '';
 		$this->envir     = $mx->EnvironmentName;
 		$this->mood      = $mx->Mood;

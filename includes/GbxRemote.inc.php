@@ -61,9 +61,6 @@
 
 	Release 2011-12-04 - Xymph:
 		Prevented possible PHP warning in IXR_Value::calculateType
-
-	Release 2013-02-18 - Xymph:
-		Removed unnecessary breaks after returns in IXR_Value::getXml() switch
 */
 
 if (!defined('LF')) {
@@ -131,12 +128,16 @@ class IXR_Value {
 		switch ($this->type) {
 			case 'boolean':
 				return '<boolean>' . ($this->data ? '1' : '0') . '</boolean>';
+				break;
 			case 'int':
 				return '<int>' . $this->data . '</int>';
+				break;
 			case 'double':
 				return '<double>' . $this->data . '</double>';
+				break;
 			case 'string':
 				return '<string>' . htmlspecialchars($this->data) . '</string>';
+				break;
 			case 'array':
 				$return = '<array><data>' . LF;
 				foreach ($this->data as $item) {
@@ -144,6 +145,7 @@ class IXR_Value {
 				}
 				$return .= '</data></array>';
 				return $return;
+				break;
 			case 'struct':
 				$return = '<struct>' . LF;
 				foreach ($this->data as $name => $value) {
@@ -152,9 +154,11 @@ class IXR_Value {
 				}
 				$return .= '</struct>';
 				return $return;
+				break;
 			case 'date':
 			case 'base64':
 				return $this->data->getXml();
+				break;
 		}
 		return false;
 	}
