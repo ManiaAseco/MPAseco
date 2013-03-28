@@ -98,36 +98,7 @@ function rasp_update_maplist($aseco,$array){
         $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));*/
     } 
   }  
-    // check for autosaving maplist
-  if ($autosave_matchsettings != '') {
-    $rtn = $aseco->client->query('SaveMatchSettings', 'MatchSettings/' . $autosave_matchsettings);
-    if (!$rtn) {
-      trigger_error('[' . $aseco->client->getErrorCode() . '] SaveMatchSettings - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
-    } else {
-      // should a random filter be added?
-      if ($aseco->settings['writemaplist_random']) {
-        $mapsfile = $aseco->server->mapdir . 'MatchSettings/' . $autosave_matchsettings;
-        // read the match settings file
-        if (!$list = @file_get_contents($mapsfile)) {
-          trigger_error('Could not read match settings file ' . $mapsfile . ' !', E_USER_WARNING);
-        } else {
-          // insert random filter after <gameinfos> section
-          $list = preg_replace('/<\/gameinfos>/', '$0' . CRLF . CRLF .
-                               "\t<filter>" . CRLF .
-                               "\t\t<random_map_order>1</random_map_order>" . CRLF .
-                               "\t</filter>", $list);
-          $startPos = strpos($list, "<script_name>") + 13;
-          $endPos = strpos($list, "</script_name>");
-          $substr = substr($list, $startPos, $endPos - $startPos);
-          $list = str_ireplace($substr, $aseco->server->gameinfo->scriptname, $list);
-          // write out the match settings file
-          if (!@file_put_contents($mapsfile, $list)) {
-            trigger_error('Could not write match settings file ' . $mapsfile . ' !', E_USER_WARNING);
-          }
-        }
-      }
-    }
-  }                 
+
 }      
 
 // called @ onEndMap
@@ -193,72 +164,28 @@ function rasp_endmap($aseco, $data) {
       // if jukebox went empty, bail out
       if (!isset($next)) return;
     } else {
-      $message = formatText($rasp->messages['JUKEBOX_NEXT'][0],
-                            stripColors($next['Name']), stripColors($next['Nick']));
-      $aseco->console_text($logmsg);
-      if ($jukebox_in_window && function_exists('send_window_message'))
-        send_window_message($aseco, $message, true);
-      else
-        $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
-        
       // just play the next map
       //$next = array_shift($jukebox);
       // put it back for rasp_newmap to remove
       //$uid = $next['uid'];
       //$jukebox = array_merge(array($uid => $next), $jukebox);
     }
+    $message = formatText($rasp->messages['JUKEBOX_NEXT'][0],
+                           stripColors($next['Name']), stripColors($next['Nick']));
+    $aseco->console_text($logmsg);
+    if ($jukebox_in_window && function_exists('send_window_message'))
+      send_window_message($aseco, $message, true);
+    else
+      $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+     
+     var_dump($message);
 
-    // remember UID of next map to check whether it really plays
-  /*  $jukebox_check = $uid;
-
-    if ($aseco->debug) {
-      $aseco->console_text('rasp_endmap step2 - $jukebox_check: ' . $jukebox_check);
-      $aseco->console_text('rasp_endmap step2 - $jukebox:' . CRLF .
-                           print_r($jukebox, true));
-    }                                */
-
-    // if a MX map, add it to server
-  /*  if ($next['mx']) {
-      if ($aseco->debug) {
-        $aseco->console_text('{RASP Jukebox} ' . $next['source'] . ' map filename is ' . $next['FileName']);
-      }
-      $rtn = $aseco->client->query('AddMap', $next['FileName']);
-      if (!$rtn) {
-        trigger_error('[' . $aseco->client->getErrorCode() . '] AddMap - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
-        return;
-      } else {
-        // throw 'maplist changed' event
-        $aseco->releaseEvent('onMaplistChanged', array('juke', $next['FileName']));
-      }
-    }    */
-
-    // select jukebox/MX map as next map
-/*    $rtn = $aseco->client->query('ChooseNextMap', $next['FileName']);
-    if (!$rtn) {
-      trigger_error('[' . $aseco->client->getErrorCode() . '] ChooseNextMap - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
-    } else {
-      // report map change from MX or jukebox
-      if ($next['mx']) {
-        $logmsg = '{RASP Jukebox} Setting Next Map to ' . stripColors($next['Name'], false) . ', file downloaded from ' . $next['source'];
-        // remember it for later removal
-        $mxplaying = $next['FileName'];
-      } else {
-        $logmsg = '{RASP Jukebox} Setting Next Map to ' . stripColors($next['Name'], false) . ', requested by ' . stripColors($next['Nick'], false);
-      }
-      $message = formatText($rasp->messages['JUKEBOX_NEXT'][0],
-                             stripColors($next['Name']), stripColors($next['Nick']));
-      $aseco->console_text($logmsg);
-      if ($jukebox_in_window && function_exists('send_window_message'))
-        send_window_message($aseco, $message, true);
-      else
-        $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
-    }       */
   } else {
     // reset just in case current map was replayed
     $replays_counter = 0;
     $replays_total = 0;
   }
-         /*
+
   // check for autosaving maplist
   if ($autosave_matchsettings != '') {
     $rtn = $aseco->client->query('SaveMatchSettings', 'MatchSettings/' . $autosave_matchsettings);
@@ -285,7 +212,7 @@ function rasp_endmap($aseco, $data) {
         }
       }
     }
-  }    */
+  }
 }  // rasp_endmap
 
 // called @ onBeginMap
