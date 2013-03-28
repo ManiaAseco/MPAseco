@@ -338,13 +338,14 @@ function ldb_playerConnect($aseco, $player) {
 
     // insert player
     $query = 'INSERT INTO players
-              (Login, Game, NickName, Nation, Continent, TeamName, UpdatedAt)
+              (Login, Game, NickName, Nation, Continent, TeamName, Joins, UpdatedAt)
               VALUES
               (' . quotedString($player->login) . ', ' .
                quotedString($aseco->server->getGame()) . ', ' .
                quotedString($player->nickname) . ', ' .
                continent2cid($player->continent) . ', ' .
                quotedString($nation) . ', ' .
+               '1,'.
                quotedString($player->teamname) . ', NOW())';
 
     $result = mysql_query($query);
