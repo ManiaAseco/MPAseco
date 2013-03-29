@@ -166,7 +166,7 @@ function rasp_endmap($aseco, $data) {
 
     $message = formatText($rasp->messages['JUKEBOX_NEXT'][0],
                            stripColors($next['Name']), stripColors($next['Nick']));
-    $aseco->console_text($logmsg);
+    //$aseco->console_text($logmsg);
     if ($jukebox_in_window && function_exists('send_window_message'))
       send_window_message($aseco, $message, true);
     else
