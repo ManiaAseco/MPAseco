@@ -197,6 +197,11 @@ function rasp_endmap($aseco, $data) {
                                "\t<filter>" . CRLF .
                                "\t\t<random_map_order>1</random_map_order>" . CRLF .
                                "\t</filter>", $list);
+ 
+          $startPos = strpos($list, "<script_name>") + 13;
+          $endPos = strpos($list, "</script_name>");
+          $substr = substr($list, $startPos, $endPos - $startPos);
+          $list = str_ireplace($substr, $aseco->server->gameinfo->scriptname, $list);
 
           // write out the match settings file
           if (!@file_put_contents($mapsfile, $list)) {
