@@ -11,9 +11,8 @@
 
 require_once('includes/gbxdatafetcher.inc.php');  // provides access to GBX data
 
-Aseco::registerEvent('onChallengeListModified', 'clearMapsCache');
+Aseco::registerEvent('onMapListModified', 'clearMapsCache');
 Aseco::registerEvent('onBeginMap2', 'initMapsCache');
-Aseco::registerEvent('onMapListModified', 'initMapsCache');
 
 global $mapListCache;
 $mapListCache = array();
