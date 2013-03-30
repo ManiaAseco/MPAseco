@@ -1,33 +1,37 @@
 /* ---------------------------------------- */
 //	Custom script extension for handling	//
-//	xmlrpc events from server controllers	//
+//	XmlRpc events from server controllers	//
 //	Author: steeffeen						//
 //	Contact: schteffens@gmail.com			//
 /* ---------------------------------------- */
 
-#Const	Version				"1.4.2 (2013-02-09)"
+#Include "TextLib" as TextLib
 
-/* How-To-Use: (Modify the file ModeBase.Script.txt)
+#Const	Version				"1.5.1 (2013-02-26)"
+
+/*
+How-To-Use: (Modify the file ModeBase.Script.txt)
 
 1. Copy-Paste the following line into the ModeBase script below the other #Include lines at the beginning of the file:
 #Include "Libs/Custom/CustomXmlRpcEvents.Script.txt" as CustomXmlRpcEvents
 
 2. Copy-Paste the following line into the ModeBase script under the line +++PlayLoop+++ (Should be around line 282):
 CustomXmlRpcEvents::HandleXmlRpcEvents();
-
 */
 
-#Include "TextLib" as TextLib
-
-// Get playerId for player with given login
-Ident GetPlayerId(Text _Login) {
-	declare PlayerId = NullId;
+// Get player/spectator with given login
+CSmPlayer GetPlayer(Text _Login) {
 	foreach (Player in Players) {
 		if (Player.Login == _Login) {
-			return Player.Id;
+			return Players[Player.Id];
 		}
 	}
-	return PlayerId;
+	foreach (Spectator in Spectators) {
+		if (Spectator.Login == _Login) {
+			return Spectators[Spectator.Id];
+		}
+	}
+	return Null;
 }
 
 // Handle XmlRpc events
@@ -38,7 +42,7 @@ Void HandleXmlRpcEvents() {
 				// Events regardless of passed values
 				switch (Event.Param1) {
 					case "setExtraRules": {
-						declare ExtraRules for XmlRpc = "";
+						declare Text ExtraRules for XmlRpc;
 						ExtraRules = Event.Param2;
 					}
 					default: {
@@ -79,61 +83,61 @@ Void HandleXmlRpcEvents() {
 									}
 								}
 								if (Login != "" && ValueText != "" && Begin != 0) {
-									declare PlayerId = GetPlayerId(Login);
-									if (PlayerId != NullId && Players.existskey(PlayerId)) {
+									declare Player = GetPlayer(Login);
+									if (Player != Null) {
 										// Perform actions by callback name
 										switch (Event.Param1) {
 											case "setAmmoGain": {
-												Players[PlayerId].AmmoGain = TextLib::ToReal(ValueText);
+												Player.AmmoGain = TextLib::ToReal(ValueText);
 											}
 											case "setArmorCount": {
-												Players[PlayerId].ArmorMax = TextLib::ToInteger(ValueText);
+												Player.ArmorMax = TextLib::ToInteger(ValueText);
 											}
 											case "setArmorGain": {
-												Players[PlayerId].ArmorGain = TextLib::ToInteger(ValueText);
+												Player.ArmorGain = TextLib::ToInteger(ValueText);
 											}
 											case "setArmorReplenishGain": {
-												Players[PlayerId].ArmorReplenishGain = TextLib::ToInteger(ValueText);
+												Player.ArmorReplenishGain = TextLib::ToInteger(ValueText);
 											}
 											case "setDefaultValues": {
 												// Set default values for the player
-												Players[PlayerId].AmmoGain = 1.0;
-												Players[PlayerId].ArmorMax = 200;
-												This.SetPlayerAmmoMax(Players[PlayerId], CSmMode::EWeapon::Rocket, 4);
-												Players[PlayerId].StaminaGain = 1.0;
-												Players[PlayerId].StaminaPower = 1.0;
+												Player.AmmoGain = 1.0;
+												Player.ArmorMax = 200;
+												This.SetPlayerAmmoMax(Player, CSmMode::EWeapon::Rocket, 4);
+												Player.StaminaGain = 1.0;
+												Player.StaminaPower = 1.0;
 											}
 											case "setCaptureSpeed": {
 												// Set capture speed as key-value variable
-												declare CaptureSpeed for Players[PlayerId] = 10;
+												declare CaptureSpeed for Player = 10;
 												CaptureSpeed = TextLib::ToInteger(ValueText);
 											}
 											case "setRocketCount": {
-												This.SetPlayerAmmoMax(Players[PlayerId], CSmMode::EWeapon::Rocket, TextLib::ToInteger(ValueText));
+												This.SetPlayerAmmoMax(Player, CSmMode::EWeapon::Rocket, TextLib::ToInteger(ValueText));
 											}
 											case "setStaminaGain": {
-												Players[PlayerId].StaminaGain = TextLib::ToReal(ValueText);
+												Player.StaminaGain = TextLib::ToReal(ValueText);
 											}
 											case "setStaminaPower": {
-												Players[PlayerId].StaminaPower = TextLib::ToReal(ValueText);
+												Player.StaminaPower = TextLib::ToReal(ValueText);
 											}
 										}
 									}
 								} else {
 									// Other events
-									declare PlayerId = GetPlayerId(Event.Param2);
-									if (PlayerId != NullId && Players.existskey(PlayerId)) {
+									declare Player = GetPlayer(Event.Param2);
+									if (Player != Null) {
 										// Player dependent events (login passed)
 										switch (Event.Param1) {
 											case "disableAltMenu": {
-												declare UI <=> UIManager.GetUI(Players[PlayerId]);
+												declare UI <=> UIManager.GetUI(Player);
 												if (UI != Null) {
 													UI.AltMenuNoDefaultScores = True;
 													UI.AltMenuNoCustomScores = True;
 												}
 											}
 											case "enableAltMenu": {
-												declare UI <=> UIManager.GetUI(Players[PlayerId]);
+												declare UI <=> UIManager.GetUI(Player);
 												if (UI != Null) {
 													UI.AltMenuNoDefaultScores = False;
 													UI.AltMenuNoCustomScores = False;

@@ -125,7 +125,7 @@ function release_modeScriptCallbacks($aseco, $data) {
     break;
     case 'Spawning': //TimeTrial Mode
       $paramsObject = json_decode($params);
-      $aseco->releaseEvent('onSpawning', array($paraamsObject->Login, $paramsObject->CpId));
+      $aseco->releaseEvent('onSpawning', array($paramsObject->Login, $paramsObject->CpId));
     break;
     case 'Surrender': //TimeTrial Mode
       $aseco->releaseEvent('onSurrender', json_decode($params)->Login);
@@ -137,7 +137,7 @@ function release_modeScriptCallbacks($aseco, $data) {
     break;
     case 'OnCheckpoint':
       $paramsObject = json_decode($params);
-      $checkpoint = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time, 1, $paramsObject->CheckpointIndex);
+      $checkpoint = array(1, $paramsObject->Player->Login, $paramsObject->Run->Time, 1, $paramsObject->Run->CheckpointId);
       $aseco->releaseEvent('onCheckpoint', $checkpoint);
     break;    
     case 'Finished': //TimeTrial Mode

@@ -113,6 +113,7 @@ class Player {
   var $client;
   var $ipport;
   var $zone;
+  var $continent;  
   var $nation;
   var $prevstatus;
   var $isspectator;
@@ -165,11 +166,27 @@ class Player {
       $this->isofficial = $rpc_infos['IsInOfficialMode'];
       $this->teamname = $rpc_infos['LadderStats']['TeamName'];
       $this->zone = substr($rpc_infos['Path'], 6);  // strip 'World|'
-      $this->nation = explode("|", $this->zone);
-      if (isset($this->nation[1]))
-        $this->nation = $this->nation[1];
-      else
+      $zones = explode('|', $rpc_infos['Path']);
+      if (isset($zones[1])) {
+        switch ($zones[1]) {
+          case 'Europe':
+          case 'Africa':
+          case 'Asia':
+          case 'Middle East':
+          case 'North America':
+          case 'South America':
+          case 'Oceania':
+            $this->continent = $zones[1];
+            $this->nation = $zones[2];
+            break;
+          default:
+            $this->continent = '';
+            $this->nation = $zones[1];
+        }
+      } else {
+        $this->continent = '';
         $this->nation = '';
+      }
       $this->ladderrank = $rpc_infos['LadderStats']['PlayerRankings'][0]['Ranking'];
       $this->ladderscore = round($rpc_infos['LadderStats']['PlayerRankings'][0]['Score'], 2);
       $this->client = $rpc_infos['ClientVersion'];
@@ -189,6 +206,7 @@ class Player {
       $this->isofficial = false;
       $this->teamname = '';
       $this->zone = '';
+      $this->continent = '';
       $this->nation = '';
       $this->ladderrank = 0;
       $this->ladderscore = 0;
@@ -394,6 +412,7 @@ class Server {
   var $timeout;
   var $version;
   var $build;
+  var $title;
   var $packmask;
   var $laddermin;
   var $laddermax;
@@ -469,28 +488,20 @@ class Gameinfo {
     switch ($this->mode) {
       case self::SCPT:
         return 'Script';
-        break;
       case self::RNDS:
         return 'Rounds';
-        break;
       case self::TA:
         return 'TimeAttack';
-        break;
       case self::TEAM:
         return 'Team';
-        break;
       case self::LAPS:
         return 'Laps';
-        break;
       case self::CUP:
         return 'Cup';
-        break;
       case self::STNT:
         return 'Stunts';
-        break;
       default:
         return 'Undefined';
-        break;
     }
   }
 
@@ -521,9 +532,9 @@ class Gameinfo {
           }
         }
         
-        $this->type = str_ireplace('shootmania\\', '', $this->type);
-        $this->type = str_replace('Arena', '', $this->type);
-        $this->type = str_replace('.Script.txt', '', $this->type);
+        $this->scriptname = str_ireplace('shootmania\\', '', $this->type);  
+        $this->scriptname = str_replace('Arena', '', $this->scriptname);
+        $this->type = str_replace('.Script.txt', '', $this->scriptname);
       }
   /*    $this->numchall = $rpc_infos['NbChallenge'];
       if ($rpc_infos['RoundsUseNewRules'])
@@ -538,7 +549,6 @@ class Gameinfo {
       $this->lapslimit = $rpc_infos['LapsTimeLimit'];
       $this->cuplimit = $rpc_infos['CupPointsLimit'];
       $this->forcedlaps = $rpc_infos['RoundsForcedLaps']; */
-      $this->scriptname = $rpc_infos['ScriptName'];
     } else {
       $this->mode = -1;
     }

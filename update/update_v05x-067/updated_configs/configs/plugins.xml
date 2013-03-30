@@ -39,7 +39,7 @@
    <!--  <plugin>plugin.linearmode.php</plugin>	 -->
 
    <!-- Recommended Elite Config (Disable Plugins Above)
-        Set feature_ranks in configs/plugins/rasp_settings.xml to true --> 
+        Set feature_ranks in configs/plugins/rasp_settings.xml to false --> 
    <!--
    <plugin>plugin.localdatabase.php</plugin>
    <plugin>chat.admin.php</plugin> 

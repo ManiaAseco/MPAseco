@@ -131,11 +131,13 @@ function ldb_connect($aseco) {
               `Login` varchar(50) NOT NULL default '',
               `Game` varchar(3) NOT NULL default '',
               `NickName` varchar(100) NOT NULL default '',
-              `Nation` varchar(3) NOT NULL default '',
+              `Continent` tinyint(3) NOT NULL default 0,
+              `Nation` varchar(3) NOT NULL default '', 
               `UpdatedAt` datetime NOT NULL default '0000-00-00 00:00:00',
               `Wins` mediumint(9) NOT NULL default 0,
               `TimePlayed` int(10) unsigned NOT NULL default 0,
               `TeamName` char(60) NOT NULL default '',
+              `Joins` mediumint(9) unsigned NOT NULL default 0,
               `Respawns` mediumint(9) unsigned NOT NULL default 0,
               `Deaths` mediumint(9) unsigned NOT NULL default 0,
               `Hits` mediumint(9) unsigned NOT NULL default 0,
@@ -209,7 +211,12 @@ function ldb_connect($aseco) {
   while ($row = mysql_fetch_row($result))
     $fields[] = $row[0];
   mysql_free_result($result);
-
+  if (!in_array('Continent', $fields)) {
+    $update .= "ADD Continent tinyint(3) unsigned NOT NULL DEFAULT 0,";
+  }
+  if (!in_array('Joins', $fields)) {
+    $update .= "ADD Joins mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  }  
   if (!in_array('Respawns', $fields)) {
     $update .= "ADD Respawns mediumint(9) unsigned NOT NULL DEFAULT 0,";
   }
@@ -312,12 +319,14 @@ function ldb_playerConnect($aseco, $player) {
     $query = 'UPDATE players
               SET NickName=' . quotedString($player->nickname) . ',
                   Nation=' . quotedString($nation) . ',
+                  Continent=' . continent2cid($player->continent) . ',
+                  Joins=Joins+1,
                   TeamName=' . quotedString($player->teamname) . ',
                   UpdatedAt=NOW()
               WHERE Login=' . quotedString($player->login); // .
               // ' AND Game=' . quotedString($aseco->server->getGame());
     $result = mysql_query($query);
-
+  
     if (mysql_affected_rows() == -1) {
       trigger_error('Could not update connecting player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
     }
@@ -329,12 +338,14 @@ function ldb_playerConnect($aseco, $player) {
 
     // insert player
     $query = 'INSERT INTO players
-              (Login, Game, NickName, Nation, TeamName, UpdatedAt)
+              (Login, Game, NickName, Nation, Continent, TeamName, Joins, UpdatedAt)
               VALUES
               (' . quotedString($player->login) . ', ' .
                quotedString($aseco->server->getGame()) . ', ' .
                quotedString($player->nickname) . ', ' .
+               continent2cid($player->continent) . ', ' .
                quotedString($nation) . ', ' .
+               '1,'.
                quotedString($player->teamname) . ', NOW())';
 
     $result = mysql_query($query);
@@ -982,7 +993,7 @@ function ldb_beginMap($aseco, $map) {
               (Uid, Name, Author, Environment)
               VALUES
               (' . quotedString($map->uid) . ', ' .
-               quotedString(stripColors($map->name)) . ', ' .
+               quotedString($map->name) . ', ' .
                quotedString($map->author) . ', ' .
                quotedString($map->environment) . ')';
     $result = mysql_query($query);
@@ -1055,8 +1066,5 @@ function ldb_playerDeath($aseco, $login) {
   mysql_query($query);
 }
 
-function ldb_attackerWon($aseco, $login) {
-  $query = 'UPDATE players SET attackerWon = attackerWon+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
-}
+
 ?>

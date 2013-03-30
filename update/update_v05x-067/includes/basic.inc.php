@@ -608,6 +608,64 @@ function mapCountry($country) {
 	}
 	return $nation;
 }  // mapCountry
+// continent Ids
+define('C_EUROPE', 1);
+define('C_AFRICA', 2);
+define('C_ASIA', 3);
+define('C_MDEAST', 4);
+define('C_NAMERICA', 5);
+define('C_SAMERICA', 6);
+define('C_OCEANIA', 7);
+
+/**
+ * Convert continent to CId
+ */
+function continent2cid($continent) {
+
+	switch ($continent) {
+		case 'Europe':
+			return C_EUROPE;
+		case 'Africa':
+			return C_AFRICA;
+		case 'Asia':
+			return C_ASIA;
+		case 'Middle East':
+			return C_MDEAST;
+		case 'North America':
+			return C_NAMERICA;
+		case 'South America':
+			return C_SAMERICA;
+		case 'Oceania':
+			return C_OCEANIA;
+		default:
+			return 0;
+	}
+}  // continent2cid
+
+/**
+ * Convert CId to continent
+ */
+function cid2continent($cid) {
+
+	switch ($cid) {
+		case C_EUROPE:
+			return 'Europe';
+		case C_AFRICA:
+			return 'Africa';
+		case C_ASIA:
+			return 'Asia';
+		case C_MDEAST:
+			return 'Middle East';
+		case C_NAMERICA:
+			return 'North America';
+		case C_SAMERICA:
+			return 'South America';
+		case C_OCEANIA:
+			return 'Oceania';
+		default:
+			return '';
+	}
+}  // cid2continent
 
 /**
  * Find MX data for the given map
@@ -741,7 +799,19 @@ function validateUTF8String($input, $invalidRepl = '') {
 	}
 	return $new;
 }  // validateUTF8String
+/**
+ * Convert php.ini memory shorthand string to integer bytes
+ * http://www.php.net/manual/en/function.ini-get.php#96996
+ */
+function shorthand2bytes($size_str) {
 
+	switch (substr($size_str, -1)) {
+		case 'M': case 'm': return (int)$size_str * 1048576;
+		case 'K': case 'k': return (int)$size_str * 1024;
+		case 'G': case 'g': return (int)$size_str * 1073741824;
+		default: return (int)$size_str;
+	}
+}  // return_bytes
 /**
  * Convert boolean value to text string
  */

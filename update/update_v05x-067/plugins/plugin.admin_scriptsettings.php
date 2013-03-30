@@ -1,16 +1,16 @@
 <?php
 /**
  *   This Plugin handles the Scriptsetttings graphically.
- *   Version: v0.2
+ *   Version: v0.3
  *   Author: Lukas Kremsmayr
  *   Dependencies: none 
  */
 
 class ScriptSettings extends Plugin {
-  private $xy; //private variables
   private $manialinksID, $showWidgetID;
+  private $defaultBeginMap;
   public $pluginVersion, $pluginAuthor; 
-  public $Aseco;
+  public $Aseco, $settingsFile;
   /**
    * Initializes the plugin, loads the XML settings
    */
@@ -18,8 +18,9 @@ class ScriptSettings extends Plugin {
     $this->pluginMainId = "99957";
     $this->showWidgetID = "1"; //mainwindow
     
-    $this->pluginVersion = '0.01';  
+    $this->pluginVersion = '0.3';  
     $this->pluginAuthor = 'Lukas Kremsmayr';
+    $this->defaultBeginMap = false;
   }
 
   /**
@@ -37,7 +38,13 @@ class ScriptSettings extends Plugin {
       $recipient = intval(substr($action, 0, 3));
       $action = substr($action, 3);
       
-      if ($recipient==998){  //Show Plugin
+      if ($recipient==995){ //OnBeginMap
+        $this->toggleDefaultOnBeginMap($command[1]);
+      }else if ($recipient==996){ //Save Default Settings
+        $this->saveDefaultSettings($command[1]);
+      }else if ($recipient==997){  //Load Default Settings
+        $this->loadDefaultSettings($command[1]);  
+      }else if ($recipient==998){  //Show Plugin
         $this->showPlugin($command[1]);
       }else if ($recipient==999){  //Apply Values
         $this->setScriptSettings($command[1], $command[3]);
@@ -49,19 +56,112 @@ class ScriptSettings extends Plugin {
     }
   } //onManiaPlayerPageAnswers
 
-  private function setScriptSettings($login, $settings){
+  private function toggleDefaultOnBeginMap($login){
     $admin = $this->Aseco->server->players->getPlayer($login);
-    // check if chat command was allowed for a masteradmin/admin/operator
+    $logtitle  = $this->getLogTitle($admin);
+            
+    if($this->defaultBeginMap == true)
+      $this->defaultBeginMap = false;
+    else
+      $this->defaultBeginMap = true;
+  
+    $this->showPlugin($login);   
+    $message = formatText('{#server}>> {#admin}Loading default settings on map begin: {#highlite}{1}{#admin}!', bool2text($this->defaultBeginMap));
+    $this->Aseco->client->query('ChatSendServerMessageToLogin', $this->Aseco->formatColors($message), $login);   
+    $this->Aseco->console('{1} [{2}] loading default settings on map begin: {3}!', $logtitle, $login, bool2text($this->defaultBeginMap));   
+  }
+  
+  public function beginMap(){
+    if($this->defaultBeginMap == true)
+      $this->loadDefaultSettings();
+  }
+
+  private function loadDefaultSettings($login = false){
+    if (file_exists($this->settingsFile)) {
+      if($login){
+        $admin = $this->Aseco->server->players->getPlayer($login);
+        $logtitle  = $this->getLogTitle($admin);
+        $chattitle = $this->Aseco->titles[strtoupper($logtitle)][0];
+      }
+      
+      $this->Aseco->console('[Admin] Load default scriptsetting file['.$this->settingsFile.']');
+      if (!$settings = $this->Aseco->xml_parser->parseXml($this->settingsFile)) {
+        trigger_error('Could not read/parse default scriptsetting file '.$this->settingsFile.' !', E_USER_ERROR);
+      }
+
+      $this->Aseco->client->query('GetModeScriptSettings');
+      $scriptSettings = $this->Aseco->client->getResponse();
+      
+      foreach($scriptSettings as $key => $value){
+         $type = gettype($value);
+         $newvalue = $settings['SCRIPTSETTINGS'][strtoupper($key)][0];
+         if($type == "boolean")
+          $newvalue = text2bool($newvalue);
+         settype($newvalue, $type);
+         $scriptSettings[$key] = $newvalue;
+      }
+      $this->Aseco->client->query('SetModeScriptSettings', $scriptSettings);
+      var_dump($scriptSettings);
+      if($login){
+        $this->showPlugin($login); 
+        
+        $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} loaded default Scriptsettings!', $chattitle, $admin->nickname);
+        $this->Aseco->client->query('ChatSendServerMessage', $this->Aseco->formatColors($message));                             
+        $this->Aseco->console('{1} [{2}] loaded default Scriptsettings!', $logtitle, $login);      
+     }  
+    } else {
+      trigger_error('Could not find default scriptsetting file ' . $this->settingsFile . ' !', E_USER_WARNING);
+    }
+  }
+  
+  
+  private function saveDefaultSettings($login){
+    if(!is_dir("configs/scriptsettings/")){
+      mkdir("configs/scriptsettings/");
+    }
+    $handle = fopen($this->settingsFile,"w");
+    if($handle){
+      $admin = $this->Aseco->server->players->getPlayer($login);
+      $logtitle  = $this->getLogTitle($admin);
+ 
+      $this->Aseco->client->query('GetModeScriptSettings');
+      $settings = $this->Aseco->client->getResponse();
+      
+      $dom = new DOMDocument('1.0', 'utf-8');
+      $dom->formatOutput = true;
+      $root = $dom->createElement('scriptsettings');
+      $dom->appendChild($root);
+      
+      foreach($settings as $key => $value){
+        if(is_bool($value))
+          $value = bool2text($value);
+        $root->appendChild($firstNode = $dom->createElement($key, $value));
+      }
+      fwrite($handle,$dom->saveXML());
+  
+      $message = formatText('{#server}>> {#admin}Default Scripsettings saved successfully!');
+      $this->Aseco->client->query('ChatSendServerMessageToLogin', $this->Aseco->formatColors($message), $login);                         
+      $this->Aseco->console('{1} [{2}] saved default Scriptsettings!', $logtitle, $login);   
+      $this->showPlugin($login); 
+    }
+    fclose($handle);
+  }
+  
+  private function getLogTitle($admin){
     if ($this->Aseco->isMasterAdmin($admin)) {
       $logtitle = 'MasterAdmin';
-      $chattitle = $this->Aseco->titles['MASTERADMIN'][0];
     } else if ($this->Aseco->isAdmin($admin)){
         $logtitle = 'Admin';
-        $chattitle = $this->Aseco->titles['ADMIN'][0];
     } else if ($this->Aseco->isOperator($admin) /* && $aseco->allowOpAbility($command['params'][0] )*/) {
         $logtitle = 'Operator';
-        $chattitle = $this->Aseco->titles['OPERATOR'][0];
-    }
+    }  
+    return $logtitle;
+  }
+  
+  private function setScriptSettings($login, $settings){
+    $admin = $this->Aseco->server->players->getPlayer($login);
+    $logtitle  = $this->getLogTitle($admin);
+    $chattitle = $this->Aseco->titles[strtoupper($logtitle)][0];
 
     $this->Aseco->client->query('GetModeScriptSettings');
     $oldSettings = $this->Aseco->client->getResponse();
@@ -102,17 +202,8 @@ class ScriptSettings extends Plugin {
 
   private function setCheckboxSetting($login, $recipient){
     $admin = $this->Aseco->server->players->getPlayer($login);
-    // check if chat command was allowed for a masteradmin/admin/operator
-    if ($this->Aseco->isMasterAdmin($admin)) {
-      $logtitle = 'MasterAdmin';
-      $chattitle = $this->Aseco->titles['MASTERADMIN'][0];
-    } else if ($this->Aseco->isAdmin($admin)){
-        $logtitle = 'Admin';
-        $chattitle = $this->Aseco->titles['ADMIN'][0];
-    } else if ($this->Aseco->isOperator($admin)) {
-        $logtitle = 'Operator';
-        $chattitle = $this->Aseco->titles['OPERATOR'][0];
-    }
+    $logtitle  = $this->getLogTitle($admin);
+    $chattitle = $this->Aseco->titles[strtoupper($logtitle)][0];
 
      
     $this->Aseco->client->query('GetModeScriptSettings');
@@ -168,6 +259,8 @@ class ScriptSettings extends Plugin {
   }
   
   private function maniaLink($login){
+    $this->settingsFile = 'configs/scriptsettings/'.$this->Aseco->server->gameinfo->type.'.xml';
+    
     $this->Aseco->client->query('GetModeScriptSettings');
     $scriptSettings = $this->Aseco->client->getResponse();
     $cnt = count($scriptSettings);
@@ -225,9 +318,20 @@ class ScriptSettings extends Plugin {
 
     }                                                       
     
-    $xml.=   '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>';
+    $xml .= '<label pos="-0.55 -0.75 -0.2" sizen="11 1.5" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" text="Load default Settings"/>';
+    $xml .= '<label pos="-0.55 -0.78 -0.2" sizen="11 1.5" style="TextValueSmall" halign="center"  focusareacolor1="555A" substyle="BgCard" text="on map begin"/>';
+    
+    if($this->defaultBeginMap == true)
+      $xml .= '<quad pos="-0.66 -0.765 -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="LvlGreen" action="'.$this->pluginMainId.'995"/>';   
+    else
+      $xml .= '<quad pos="-0.66 -0.765 -0.14" size="0.03 0.03" halign="center" style="Icons64x64_1" substyle="LvlRed" action="'.$this->pluginMainId.'995"/>';
+          
+    $xml.=   '<quad pos="-0.71 -0.74 -0.2" size="0.08 0.08" halign="center" style="Icons64x64_1" substyle="Close" action="0"/>'; //Close Button
     if($changePermission){ 
-      $xml.= '<label pos="-1.281 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Apply Values" action="'.$this->pluginMainId.'999"/>';
+      $xml.= '<label pos="-0.12 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Save Default Settings" action="'.$this->pluginMainId.'996"/>'; //Save
+      if(file_exists($this->settingsFile))    
+        $xml.= '<label pos="-0.35 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Load Default Settings" action="'.$this->pluginMainId.'997"/>'; //Load
+      $xml.= '<label pos="-1.281 -0.744 -0.2" halign="center" style="CardButtonMedium" text="Apply Values" action="'.$this->pluginMainId.'999"/>';   //Apply
     }
     $xml.='</frame>';  
     return $xml; 
@@ -246,11 +350,17 @@ $scriptSettings->setDescription('Manages Scriptsettings');
 /* Register the used Events */
 Aseco::registerEvent('onStartup', 'scriptSettings_mpasecoStartup');  
 Aseco::registerEvent('onPlayerManialinkPageAnswer', 'scriptSettings_handleClick');
+Aseco::registerEvent('onBeginMap', 'scriptSettings_beginMap');
 
 /* Events: */ 
 function scriptSettings_show($login){
   global $scriptSettings;
   $scriptSettings->showPlugin($login);
+}   
+
+function scriptSettings_beginMap(){
+  global $scriptSettings;
+  $scriptSettings->beginMap();
 }   
  
 function scriptSettings_mpasecoStartup($aseco){
