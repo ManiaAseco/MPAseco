@@ -286,7 +286,7 @@ function ldb_playerConnect($aseco, $player) {
   global $ldb_settings;
 
   $nation = mapCountry($player->nation);
-
+  
   // get player stats
   $query = 'SELECT Id, Wins, TimePlayed, TeamName
             FROM players
@@ -343,8 +343,8 @@ function ldb_playerConnect($aseco, $player) {
               (' . quotedString($player->login) . ', ' .
                quotedString($aseco->server->getGame()) . ', ' .
                quotedString($player->nickname) . ', ' .
+               quotedString($nation) . ', ' . 
                continent2cid($player->continent) . ', ' .
-               quotedString($nation) . ', ' .
                '1,'.
                quotedString($player->teamname) . ', NOW())';
 
