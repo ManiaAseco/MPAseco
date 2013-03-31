@@ -73,6 +73,8 @@ function release_modeScriptCallbacks($aseco, $data) {
       $victim = str_replace('Victim:', '', $players[1]);
       $shooter = str_replace('Shooter:', '', $players[0]);
       $aseco->releaseEvent('onPassBall', array('victim' => $victim, 'shooter' => $shooter));
+      if($playercnt > 3) //only if more than 3 Player on the Server
+        $aseco->releaseEvent('onPlayerSurvival', $shooter);
     break;
     case 'beginRound':
       updateRankings($params);

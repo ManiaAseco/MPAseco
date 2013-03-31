@@ -23,6 +23,7 @@ Aseco::registerEvent('onSync', 'init_jbhistory');
 Aseco::registerEvent('onEndMap', 'rasp_endmap');
 Aseco::registerEvent('onBeginMap', 'rasp_newmap');
 Aseco::registerEvent('onJukeboxChanged', 'rasp_updateMaplist');
+Aseco::registerEvent('onMapListModified', 'rasp_updateMaplist');
 Aseco::registerEvent('onPlayerDisconnect', 'rasp_playerDisconnect');
 
 // handles action id's "101"-"2000" for jukeboxing max. 1900 maps
@@ -105,7 +106,7 @@ function rasp_updateMaplist($aseco,$array){
       }
     }
     
-    var_dump($next['FileName']);    
+   // var_dump($next['FileName']);    
     // select jukebox/MX map as next map
     $rtn = $aseco->client->query('ChooseNextMap', $next['FileName']);
     if (!$rtn) {
