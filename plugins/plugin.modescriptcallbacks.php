@@ -2,12 +2,11 @@
 /**
  * Plugin to handle the script callbacks send by the server.
  * Made by the MPAseco team for ShootMania
- * v1.0 
+ * v2.0 
  */
 
 Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
-
-
+Aseco::registerEvent('onModeScriptCallbackArray', 'release_modeScriptCallbacks');
 
 function release_modeScriptCallbacks($aseco, $data) {
   global $singe_callbacks, $multi_callbacks;
@@ -43,6 +42,61 @@ function release_modeScriptCallbacks($aseco, $data) {
    }   */ 
                  
   switch($name) {
+    /* New Callbacks Release 9.4.2013 */
+    case 'LibXmlRpc_Rankings': 
+      updateRankings($params);
+    break;
+    
+    case 'LibXmlRpc_BeginRound':
+      $aseco->releaseEvent('onBeginRound', $aseco->smrankings);
+    break;
+
+    case 'LibXmlRpc_EndRound':  
+      $aseco->releaseEvent('onEndRound', $aseco->smrankings);
+    break;
+    
+    case 'LibXmlRpc_BeginMap':
+      $aseco->smrankings = array();
+      $aseco->beginMap();
+    break;   
+        
+    case 'LibXmlRpc_EndMap': 
+      if(!$aseco->endmapvar){ 
+        $aseco->console_text('End Map');
+        $aseco->releaseEvent('onEndMap1', $aseco->smrankings);    
+        $aseco->displayEndMapRecords(); 
+        $aseco->endMapRanking($aseco->smrankings);    //temporary fix    
+        $aseco->endmapvar=1;
+        $aseco->releaseEvent('onEndMap', $aseco->smrankings);
+      }
+    break; 
+        
+    case 'LibXmlRpc_OnCapture': 
+       if($playercnt > 1){ //only if more than 1 Player on the Server
+          $players = explode(';', $params);
+          foreach($players as $player){
+            $aseco->releaseEvent('onPoleCapture', $player);
+          }
+        }
+    break;
+    
+    case 'LibXmlRpc_OnArmorEmpty': 
+      //ShooterLogin, VictimLogin, TL::ToText(_Event.Damage), TL::ToText(_Event.WeaponNum), TL::ToText(_Event.ShooterPoints)
+      $aseco->releaseEvent('onPlayerDeath', $params[1]); 
+    break;
+
+    case 'LibXmlRpc_OnPlayerRequestRespawn':  //SM Release 09.04.2013
+      $aseco->releaseEvent('onPlayerRespawn', $params);
+    break;
+        
+    case 'LibXmlRpc_OnHit': 
+      //ShooterLogin, VictimLogin, TL::ToText(_Event.Damage), TL::ToText(_Event.WeaponNum), TL::ToText(_Event.ShooterPoints)
+      if($playercnt > 2) //only if more than 2 Player on the Server
+        $aseco->releaseEvent('onPlayerHit', array('victim' => $params[1], 'shooter' => $params[0], 'points' => $params[4]));
+    break;
+    
+    
+    /* Old Callbacks */ 
     case 'playerDeath':
       $aseco->releaseEvent('onPlayerDeath', $params);
     break;
@@ -50,6 +104,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       if($playercnt > 1) //only if more than 1 Player on the Server
         $aseco->releaseEvent('onPoleCapture', $params);
     break;
+    
     case 'playerHit':
       $players = explode(';', $params);
       $victim = str_replace('Victim:', '', $players[0]);
@@ -58,10 +113,12 @@ function release_modeScriptCallbacks($aseco, $data) {
       if($playercnt > 2) //only if more than 2 Player on the Server
         $aseco->releaseEvent('onPlayerHit', array('victim' => $victim, 'shooter' => $shooter, 'points' => $points));
     break;
+    
     case 'playerSurvival':
       if($playercnt > 3) //only if more than 3 Player on the Server
         $aseco->releaseEvent('onPlayerSurvival', $params);
     break;
+  
     case 'playerRespawn':
       $aseco->releaseEvent('onPlayerRespawn', $params);
     break;
@@ -85,25 +142,34 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onEndRound', $aseco->smrankings);
     break;
     case 'MatchEnded': //TimeTrial Mode
-    $aseco->releaseEvent('onEndMap1', $aseco->smrankings);
-    $aseco->smrankings = json_decode($params,true);
-    if($aseco->settings['records_activated'])
-      array_multisort($aseco->smrankings, SORT_ASC, SORT_NUMERIC);
-    else
-      array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);  
-    $aseco->endmapvar=1;
-    $aseco->releaseEvent('onEndMap', $aseco->smrankings);
+      if(!$aseco->endmapvar){    
+        $aseco->releaseEvent('onEndMap1', $aseco->smrankings);
+        $aseco->smrankings = json_decode($params,true);
+        if($aseco->settings['records_activated'])
+          array_multisort($aseco->smrankings, SORT_ASC, SORT_NUMERIC);
+        else
+          array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);  
+        $aseco->endmapvar=1;
+        $aseco->releaseEvent('onEndMap', $aseco->smrankings);
+      }
     break;
+    case 'BeginWarmup':
+      $aseco->client->query('TriggerModeScriptEvent','LibXmlRpc_GetRankings'); //Get Rankings
+    break;
+        
     case 'endMap1':     
     case 'endMap': 
-      $aseco->console_text('End Map');
-      $aseco->releaseEvent('onEndMap1', $aseco->smrankings);
-      updateRankings($params);  
-      $aseco->displayEndMapRecords(); 
-      $aseco->endMapRanking($aseco->smrankings);    //temporary fix    
-      $aseco->endmapvar=1;
-      $aseco->releaseEvent('onEndMap', $aseco->smrankings);
+      if(!$aseco->endmapvar){
+        $aseco->console_text('End Map');
+        $aseco->releaseEvent('onEndMap1', $aseco->smrankings);
+        updateRankings($params);  
+        $aseco->displayEndMapRecords(); 
+        $aseco->endMapRanking($aseco->smrankings);    //temporary fix    
+        $aseco->endmapvar=1;
+        $aseco->releaseEvent('onEndMap', $aseco->smrankings);
+      }
     break;
+    
     case 'MapLoaded': //TimeTrial Mode
     case 'beginMap':
       $aseco->smrankings = array();

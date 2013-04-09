@@ -42,7 +42,7 @@ Text Private_GetRankings() {
 /* ------------------------------------- */
 /// Wrapper for the SendCallbackArray() method
 Void Private_SendCallbackArray(Text _Type, Text[] _Data) {
-	//log(Now^"> LibXmlRpc > SendCallbackArray() > Type: "^_Type^" | Data: "^_Data);
+	log(Now^"> LibXmlRpc > SendCallbackArray() > Type: "^_Type^" | Data: "^_Data);
 	XmlRpc.SendCallbackArray(_Type, _Data);
 }
 

@@ -12,7 +12,7 @@
 #Include "Libs/Nadeo/ShootMania/XmlRpc.Script.txt" as XmlRpc
 #Include "Libs/Custom/CustomXmlRpcEvents.Script.txt" as CustomXmlRpcEvents
 
-#Setting S_UseScriptCallbacks False as "<hidden>"	///< Turn on/off the script callbacks, usefull for server manager
+#Setting S_UseScriptCallbacks True as "<hidden>"	///< Turn on/off the script callbacks, usefull for server manager
 
 #Const C_PlayersPresentationTime	4000	///< Duration of the player presentation sequence (default: 4000)
 
