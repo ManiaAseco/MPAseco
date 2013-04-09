@@ -348,6 +348,7 @@ main() {
 									+++OnNewBot+++
 								}
 							}
+              XmlRpc::Loop();
 							Clublink::Update();
 							
 							+++PlayLoop+++	
