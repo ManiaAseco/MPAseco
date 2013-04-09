@@ -153,9 +153,6 @@ function release_modeScriptCallbacks($aseco, $data) {
         $aseco->releaseEvent('onEndMap', $aseco->smrankings);
       }
     break;
-    case 'BeginWarmup':
-      $aseco->client->query('TriggerModeScriptEvent','LibXmlRpc_GetRankings'); //Get Rankings
-    break;
         
     case 'endMap1':     
     case 'endMap': 
