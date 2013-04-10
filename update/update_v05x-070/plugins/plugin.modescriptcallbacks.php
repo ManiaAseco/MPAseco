@@ -44,7 +44,7 @@ function release_modeScriptCallbacks($aseco, $data) {
   switch($name) {
     /* New Callbacks Release 9.4.2013 */
     case 'LibXmlRpc_Rankings': 
-      updateRankings($params);
+      updateRankings($params[0]);
     break;
     
     case 'LibXmlRpc_BeginRound':
@@ -57,10 +57,10 @@ function release_modeScriptCallbacks($aseco, $data) {
     
     case 'LibXmlRpc_BeginMap':
       $aseco->smrankings = array();
-      $aseco->beginMap();
+      $aseco->beginMap(0);
     break;   
         
-    case 'LibXmlRpc_EndMap': 
+    case 'LibXmlRpc_EndMap':
       if(!$aseco->endmapvar){ 
         $aseco->console_text('End Map');
         $aseco->releaseEvent('onEndMap1', $aseco->smrankings);    
@@ -73,7 +73,7 @@ function release_modeScriptCallbacks($aseco, $data) {
         
     case 'LibXmlRpc_OnCapture': 
        if($playercnt > 1){ //only if more than 1 Player on the Server
-          $players = explode(';', $params);
+          $players = explode(';', $params[0]);
           foreach($players as $player){
             $aseco->releaseEvent('onPoleCapture', $player);
           }
@@ -86,12 +86,12 @@ function release_modeScriptCallbacks($aseco, $data) {
     break;
 
     case 'LibXmlRpc_OnPlayerRequestRespawn':  //SM Release 09.04.2013
-      $aseco->releaseEvent('onPlayerRespawn', $params);
+      $aseco->releaseEvent('onPlayerRespawn', $params[0]);
     break;
         
     case 'LibXmlRpc_OnHit': 
       //ShooterLogin, VictimLogin, TL::ToText(_Event.Damage), TL::ToText(_Event.WeaponNum), TL::ToText(_Event.ShooterPoints)
-      if($playercnt > 2) //only if more than 2 Player on the Server
+      if($playercnt > 1) //only if more than 2 Player on the Server
         $aseco->releaseEvent('onPlayerHit', array('victim' => $params[1], 'shooter' => $params[0], 'points' => $params[4]));
     break;
     

@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.68');
+define('MPASECO_VERSION', '0.70');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -1056,14 +1056,14 @@ class Aseco {
             $this->releaseEvent('onStatusChangeTo' . $this->currstatus, $call[1]);
             break;
 
-          case 'ManiaPlanet.BeginMap':  // [0]=Challenge
+         /* case 'ManiaPlanet.BeginMap':  // [0]=Challenge
             $this->beginMap($call[1]);
             break;
 
           case 'ManiaPlanet.EndMap':  // [0]=Challenge
             if($this->endmapvar==0)
               $this->endMap($call[1]);
-            break;
+            break; */
 
           case 'ManiaPlanet.PlayerManialinkPageAnswer':  // [0]=PlayerUid, [1]=Login, [2]=Answer, [3]=Entries
             $this->releaseEvent('onPlayerManialinkPageAnswer', $call[1]);
@@ -1101,8 +1101,12 @@ class Aseco {
 
           case 'ManiaPlanet.ModeScriptCallback':  // [0]=Param1, [1]=Param2
             $this->releaseEvent('onModeScriptCallback', $call[1]);
-            break;
+          break;
 
+          case 'ManiaPlanet.ModeScriptCallbackArray':  // [0]=Param1, [1]=Param2
+            $this->releaseEvent('onModeScriptCallbackArray', $call[1]);
+          break;
+          
           default:
             // do nothing
         }
