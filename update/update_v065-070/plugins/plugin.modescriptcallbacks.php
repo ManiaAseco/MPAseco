@@ -15,32 +15,7 @@ function release_modeScriptCallbacks($aseco, $data) {
   $params = isset($data[1]) ? $data[1] : '';
   $playercnt = count($aseco->server->players->player_list);
 
-  /* For future purpose:   
-    foreach($single_callbacks as $callback){
-      if($callback->name == $name){
-          if($playercnt >= $callback->mincntPlayers)
-             $aseco->releaseEvent('on'.ucfirst($callback->name), $params);      
-          $name = false; //Avoid switch-case    
-      }
-    }
-    
-    foreach($multi_callbacks as $callback){
-       if($callback->name == $name){
-          $vals = explode(';', $params);
-          $i = 0;
-          $indexArr = array();
-          foreach($callback->index as $index){
-             $index = str_replace($index->name, '', $vals[$i]);
-             $indexArr[strtolower($index->name)] = $index;
-             $i++;
-          }     
-          if($playercnt >= $callback->mincntPlayers)
-             $aseco->releaseEvent('on'.ucfirst($callback->name), $indexArr);       
-          $name = false;  //Avoid switch-case  
-       } 
- 
-   }   */ 
-                 
+   
   switch($name) {
     /* New Callbacks Release 9.4.2013 */
     case 'LibXmlRpc_Rankings': 
@@ -217,21 +192,6 @@ function release_modeScriptCallbacks($aseco, $data) {
     break;
   }
 }
-/*
-function updateRankingsJSON($data) {
-  global $aseco;
-  $scores = explode(';', $data);
-  foreach($scores as $player) {
-    if (strpos($player, ':') !== false) {
-      $tmp = explode(':', $player);
-      $aseco->smrankings[$tmp[0]] = $tmp[1];
-    }
-  }
-  if($aseco->settings['records_activated'])
-    array_multisort($aseco->smrankings, SORT_ASC, SORT_NUMERIC);
-  else
-    array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);  
-}    */
 
 
 function updateRankings($data) {
@@ -251,73 +211,5 @@ function updateRankings($data) {
 
 
 
-/**
- * Should insert in types.inc.php
- */
 
-class SingleCallback{
-   var $name;
-   var $database;
-   var $mincnt_players;
-   
-   function SingleCallback($name){
-       $this->name = name;
-   }
-}
-
-class MultiCallback {
-   var $name;
-   var $database;
-   var $mincnt_players;
-   var $index;
-   
-   function MultiCallback($name){
-      $this->name = name;
-   }
-   function addIndex($indexName, $id){
-      $index[$id] = new CallIndex($indexName);
-   }
-}
-
-class CallIndex{
-   var $name;
-   var $database;
-   function CallIndex($name){
-    $this->name = $name;
-   }
-}
-
-      /*
-// called @ onStartup
-function load_modeScriptCallbacks($aseco) {
-  global $singe_callbacks, $multi_callbacks;
-  $msfile = "configs/core/modescriptcallbacks.xml"
-
-//  $aseco->console('[LocalDB] Load config file ['.$msfile.']');
-  if (!$xml = $aseco->xml_parser->parseXml($msfile)) {
-    trigger_error('Could not read/parse Modescript config file '.$msfile.' !', E_USER_ERROR);
-  }
-  $xml = $xml['CALLBACKS'];      
-  foreach ($xml['SINGLE_CALLBACKS'][0]['CALLBACK'] as $callback) {
-    $callback = new SingleCallback($callback['NAME'][0]);
-    $callback->database = $callback['DATABASE'][0];
-    $callback->mincntPlayers = $callback['MINCNT_PLAYERS'][0];
-    $single_callbacks[$callback['NAME'][0]] = $callback;
-  }    
-  
-  foreach ($xml['MULTI_CALLBACKS'][0]['CALLBACK'] as $callback) {
-    $callback = new MultiCallback($callback['NAME'][0]);
-    foreach ($callback['INDEX'] as $index){
-        $id = $index['ID'][0];
-        $callback->addIndex($index['NAME'][0], $id);
-        $database = $index['DATABASE'][0];
-        if($database > 0)
-          $callback->index[$id]->database = $database;
-    }
-    $callback->mincntPlayers = $callback['MINCNT_PLAYERS'][0];
-    $multi_callbacks[$callback['NAME'][0]] = $callback; 
-  }    
-
-}  // modescriptcallbacks onStartup
-      */
 ?>
