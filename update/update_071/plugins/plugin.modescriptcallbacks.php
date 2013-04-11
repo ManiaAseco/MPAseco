@@ -28,6 +28,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
 
     case 'LibXmlRpc_EndRound':  
       $aseco->console_text('End Round');
+      $aseco->releaseEvent('onEndRoundNr', $params[0]);  
       $aseco->releaseEvent('onEndRound', $aseco->smrankings);
     break;
     
@@ -36,7 +37,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break;
 
     case 'LibXmlRpc_EndMatch':
-      $aseco->releaseEvent('onBeginMatch', $params[0]);
+      $aseco->releaseEvent('onEndMatch', $params[0]);
     break;
 
     case 'LibXmlRpc_BeginSubmatch':
@@ -84,7 +85,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break;
 
     case 'LibXmlRpc_OnNearMiss':
-      $aseco->releaseEvent('onShoot', $params);
+      $aseco->releaseEvent('onNearMiss', $params);
     break;
                    
     case 'LibXmlRpc_OnCapture': 
@@ -115,7 +116,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break;      
 
     case 'TimeAttack_OnStart':  
-      $aseco->releaseEvent('onPlayerStartTimeMode', $params);
+      $aseco->releaseEvent('onPlayerStartTimeMode', $params[0]);
     break;  
  
     case 'TimeAttack_OnCheckpoint':
@@ -153,9 +154,9 @@ function release_modeScriptCallbacks($aseco, $data) {
 
 
   switch($name) {
-  
-    
-    /* Old Callbacks */ 
+    case 'updateRankings':
+      updateRankings($params[0]);    
+    break;
     case 'playerDeath':
       $aseco->releaseEvent('onPlayerDeath', $params);
     break;
@@ -291,6 +292,7 @@ function updateRankings($data) {
     array_multisort($aseco->smrankings, SORT_ASC, SORT_NUMERIC);
   else
     array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);  
+  $aseco->releaseEvent('onRankingUpdated', $aseco->smrankings);
 }
 
 ?>
