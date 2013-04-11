@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.70');
+define('MPASECO_VERSION', '0.71');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -1020,28 +1020,28 @@ class Aseco {
     if (!empty($calls)) {
       while ($call = array_shift($calls)) {
         switch ($call[0]) {   
-          case 'ManiaPlanet.PlayerConnect':  // [0]=Login, [1]=IsSpectator      new
+          case 'ManiaPlanet.PlayerConnect':  // [0]=Login, [1]=IsSpectator    
             $this->playerConnect($call[1]);
             break;
             
-          case 'ManiaPlanet.PlayerDisconnect':  // [0]=Login                    new
+          case 'ManiaPlanet.PlayerDisconnect':  // [0]=Login              
             $this->playerDisconnect($call[1]);
             break;
 
-          case 'ManiaPlanet.PlayerChat':  // [0]=PlayerUid, [1]=Login, [2]=Text, [3]=IsRegistredCmd   new
+          case 'ManiaPlanet.PlayerChat':  // [0]=PlayerUid, [1]=Login, [2]=Text, [3]=IsRegistredCmd  
             $this->playerChat($call[1]);
             $this->releaseEvent('onChat', $call[1]);
             break;
-
+          /*
           case 'ManiaPlanet.BeginRound':  // none     new
             $this->beginRound();
             break;
 
           case 'ManiaPlanet.EndRound':  // none       new
             $this->endRound();
-            break;
+            break;       */
 
-          case 'ManiaPlanet.StatusChanged':  // [0]=StatusCode, [1]=StatusName
+          case 'ManiaPlanet.StatusChanged':  // [0]=StatusCode, [1]=StateName
             // update status changes
             $this->prevstatus = $this->currstatus;
             $this->currstatus = $call[1][0];
@@ -1096,10 +1096,8 @@ class Aseco {
           case 'ManiaPlanet.VoteUpdated':  // [0]=StateName, [1]=Login, [2]=CmdName, [3]=CmdParam
             $this->releaseEvent('onVoteUpdated', $call[1]);
             break;
-
-          // new MP callbacks:
-
-          case 'ManiaPlanet.ModeScriptCallback':  // [0]=Param1, [1]=Param2
+            
+          case 'ManiaPlanet.ModeScriptCallback':  // [0]=Name, [1]=Params
             $this->releaseEvent('onModeScriptCallback', $call[1]);
           break;
 

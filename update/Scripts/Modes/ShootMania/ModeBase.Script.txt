@@ -3,7 +3,7 @@
  */
 
 #RequireContext CSmMode
-#Const ModeBaseVersion		"2013-03-22"
+#Const ModeBaseVersion		"2013-04-10"
 #Const ModeBaseScriptName	"ModeBase.Script.txt"
 
 #Include "Libs/Nadeo/Mode.Script.txt" as Mode
@@ -12,7 +12,7 @@
 #Include "Libs/Nadeo/ShootMania/XmlRpc.Script.txt" as XmlRpc
 #Include "Libs/Custom/CustomXmlRpcEvents.Script.txt" as CustomXmlRpcEvents
 
-#Setting S_UseScriptCallbacks True as "<hidden>"	///< Turn on/off the script callbacks, usefull for server manager
+#Const S_UseScriptCallbacks True	///< Turn on/off the script callbacks, usefull for server manager
 
 #Const C_PlayersPresentationTime	4000	///< Duration of the player presentation sequence (default: 4000)
 
@@ -94,6 +94,7 @@ Void MB_Sleep(Integer _Duration) {
 	declare End = Now + _Duration;
 	while(Now < End) {
 		yield;
+		XmlRpc::Loop();
 		Clublink::Update();
 		+++SleepLoop+++
 	}
@@ -348,11 +349,11 @@ main() {
 									+++OnNewBot+++
 								}
 							}
-              XmlRpc::Loop();
+							XmlRpc::Loop();
 							Clublink::Update();
 							
-							+++PlayLoop+++	
-              CustomXmlRpcEvents::HandleXmlRpcEvents();		              					
+							+++PlayLoop+++
+							CustomXmlRpcEvents::HandleXmlRpcEvents();	
 						}
 /* -------------------------------------- */
 // Turn end
