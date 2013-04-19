@@ -30,6 +30,8 @@ Aseco::registerEvent('onPlayerRespawn', 'ldb_playerRespawn');
 Aseco::registerEvent('onPlayerSurvival', 'ldb_playerSurvival');
 Aseco::registerEvent('onPlayerDeath', 'ldb_playerDeath');
 Aseco::registerEvent('onPlayerShoot1', 'ldb_playerShoot');
+Aseco::registerEvent('onNearMiss', 'ldb_playerNearMiss');
+Aseco::registerEvent('onPlayerWonAttackRound', 'ldb_playerWonAttackRound');
 //Aseco::registerEvent('onPlayerVote', 'ldb_vote');
 
 // called @ onStartup
@@ -148,6 +150,7 @@ function ldb_connect($aseco) {
               `Survivals` mediumint(9) unsigned NOT NULL default 0,              
               `AllPoints` mediumint(9) unsigned NOT NULL default 0,
               `Shots` mediumint(9) unsigned NOT NULL default 0,
+              `NearMisses` mediumint(9) unsigned NOT NULL default 0,
               PRIMARY KEY (`Id`),
               UNIQUE KEY `Login` (`Login`),
               KEY `Game` (`Game`)
@@ -242,7 +245,10 @@ function ldb_connect($aseco) {
   }
   if (!in_array('Shots', $fields)) {
     $update .= "ADD Shots mediumint(9) unsigned NOT NULL DEFAULT 0,";
-  }        
+  } 
+  if (!in_array('NearMisses', $fields)) {
+    $update .= "ADD NearMisses mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  }               
   if (!in_array('AllPoints', $fields)) {
     $update .= "ADD AllPoints int(20) unsigned NOT NULL DEFAULT 0,";
   } 
@@ -1044,35 +1050,57 @@ function ldb_playerWins($aseco, $player) {
 }  // ldb_playerWins
 
 function ldb_playerHit($aseco, $data) {
-  //maybe optimize
-  $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
-  mysql_query($query);
-  $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){ //Joust?!?
+    $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
+    mysql_query($query);
+    $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
+    mysql_query($query);
+  } 
 }
 
 function ldb_poleCapture($aseco, $login) {
-  $query = 'UPDATE players SET captures = captures+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET captures = captures+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 
 function ldb_playerRespawn($aseco, $login) {
-  $query = 'UPDATE players SET respawns = respawns+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET respawns = respawns+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 
 function ldb_playerSurvival($aseco, $login) {
-  $query = 'UPDATE players SET Survivals= Survivals+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET Survivals= Survivals+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 
 function ldb_playerDeath($aseco, $login) {
-  $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 function ldb_playerShoot($aseco, $login) {
-  $query = 'UPDATE players SET Shots = Shots+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET Shots = Shots+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
-
+function ldb_attackerWon($aseco, $login) {
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET attackerWon = attackerWon+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
+}
+function ldb_playerNearMiss($aseco, $login) {
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET NearMisses = NearMisses+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
+}
 ?>

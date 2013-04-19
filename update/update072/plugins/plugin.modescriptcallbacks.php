@@ -2,7 +2,7 @@
 /**
  * Plugin to handle the script callbacks send by the server.
  * Made by the MPAseco team for ShootMania
- * v2.0 
+ * v2.1 
  */
 
 Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
@@ -12,7 +12,6 @@ function release_LibXmlRpcCallbacks($aseco, $data){
 
   $name = $data[0];
   $params = isset($data[1]) ? $data[1] : '';
-  $playercnt = count($aseco->server->players->player_list);
  
   switch($name) {
     case 'LibXmlRpc_Rankings': 
@@ -78,10 +77,8 @@ function release_LibXmlRpcCallbacks($aseco, $data){
 
     case 'LibXmlRpc_OnHit': 
       //ShooterLogin, VictimLogin, TL::ToText(_Event.Damage), TL::ToText(_Event.WeaponNum), TL::ToText(_Event.ShooterPoints)
-      if($playercnt > 1){ //only if more than 2 Player on the Server
-        $aseco->releaseEvent('onPlayerHit', array('victim' => $params[1], 'shooter' => $params[0], 'points' => $params[4]));
-        $aseco->releaseEvent('onPlayerHit1',$params);
-      }
+      $aseco->releaseEvent('onPlayerHit', array('victim' => $params[1], 'shooter' => $params[0], 'points' => $params[4]));
+      $aseco->releaseEvent('onPlayerHit1',$params);
     break;
 
     case 'LibXmlRpc_OnNearMiss':
@@ -89,12 +86,10 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break;
                    
     case 'LibXmlRpc_OnCapture': 
-       if($playercnt > 1){ //only if more than 1 Player on the Server
-          $players = explode(';', $params[0]);
-          foreach($players as $player){
-            $aseco->releaseEvent('onPoleCapture', $player);
-          }
-        }
+      $players = explode(';', $params[0]);
+      foreach($players as $player){
+        $aseco->releaseEvent('onPoleCapture', $player);
+      }
     break;
     
     case 'LibXmlRpc_OnArmorEmpty': 
@@ -114,7 +109,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     case 'Royal_SpawnPlayer':  
       $aseco->releaseEvent('onRoyalSpawnPlayer', $params);
     break;      
-
+    
     case 'TimeAttack_OnStart':  
       $aseco->releaseEvent('onPlayerStartTimeMode', $params[0]);
     break;  
@@ -146,12 +141,8 @@ function release_LibXmlRpcCallbacks($aseco, $data){
   }
 }
 function release_modeScriptCallbacks($aseco, $data) {
-  global $singe_callbacks, $multi_callbacks;
-   
   $name = $data[0];
   $params = isset($data[1]) ? $data[1] : '';
-  $playercnt = count($aseco->server->players->player_list);
-
 
   switch($name) {
     case 'updateRankings':
@@ -161,8 +152,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $aseco->releaseEvent('onPlayerDeath', $params);
     break;
     case 'poleCapture':
-      if($playercnt > 1) //only if more than 1 Player on the Server
-        $aseco->releaseEvent('onPoleCapture', $params);
+      $aseco->releaseEvent('onPoleCapture', $params);
     break;
     
     case 'playerHit':
@@ -170,15 +160,15 @@ function release_modeScriptCallbacks($aseco, $data) {
       $victim = str_replace('Victim:', '', $players[0]);
       $shooter = str_replace('Shooter:', '', $players[1]);
       $points = $players[2];   
-      if($playercnt > 2) //only if more than 2 Player on the Server
-        $aseco->releaseEvent('onPlayerHit', array('victim' => $victim, 'shooter' => $shooter, 'points' => $points));
+      $aseco->releaseEvent('onPlayerHit', array('victim' => $victim, 'shooter' => $shooter, 'points' => $points));
     break;
     
     case 'playerSurvival':
-      if($playercnt > 3) //only if more than 3 Player on the Server
-        $aseco->releaseEvent('onPlayerSurvival', $params);
+      $aseco->releaseEvent('onPlayerSurvival', $params);
     break;
-  
+    case 'attackerWon':
+      $aseco->releaseEvent('onPlayerWonAttackRound', $params);
+    break;    
     case 'playerRespawn':
       $aseco->releaseEvent('onPlayerRespawn', $params);
     break;
@@ -190,8 +180,7 @@ function release_modeScriptCallbacks($aseco, $data) {
       $victim = str_replace('Victim:', '', $players[1]);
       $shooter = str_replace('Shooter:', '', $players[0]);
       $aseco->releaseEvent('onPassBall', array('victim' => $victim, 'shooter' => $shooter));
-      if($playercnt > 3) //only if more than 3 Player on the Server
-        $aseco->releaseEvent('onPlayerSurvival', $shooter);
+      $aseco->releaseEvent('onPlayerSurvival', $shooter);
     break;
     case 'beginRound':
       updateRankings($params);
@@ -237,8 +226,7 @@ function release_modeScriptCallbacks($aseco, $data) {
     break; 
     case 'OnHit':
       $paramsObject = json_decode($params);
-      if($playercnt > 2) //only if more than 2 Player on the Server
-        $aseco->releaseEvent('onPlayerHit', array('victim' => $paramsObject->Event->Victim->Login, 'shooter' => $paramsObject->Event->Shooter->Login, 'points' => 1));
+      $aseco->releaseEvent('onPlayerHit', array('victim' => $paramsObject->Event->Victim->Login, 'shooter' => $paramsObject->Event->Shooter->Login, 'points' => 1));
     break;
     case 'OnArmorEmpty':
       $paramsObject = json_decode($params);
