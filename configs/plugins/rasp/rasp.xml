@@ -3,7 +3,6 @@
   <messages>
     <!-- rank/pb messages -->
     <rank>{#server}> {#record}Your server rank is {#rank}{1}{#record} / {#highlite}{2}{#record} Points: {#highlite}{3}</rank>
-   <!-- <rank_none>{#server}> {#record}You must have {#highlite}{1}{#record} Hits on this server before recieving a rank...</rank_none>    -->
     <rank_none>{#server}> {#record}You must have {#highlite}{1}{#record} Points on this server before recieving a rank...</rank_none>  
     <nextrank>{#server}> {#record}The next better ranked player is {#highlite}{1}</nextrank>
     <nextrank_rp> $n{#record}[{#highlite}-{1}{#record} Points]</nextrank_rp>
@@ -76,6 +75,7 @@
     <nextmap>{#server}> The next Map will be: {#highlite}{1}</nextmap>
     <nextenvmap>{#server}> The next Map will be: {#timelite}[{1}] {#highlite}{2}</nextenvmap>
     <official>{#server}> {#highlite}That is not a valid command on ANY server - just wait until the next map to become official.</official>
+    <ragequit>{#error}>> {#highlite}{1}$z$s{#error} said: "@"#!" and ragequitted.</ragequit>
     <bootme>{#server}>> {#highlite}{1}$z$s{#message} chooses to boot back to the real world.</bootme>
     <bootme_dialog>{#message}Thanks for playing, please come back soon!</bootme_dialog>
   </messages>
