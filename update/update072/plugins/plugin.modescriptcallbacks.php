@@ -72,7 +72,8 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break; 
    
     case 'LibXmlRpc_OnShoot':
-      $aseco->releaseEvent('onShoot', $params);
+      $aseco->releaseEvent('onPlayerShoot1', $params);
+      $aseco->releaseEvent('onPlayerShoot', $params[0]);
     break;
 
     case 'LibXmlRpc_OnHit': 
