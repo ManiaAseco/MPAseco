@@ -119,11 +119,11 @@ Aseco::addChatCommand('removeop', 'Removes an operator', true);
 Aseco::addChatCommand('listmasters', 'Displays current masteradmin list', true);
 Aseco::addChatCommand('listadmins', 'Displays current admin list', true);
 Aseco::addChatCommand('listops', 'Displays current operator list', true);
-//Aseco::addChatCommand('adminability', 'Shows/changes admin ability {ON/OFF}', true);
-//Aseco::addChatCommand('opability', 'Shows/changes operator ability {ON/OFF}', true);
-//Aseco::addChatCommand('listabilities', 'Displays current abilities list', true);
-//Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
-//Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
+Aseco::addChatCommand('adminability', 'Shows/changes admin ability {ON/OFF}', true);
+Aseco::addChatCommand('opability', 'Shows/changes operator ability {ON/OFF}', true);
+Aseco::addChatCommand('listabilities', 'Displays current abilities list', true);
+Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
+Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
 Aseco::addChatCommand('wall/mta', 'Displays popup message to all players', true);
 if (!DISABLE_RECCMDS){
   Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
@@ -2820,6 +2820,10 @@ function chat_admin($aseco, $command) {
         $aseco->admin_list['IPADDRESS'][$i] = '';
         $aseco->writeLists();
 
+        // remove permission from database
+        $query = 'UPDATE players SET Permissions = 0 WHERE login = '.quotedString($target->login);
+        mysql_query($query);    
+        
         // log console message
         $aseco->console('{1} [{2}] removes admin [{3} : {4}]!', $logtitle, $login, $target->login, stripColors($target->nickname, false));
 
@@ -2876,6 +2880,10 @@ function chat_admin($aseco, $command) {
         $aseco->operator_list['IPADDRESS'][$i] = '';
         $aseco->writeLists();
 
+        // remove permission from database
+        $query = 'UPDATE players SET Permissions = 0 WHERE login = '.quotedString($target->login);
+        mysql_query($query);    
+      
         // log console message
         $aseco->console('{1} [{2}] removes operator [{3} : {4}]!', $logtitle, $login, $target->login, stripColors($target->nickname, false));
 

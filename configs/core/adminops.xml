@@ -175,7 +175,9 @@
 		<teambalance>true</teambalance>
  		<autoteambalance>true</autoteambalance>
 		<scriptsettings>true</scriptsettings>
- 		<scriptset>true</scriptset>        		
+ 		<scriptset>true</scriptset> 
+		<warmext>true</warmext>
+ 		<warmend>true</warmend>       		
 	</admin_abilities>
 
 	<operator_abilities>
@@ -336,5 +338,7 @@
  		<autoteambalance>true</autoteambalance>
 		<scriptsettings>false</scriptsettings>
  		<scriptset>false</scriptset>  
+		<warmext>true</warmext>
+ 		<warmend>true</warmend>
 	</operator_abilities>
 </lists>
