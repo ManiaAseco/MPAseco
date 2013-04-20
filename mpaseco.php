@@ -534,7 +534,9 @@ class Aseco {
     if(!$this->settings['records_activated']){
       $minrank = $minpoints;
       define('DISABLE_RECCMDS', true);
-    }     
+    }else{
+      define('DISABLE_RECCMDS', false);
+    }    
                                                            
   }  // loadSettings
 
@@ -675,6 +677,11 @@ class Aseco {
     $lists .= "\t</operator_abilities>" . CRLF
             . "</lists>" . CRLF;
 
+    /* Update Permissions in Database */
+    if(function_exists("ldb_updatePermissions")){
+      ldb_updatePermissions($this);
+    }
+    
     // write out the lists file
     if (!@file_put_contents($adminops_file, $lists)) {
       trigger_error('Could not write adminops file ' . $adminops_file . ' !', E_USER_WARNING);
@@ -1104,7 +1111,11 @@ class Aseco {
           case 'ManiaPlanet.ModeScriptCallbackArray':  // [0]=Param1, [1]=Param2
             $this->releaseEvent('onModeScriptCallbackArray', $call[1]);
           break;
-          
+      
+          case 'ManiaPlanet.PlayerAlliesChanged':  // [0]=Param1, [1]=Login
+            $this->releaseEvent('onPlayerAlliesChanged', $call[1]);
+          break;
+                    
           default:
             // do nothing
         }

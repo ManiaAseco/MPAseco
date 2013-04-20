@@ -16,6 +16,7 @@
 
 Aseco::registerEvent('onStartup', 'ldb_loadSettings');
 Aseco::registerEvent('onStartup', 'ldb_connect');
+Aseco::registerEvent('onStartup', 'ldb_updatePermissions');
 Aseco::registerEvent('onEverySecond', 'ldb_reconnect');
 Aseco::registerEvent('onSync', 'ldb_sync');
 Aseco::registerEvent('onBeginMap', 'ldb_beginMap');
@@ -118,6 +119,8 @@ function ldb_connect($aseco) {
   $aseco->console('[LocalDB] Checking database structure...');
 
   // create main tables
+
+  
   $query = "CREATE TABLE IF NOT EXISTS `maps` (
               `Id` mediumint(9) NOT NULL auto_increment,
               `Uid` varchar(27) NOT NULL default '',
@@ -134,6 +137,7 @@ function ldb_connect($aseco) {
               `Login` varchar(50) NOT NULL default '',
               `Game` varchar(3) NOT NULL default '',
               `NickName` varchar(100) NOT NULL default '',
+              `Permissions` mediumint(9) NOT NULL default '',
               `Continent` tinyint(3) NOT NULL default 0,
               `Nation` varchar(3) NOT NULL default '', 
               `UpdatedAt` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -219,6 +223,9 @@ function ldb_connect($aseco) {
   if (!in_array('Continent', $fields)) {
     $update .= "ADD Continent tinyint(3) unsigned NOT NULL DEFAULT 0,";
   }
+  if (!in_array('Permissions', $fields)) { //Permission 1 = Masteradmin, 2 = Admin, 3 = Operator
+    $update .= "ADD Permissions mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  } 
   if (!in_array('Joins', $fields)) {
     $update .= "ADD Joins mediumint(9) unsigned NOT NULL DEFAULT 0,";
   }  
@@ -252,6 +259,7 @@ function ldb_connect($aseco) {
   if (!in_array('AllPoints', $fields)) {
     $update .= "ADD AllPoints int(20) unsigned NOT NULL DEFAULT 0,";
   } 
+    
   $update = substr($update, -1, 1) == ',' ? substr($update, 0, -1) : $update;
 
   if(!empty($update)) {
@@ -261,6 +269,22 @@ function ldb_connect($aseco) {
  
   $aseco->console('[LocalDB] ...Structure OK!');
 }  // ldb_connect
+
+// called @ onStartup
+function ldb_updatePermissions($aseco){  
+ foreach ($aseco->operator_list['MPLOGIN'] as $login){
+    $query = 'UPDATE players SET Permissions = 3 WHERE login = '.quotedString($login);
+    mysql_query($query);       
+ }
+ foreach ($aseco->admin_list['MPLOGIN'] as $login){
+    $query = 'UPDATE players SET Permissions = 2 WHERE login = '.quotedString($login);
+    mysql_query($query);       
+ }
+ foreach ($aseco->masteradmin_list['MPLOGIN'] as $login){
+    $query = 'UPDATE players SET Permissions = 1 WHERE login = '.quotedString($login);
+    mysql_query($query);       
+ }
+} //ldb_updatePermissions
 
 // called @ onEverySecond
 function ldb_reconnect($aseco) {
