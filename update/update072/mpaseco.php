@@ -597,6 +597,12 @@ class Aseco {
           $this->op_abilities[$ability][0] = false;
         }
       }
+      
+      /* Read Permissions Out of Database */
+      if(function_exists("ldb_readPermissions")){
+        ldb_readPermissions($this);
+      }
+    
       return true;
     } else {
       // could not parse XML file
@@ -677,9 +683,9 @@ class Aseco {
     $lists .= "\t</operator_abilities>" . CRLF
             . "</lists>" . CRLF;
 
-    /* Update Permissions in Database */
-    if(function_exists("ldb_updatePermissions")){
-      ldb_updatePermissions($this);
+    /* Write Permissions in Database */
+    if(function_exists("ldb_writePermissions")){
+      ldb_writePermissions($this);
     }
     
     // write out the lists file
