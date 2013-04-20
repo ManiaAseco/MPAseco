@@ -16,7 +16,8 @@
 
 Aseco::registerEvent('onStartup', 'ldb_loadSettings');
 Aseco::registerEvent('onStartup', 'ldb_connect');
-Aseco::registerEvent('onStartup', 'ldb_updatePermissions');
+Aseco::registerEvent('onStartup', 'ldb_writePermissions');
+Aseco::registerEvent('onStartup', 'ldb_readPermissions');
 Aseco::registerEvent('onEverySecond', 'ldb_reconnect');
 Aseco::registerEvent('onSync', 'ldb_sync');
 Aseco::registerEvent('onBeginMap', 'ldb_beginMap');
@@ -271,7 +272,7 @@ function ldb_connect($aseco) {
 }  // ldb_connect
 
 // called @ onStartup
-function ldb_updatePermissions($aseco){  
+function ldb_writePermissions($aseco){  
  foreach ($aseco->operator_list['MPLOGIN'] as $login){
     $query = 'UPDATE players SET Permissions = 3 WHERE login = '.quotedString($login);
     mysql_query($query);       
@@ -284,7 +285,31 @@ function ldb_updatePermissions($aseco){
     $query = 'UPDATE players SET Permissions = 1 WHERE login = '.quotedString($login);
     mysql_query($query);       
  }
-} //ldb_updatePermissions
+} //ldb_writePermissions
+
+// called @ onStartup
+function ldb_readPermissions($aseco){  
+  /* Get Admins */
+  $query = 'SELECT Login FROM players WHERE Permissions = 2'; 
+  $result = mysql_query($query);
+  if (mysql_num_rows($result) > 0) {
+    while ($admin = mysql_fetch_array($result)) {
+      if(!in_array($admin['Login'], $aseco->admin_list['MPLOGIN'])){
+        array_push($aseco->admin_list['MPLOGIN'],$admin['Login']);  
+        }
+      }
+    }
+    /* Get Operators */
+    $query = 'SELECT Login FROM players WHERE Permissions = 1'; 
+    $result = mysql_query($query);
+    if (mysql_num_rows($result) > 0) {
+      while ($operator = mysql_fetch_array($result)) {
+        if(!in_array($operator['Login'], $aseco->operator_list['MPLOGIN'])){
+          array_push($aseco->operator_list['MPLOGIN'],$operator['Login']);  
+        }
+      }
+    }     
+} //ldb_readPermissions
 
 // called @ onEverySecond
 function ldb_reconnect($aseco) {
