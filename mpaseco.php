@@ -1674,6 +1674,13 @@ class Aseco {
     // (removed callback mechanism here, as GetPlayerInfo occasionally
     //  returns no data and then the connecting login would be lost)
     $login = $player[0];
+    
+    // check if the player is a bot
+    if(strpos($login, "*fakeplayer") !== false){
+      $this->console('{1} connected', $player['Login']);
+      return;
+    }
+    
     $this->client->query('GetDetailedPlayerInfo', $login);
     $playerd = $this->client->getResponse();
     $this->client->query('GetPlayerInfo', $login, 1);
