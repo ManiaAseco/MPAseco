@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.72');
+define('MPASECO_VERSION', '0.73');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -72,8 +72,8 @@ define('MPASECO', 'http://www.MPAseco.org/');
 define('IN_MPASECO', true);
 
 // required official dedicated server build
-define('MP_BUILD', '2012-07-19-xx_xx');
-define('API_VERSION', '2012-06-19');
+define('MP_BUILD', '2013-04-19-xx_xx');
+define('API_VERSION', '2013-04-16');
 
 // check current operating system
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {

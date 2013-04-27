@@ -995,7 +995,8 @@ function getMapsNoRecent($player) {
   }
 
   // get list of ranked records
-  $reclist = get_recs($player->id);
+  if($recsActive)
+    $reclist = get_recs($player->id);
   // get new/cached list of maps
   $newlist = getMapsCache($aseco);
 
@@ -1295,7 +1296,8 @@ function getMapsNoVote($player) {
   $recsActive = $aseco->settings['records_activated'];
   
   // get list of ranked records
-  $reclist = get_recs($player->id);
+  if($recsActive)
+    $reclist = get_recs($player->id);
 
   // get new/cached list of maps
   $newlist = getMapsCache($aseco);
@@ -1315,7 +1317,8 @@ function getMapsNoVote($player) {
   $msg = array();
 /*  if ($aseco->server->packmask != 'SMStorm')
     $msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env');
-  else */ if($recsActive)
+  else */ 
+  if($recsActive)
     $msg[] = array('Id', 'Rec', 'Name', 'Author');
   else
     $msg[] = array('Id', 'Name', 'Author'); 
@@ -1373,7 +1376,8 @@ function getMapsNoVote($player) {
   /*  if ($aseco->server->packmask != 'SMStorm')
       $msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
                      $pos . '.', $mapname, $mapauthor, $mapenv);
-    else */ if($recsActive)
+    else */ 
+    if($recsActive)
       $msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
                      $pos . '.', $mapname, $mapauthor);
     else   
@@ -1387,7 +1391,8 @@ function getMapsNoVote($player) {
       $msg = array();
     /*  if ($aseco->server->packmask != 'SMStorm')
         $msg[] = array('Id', 'Rec', 'Name', 'Author', 'Env');
-      else */ if($recsActive)
+      else */ 
+      if($recsActive)
         $msg[] = array('Id', 'Rec', 'Name', 'Author');
       else 
         $msg[] = array('Id', 'Name', 'Author');       

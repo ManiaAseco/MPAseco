@@ -3,7 +3,7 @@
  */
 
 #RequireContext CSmMode
-#Const ModeBaseVersion		"2013-04-10"
+#Const ModeBaseVersion		"2013-04-18"
 #Const ModeBaseScriptName	"ModeBase.Script.txt"
 
 #Include "Libs/Nadeo/Mode.Script.txt" as Mode
@@ -103,13 +103,13 @@ Void MB_Sleep(Integer _Duration) {
 /* -------------------------------------- */
 /// Do the player presentation sequence (aka versus screen)
 Void MB_PlayersPresentationSequence() {
+	Clublink::SyncUpdate();
+	
 	declare Start = Now;
-	Clublink::Update();
-	sleep(500);
 	UIManager.UIAll.UISequence = CUIConfig::EUISequence::PlayersPresentation;
 	while (Now < Start + C_PlayersPresentationTime) {
-		Clublink::Update();
 		yield;
+		+++SleepLoop+++
 	}
 }
 
@@ -120,7 +120,7 @@ Void MB_XmlRpcCheck() {
 		MB_UseScriptCallbacks = S_UseScriptCallbacks;
 		if (MB_UseScriptCallbacks) XmlRpc::Enable();
 		else XmlRpc::Disable();
-		MB_Log("Script callbacks: "^MB_UseScriptCallbacks);
+		MB_Log("Enable script callbacks: "^MB_UseScriptCallbacks);
 	}
 }
 
@@ -196,7 +196,8 @@ main() {
 			if (MB_UseLogging) MB_Log("StartMap");
 	
 			+++InitMap+++
-
+			
+			XmlRpc::BeginMap(MB_SectionMapNb);
 			Mode::Synchro_DoBarrier();
 			
 			// Play mediatracker intro
@@ -204,7 +205,6 @@ main() {
 				---MapIntro---
 			}
 			
-			XmlRpc::BeginMap(MB_SectionMapNb);
 			+++StartMap+++
 			Clublink::Update();
 		
@@ -353,7 +353,6 @@ main() {
 							Clublink::Update();
 							
 							+++PlayLoop+++
-							CustomXmlRpcEvents::HandleXmlRpcEvents();	
 						}
 /* -------------------------------------- */
 // Turn end
@@ -394,12 +393,13 @@ main() {
 			MB_XmlRpcCheck();
 			if (MB_UseLogging) MB_Log("EndMap");
 			
-			// Play mediatracker intro
+			XmlRpc::EndMap(MB_SectionMapNb);
+			
+			// Play mediatracker outro
 			if (MB_UseOutro) {
 				---MapOutro---
 			}
 			
-			XmlRpc::EndMap(MB_SectionMapNb);
 			+++EndMap+++
 			Mode::UnloadMap();
 		}

@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.71');
+define('MPASECO_VERSION', '0.73');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -72,8 +72,8 @@ define('MPASECO', 'http://www.MPAseco.org/');
 define('IN_MPASECO', true);
 
 // required official dedicated server build
-define('MP_BUILD', '2012-07-19-xx_xx');
-define('API_VERSION', '2012-06-19');
+define('MP_BUILD', '2013-04-19-xx_xx');
+define('API_VERSION', '2013-04-16');
 
 // check current operating system
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -534,7 +534,9 @@ class Aseco {
     if(!$this->settings['records_activated']){
       $minrank = $minpoints;
       define('DISABLE_RECCMDS', true);
-    }     
+    }else{
+      define('DISABLE_RECCMDS', false);
+    }    
                                                            
   }  // loadSettings
 
@@ -595,6 +597,12 @@ class Aseco {
           $this->op_abilities[$ability][0] = false;
         }
       }
+      
+      /* Read Permissions Out of Database */
+      if(function_exists("ldb_readPermissions")){
+        ldb_readPermissions($this);
+      }
+    
       return true;
     } else {
       // could not parse XML file
@@ -675,6 +683,11 @@ class Aseco {
     $lists .= "\t</operator_abilities>" . CRLF
             . "</lists>" . CRLF;
 
+    /* Write Permissions in Database */
+    if(function_exists("ldb_writePermissions")){
+      ldb_writePermissions($this);
+    }
+    
     // write out the lists file
     if (!@file_put_contents($adminops_file, $lists)) {
       trigger_error('Could not write adminops file ' . $adminops_file . ' !', E_USER_WARNING);
@@ -1104,7 +1117,11 @@ class Aseco {
           case 'ManiaPlanet.ModeScriptCallbackArray':  // [0]=Param1, [1]=Param2
             $this->releaseEvent('onModeScriptCallbackArray', $call[1]);
           break;
-          
+      
+          case 'ManiaPlanet.PlayerAlliesChanged':  // [0]=Param1, [1]=Login
+            $this->releaseEvent('onPlayerAlliesChanged', $call[1]);
+          break;
+                    
           default:
             // do nothing
         }
@@ -1657,6 +1674,13 @@ class Aseco {
     // (removed callback mechanism here, as GetPlayerInfo occasionally
     //  returns no data and then the connecting login would be lost)
     $login = $player[0];
+    
+    // check if the player is a bot
+    if(strpos($login, "*fakeplayer") !== false){
+      $this->console('{1} connected', $player['Login']);
+      return;
+    }
+    
     $this->client->query('GetDetailedPlayerInfo', $login);
     $playerd = $this->client->getResponse();
     $this->client->query('GetPlayerInfo', $login, 1);

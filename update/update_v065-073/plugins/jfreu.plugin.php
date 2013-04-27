@@ -255,7 +255,7 @@ function init_jfreu($aseco, $command)
   $aseco->client->query('ChatSendServerMessage', $message);
 
   // start rank limiting
-  set_ranklimit($aseco, $aseco->server->jfreu->autolimit, $autorank);  // pass $autorank as integer
+  set_ranklimit($aseco, $aseco->server->jfreu->autolimit, text2bool($aseco->server->jfreu->autorank));  
 }  // init_jfreu
 
 function write_lists_xml($aseco)

@@ -119,11 +119,11 @@ Aseco::addChatCommand('removeop', 'Removes an operator', true);
 Aseco::addChatCommand('listmasters', 'Displays current masteradmin list', true);
 Aseco::addChatCommand('listadmins', 'Displays current admin list', true);
 Aseco::addChatCommand('listops', 'Displays current operator list', true);
-//Aseco::addChatCommand('adminability', 'Shows/changes admin ability {ON/OFF}', true);
-//Aseco::addChatCommand('opability', 'Shows/changes operator ability {ON/OFF}', true);
-//Aseco::addChatCommand('listabilities', 'Displays current abilities list', true);
-//Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
-//Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
+Aseco::addChatCommand('adminability', 'Shows/changes admin ability {ON/OFF}', true);
+Aseco::addChatCommand('opability', 'Shows/changes operator ability {ON/OFF}', true);
+Aseco::addChatCommand('listabilities', 'Displays current abilities list', true);
+Aseco::addChatCommand('writeabilities', 'Saves current abilities list (def: adminops.xml)', true);
+Aseco::addChatCommand('readabilities', 'Loads current abilities list (def: adminops.xml)', true);
 Aseco::addChatCommand('wall/mta', 'Displays popup message to all players', true);
 if (!DISABLE_RECCMDS){
   Aseco::addChatCommand('delrec', 'Deletes specific record on current map', true);
@@ -159,6 +159,8 @@ Aseco::addChatCommand('shutdownall', 'Shuts down Server & MPASECO', true);
 Aseco::addChatCommand('requestshutdown', 'Shuts down Server & MPASECO the next time the server is empty', true);
 Aseco::addChatCommand('teambalance/autoteambalance', 'Team balance', true);
 Aseco::addChatCommand('scriptsettings/scriptset','Set Scriptsettings. $i/admin scriptsettings$i displays a list of available settings', true);
+Aseco::addChatCommand('warmext', 'Extends the Warmup', true);
+Aseco::addChatCommand('warmend', 'Forces end of the Warmup', true);
 
 //Aseco::addChatCommand('uptodate', 'Checks current version of MPAseco', true);  // already defined in plugin.uptodate.php
 
@@ -1101,6 +1103,37 @@ function chat_admin($aseco, $command) {
       }
     }
 
+/**
+   * Extends the Warmup.
+   */
+  } elseif ($command['params'][0] == 'warmext' ||
+            $command['params'][0] == 'wuext') {
+
+    // log console message
+    $aseco->console('{1} [{2}] extended Warmup!', $logtitle, $login);
+
+    // show chat message
+    $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} extended Warmup!',
+                          $chattitle, $admin->nickname);
+    $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+
+    $aseco->client->query('TriggerModeScriptEvent', 'extendWarmup');
+  /**
+   * Extends the Warmup.
+   */
+  } elseif ($command['params'][0] == 'warmend' ||
+            $command['params'][0] == 'wuend') {
+    
+    // log console message
+    $aseco->console('{1} [{2}] forced end of the Warmup!', $logtitle, $login);
+
+    // show chat message
+    $message = formatText('{#server}>> {#admin}{1}$z$s {#highlite}{2}$z$s{#admin} forced end of the Warmup!',
+                          $chattitle, $admin->nickname);
+    $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
+
+    $aseco->client->query('TriggerModeScriptEvent', 'endWarmup');  
+    
   /**
    * Adds current /add-ed map permanently to server's map list
    * by preventing its removal that normally occurs afterwards
@@ -2787,6 +2820,10 @@ function chat_admin($aseco, $command) {
         $aseco->admin_list['IPADDRESS'][$i] = '';
         $aseco->writeLists();
 
+        // remove permission from database
+        $query = 'UPDATE players SET Permissions = 0 WHERE login = '.quotedString($target->login);
+        mysql_query($query);    
+        
         // log console message
         $aseco->console('{1} [{2}] removes admin [{3} : {4}]!', $logtitle, $login, $target->login, stripColors($target->nickname, false));
 
@@ -2843,6 +2880,10 @@ function chat_admin($aseco, $command) {
         $aseco->operator_list['IPADDRESS'][$i] = '';
         $aseco->writeLists();
 
+        // remove permission from database
+        $query = 'UPDATE players SET Permissions = 0 WHERE login = '.quotedString($target->login);
+        mysql_query($query);    
+      
         // log console message
         $aseco->console('{1} [{2}] removes operator [{3} : {4}]!', $logtitle, $login, $target->login, stripColors($target->nickname, false));
 
@@ -4413,7 +4454,6 @@ function chat_admin($aseco, $command) {
       $message = '{#server}> {#error}Invalid password!';
     }
     $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
-
   /**
    * Toggle debug on/off.
    */
@@ -4456,7 +4496,7 @@ function chat_admin($aseco, $command) {
     }
     $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
     
-  /**
+ /**
    * Checks current version of MPASECO.
    */
   } elseif ($command['params'][0] == 'uptodate') {

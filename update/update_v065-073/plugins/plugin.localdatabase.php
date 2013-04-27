@@ -16,6 +16,8 @@
 
 Aseco::registerEvent('onStartup', 'ldb_loadSettings');
 Aseco::registerEvent('onStartup', 'ldb_connect');
+Aseco::registerEvent('onStartup', 'ldb_writePermissions');
+Aseco::registerEvent('onStartup', 'ldb_readPermissions');
 Aseco::registerEvent('onEverySecond', 'ldb_reconnect');
 Aseco::registerEvent('onSync', 'ldb_sync');
 Aseco::registerEvent('onBeginMap', 'ldb_beginMap');
@@ -29,6 +31,9 @@ Aseco::registerEvent('onPoleCapture', 'ldb_poleCapture');
 Aseco::registerEvent('onPlayerRespawn', 'ldb_playerRespawn');
 Aseco::registerEvent('onPlayerSurvival', 'ldb_playerSurvival');
 Aseco::registerEvent('onPlayerDeath', 'ldb_playerDeath');
+Aseco::registerEvent('onPlayerShoot1', 'ldb_playerShoot');
+Aseco::registerEvent('onNearMiss', 'ldb_playerNearMiss');
+Aseco::registerEvent('onPlayerWonAttackRound', 'ldb_playerWonAttackRound');
 //Aseco::registerEvent('onPlayerVote', 'ldb_vote');
 
 // called @ onStartup
@@ -115,6 +120,8 @@ function ldb_connect($aseco) {
   $aseco->console('[LocalDB] Checking database structure...');
 
   // create main tables
+
+  
   $query = "CREATE TABLE IF NOT EXISTS `maps` (
               `Id` mediumint(9) NOT NULL auto_increment,
               `Uid` varchar(27) NOT NULL default '',
@@ -131,6 +138,7 @@ function ldb_connect($aseco) {
               `Login` varchar(50) NOT NULL default '',
               `Game` varchar(3) NOT NULL default '',
               `NickName` varchar(100) NOT NULL default '',
+              `Permissions` mediumint(9) NOT NULL default '',
               `Continent` tinyint(3) NOT NULL default 0,
               `Nation` varchar(3) NOT NULL default '', 
               `UpdatedAt` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -146,6 +154,8 @@ function ldb_connect($aseco) {
               `Captures` mediumint(9) unsigned NOT NULL default 0,
               `Survivals` mediumint(9) unsigned NOT NULL default 0,              
               `AllPoints` mediumint(9) unsigned NOT NULL default 0,
+              `Shots` mediumint(9) unsigned NOT NULL default 0,
+              `NearMisses` mediumint(9) unsigned NOT NULL default 0,
               PRIMARY KEY (`Id`),
               UNIQUE KEY `Login` (`Login`),
               KEY `Game` (`Game`)
@@ -214,6 +224,9 @@ function ldb_connect($aseco) {
   if (!in_array('Continent', $fields)) {
     $update .= "ADD Continent tinyint(3) unsigned NOT NULL DEFAULT 0,";
   }
+  if (!in_array('Permissions', $fields)) { //Permission 1 = Masteradmin, 2 = Admin, 3 = Operator
+    $update .= "ADD Permissions mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  } 
   if (!in_array('Joins', $fields)) {
     $update .= "ADD Joins mediumint(9) unsigned NOT NULL DEFAULT 0,";
   }  
@@ -234,13 +247,20 @@ function ldb_connect($aseco) {
   }
   if (!in_array('Survivals', $fields)) {
     $update .= "ADD Survivals mediumint(9) unsigned NOT NULL DEFAULT 0,";
-  } 
+  }  
   if (!in_array('attackerWon', $fields)) {
     $update .= "ADD attackerWon mediumint(9) unsigned NOT NULL DEFAULT 0,";
-  }   
+  }
+  if (!in_array('Shots', $fields)) {
+    $update .= "ADD Shots mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  } 
+  if (!in_array('NearMisses', $fields)) {
+    $update .= "ADD NearMisses mediumint(9) unsigned NOT NULL DEFAULT 0,";
+  }               
   if (!in_array('AllPoints', $fields)) {
     $update .= "ADD AllPoints int(20) unsigned NOT NULL DEFAULT 0,";
   } 
+    
   $update = substr($update, -1, 1) == ',' ? substr($update, 0, -1) : $update;
 
   if(!empty($update)) {
@@ -250,6 +270,46 @@ function ldb_connect($aseco) {
  
   $aseco->console('[LocalDB] ...Structure OK!');
 }  // ldb_connect
+
+// called @ onStartup
+function ldb_writePermissions($aseco){  
+ foreach ($aseco->operator_list['MPLOGIN'] as $login){
+    $query = 'UPDATE players SET Permissions = 3 WHERE login = '.quotedString($login);
+    mysql_query($query);       
+ }
+ foreach ($aseco->admin_list['MPLOGIN'] as $login){
+    $query = 'UPDATE players SET Permissions = 2 WHERE login = '.quotedString($login);
+    mysql_query($query);       
+ }
+ foreach ($aseco->masteradmin_list['MPLOGIN'] as $login){
+    $query = 'UPDATE players SET Permissions = 1 WHERE login = '.quotedString($login);
+    mysql_query($query);       
+ }
+} //ldb_writePermissions
+
+// called @ onStartup
+function ldb_readPermissions($aseco){  
+  /* Get Admins */
+  $query = 'SELECT Login FROM players WHERE Permissions = 2'; 
+  $result = mysql_query($query);
+  if (mysql_num_rows($result) > 0) {
+    while ($admin = mysql_fetch_array($result)) {
+      if(!in_array($admin['Login'], $aseco->admin_list['MPLOGIN'])){
+        array_push($aseco->admin_list['MPLOGIN'],$admin['Login']);  
+        }
+      }
+    }
+    /* Get Operators */
+    $query = 'SELECT Login FROM players WHERE Permissions = 1'; 
+    $result = mysql_query($query);
+    if (mysql_num_rows($result) > 0) {
+      while ($operator = mysql_fetch_array($result)) {
+        if(!in_array($operator['Login'], $aseco->operator_list['MPLOGIN'])){
+          array_push($aseco->operator_list['MPLOGIN'],$operator['Login']);  
+        }
+      }
+    }     
+} //ldb_readPermissions
 
 // called @ onEverySecond
 function ldb_reconnect($aseco) {
@@ -1039,32 +1099,57 @@ function ldb_playerWins($aseco, $player) {
 }  // ldb_playerWins
 
 function ldb_playerHit($aseco, $data) {
-  //maybe optimize
-  $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
-  mysql_query($query);
-  $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){ //Joust?!?
+    $query = 'UPDATE players SET Hits = Hits+1 WHERE login = '.quotedString($data['shooter']);
+    mysql_query($query);
+    $query = 'UPDATE players SET GotHits = GotHits+1 WHERE login = '.quotedString($data['victim']);
+    mysql_query($query);
+  } 
 }
 
 function ldb_poleCapture($aseco, $login) {
-  $query = 'UPDATE players SET captures = captures+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET captures = captures+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 
 function ldb_playerRespawn($aseco, $login) {
-  $query = 'UPDATE players SET respawns = respawns+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET respawns = respawns+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 
 function ldb_playerSurvival($aseco, $login) {
-  $query = 'UPDATE players SET Survivals= Survivals+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET Survivals= Survivals+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
 
 function ldb_playerDeath($aseco, $login) {
-  $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
-  mysql_query($query);
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET deaths = deaths+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
 }
-
-
+function ldb_playerShoot($aseco, $login) {
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET Shots = Shots+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
+}
+function ldb_attackerWon($aseco, $login) {
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET attackerWon = attackerWon+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
+}
+function ldb_playerNearMiss($aseco, $login) {
+  if(count($aseco->server->players->player_list) > 3){
+    $query = 'UPDATE players SET NearMisses = NearMisses+1 WHERE login = '.quotedString($login);
+    mysql_query($query);
+  }
+}
 ?>
