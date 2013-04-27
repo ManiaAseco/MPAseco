@@ -141,15 +141,16 @@ class ScriptSettings extends Plugin {
       
       $ratios = $settings['SETTINGS']['PUBLIC_VOTE_RATIOS'][0];
       $valueArray = array();
-      $array["Command"] = "SetScriptSettings";     
-      foreach($scriptSettings as $name => $value){
-        if(array_key_exists(strtoupper($name),$ratios)){
-          $array["Param"] = $name;
-          $array["Ratio"] = (float) $ratios[strtoupper($name)][0];
-          $valueArray[] = $array;
+      $array["Command"] = "SetScriptSettings"; 
+      if(is_array($ratios)){    
+        foreach($scriptSettings as $name => $value){
+          if(array_key_exists(strtoupper($name),$ratios)){
+            $array["Param"] = $name;
+            $array["Ratio"] = (float) $ratios[strtoupper($name)][0];
+            $valueArray[] = $array;
+          }
         }
       }
-     
      /* Disable Ban-Vote */
       $array["Command"] = "Ban";
       $array["Param"] = "";
