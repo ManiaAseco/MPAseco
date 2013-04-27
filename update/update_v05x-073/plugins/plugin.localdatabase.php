@@ -16,8 +16,8 @@
 
 Aseco::registerEvent('onStartup', 'ldb_loadSettings');
 Aseco::registerEvent('onStartup', 'ldb_connect');
-Aseco::registerEvent('onStartup', 'ldb_writePermissions');
-Aseco::registerEvent('onStartup', 'ldb_readPermissions');
+//Aseco::registerEvent('onStartup', 'ldb_writePermissions');
+//Aseco::registerEvent('onStartup', 'ldb_readPermissions');
 Aseco::registerEvent('onEverySecond', 'ldb_reconnect');
 Aseco::registerEvent('onSync', 'ldb_sync');
 Aseco::registerEvent('onBeginMap', 'ldb_beginMap');
@@ -272,7 +272,8 @@ function ldb_connect($aseco) {
 }  // ldb_connect
 
 // called @ onStartup
-function ldb_writePermissions($aseco){  
+function ldb_writePermissions($aseco){ 
+ var_dump($aseco->operator_list); 
  foreach ($aseco->operator_list['MPLOGIN'] as $login){
     $query = 'UPDATE players SET Permissions = 3 WHERE login = '.quotedString($login);
     mysql_query($query);       

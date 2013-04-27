@@ -1,7 +1,7 @@
 <?php
 /**
  *   This Plugin handles the Scriptsetttings graphically.
- *   Version: v0.4
+ *   Version: v0.42
  *   Author: Lukas Kremsmayr
  *   Dependencies: none 
  */
@@ -18,7 +18,7 @@ class ScriptSettings extends Plugin {
     $this->pluginMainId = "99957";
     $this->showWidgetID = "1"; //mainwindow
     
-    $this->pluginVersion = '0.4';  
+    $this->pluginVersion = '0.42';  
     $this->pluginAuthor = 'Lukas Kremsmayr';
     $this->defaultBeginMap = false;
       /*      private function loadDefaultSettings($login = false){
@@ -86,7 +86,8 @@ class ScriptSettings extends Plugin {
       $this->loadDefaultSettings();
     if($this->startUp){
       $this->settingsFile = 'configs/scriptsettings/'.$this->Aseco->server->gameinfo->type.'.xml';
-      $this->loadDefaultSettings();
+      if(file_exists($this->settingsFile))
+        $this->loadDefaultSettings();
       $this->startUp = false;
     }
   }
@@ -107,6 +108,14 @@ class ScriptSettings extends Plugin {
         trigger_error('Could not read/parse default scriptsetting file '.$this->settingsFile.' !', E_USER_ERROR);
       }
 
+      /* Delte old Setting Version */
+      if(!array_key_exists("SETTINGS", $settings)){ 
+        unlink($this->settingsFile);
+        if($login)
+          $this->showPlugin($login); 
+        return;
+      }  
+      
       /* Load Script-Settings */
       $this->Aseco->client->query('GetModeScriptSettings');
       $scriptSettings = $this->Aseco->client->getResponse();
@@ -121,7 +130,7 @@ class ScriptSettings extends Plugin {
       }
       
       /* Set Minimum of Matchmaking Sleep Time */
-      if($scriptSettings["S_MatchmakingSleep"] < 2)
+      if(array_key_exists("S_MatchmakingSleep",$scriptSettings) && $scriptSettings["S_MatchmakingSleep"] < 2)
         $scriptSettings["S_MatchmakingSleep"] = 2; 
         
       $this->Aseco->client->query('SetModeScriptSettings', $scriptSettings);
