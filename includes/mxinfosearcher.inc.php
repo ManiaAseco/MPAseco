@@ -2,6 +2,10 @@
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
 /**
+ *for serverviewer: 
+ *  line 197 	$url = str_replace(' ', '%20',$url);  
+ *  
+ *  
  * MXInfoSearcher - Search info for TM2/SM/QM maps from ManiaExchange
  * Created by Xymph <tm@gamers.org> based on:
  * http://api.mania-exchange.com/
@@ -126,7 +130,7 @@ class MXInfoSearcher implements Iterator {
 
 	private function getList($name, $author, $env) {
 
-		$maxpage = 5;  // max. 100 maps
+		$maxpage = 1;  // max. 100 maps
 
 		// compile search URL
 		$url = 'http://' . $this->prefix . '.mania-exchange.com/tracksearch?api=on';
@@ -146,7 +150,7 @@ class MXInfoSearcher implements Iterator {
 				$url .= '&environments=3';
 				break;
 		}
-		$url .= '&page=';
+	//	$url .= '&page=';
 
 		$maps = array();
 		$page = 1;
@@ -154,7 +158,8 @@ class MXInfoSearcher implements Iterator {
 
 		// get results 20 maps at a time
 		while ($page <= $maxpage && !$done) {
-			$file = $this->get_file($url . $page);
+			$file = $this->get_file($url);
+			//var_dump($file);
 			if ($file === false) {
 				$this->error = 'Connection or response error on ' . $url;
 				return array();
@@ -184,7 +189,6 @@ class MXInfoSearcher implements Iterator {
 				$done = true;
 			}
 		}
-
 		// return list of maps as array of MX objects
 		return $maps;
 	}  // getList
@@ -192,11 +196,11 @@ class MXInfoSearcher implements Iterator {
 	// Simple HTTP Get function with timeout
 	// ok: return string || error: return false || timeout: return -1
 	private function get_file($url) {
-
-		$url = parse_url($url);
+		$url = str_replace(' ', '%20',$url);      
+		//var_dump($url);
+    $url = parse_url($url);
 		$port = isset($url['port']) ? $url['port'] : 80;
 		$query = isset($url['query']) ? "?" . $url['query'] : "";
-
 		$fp = @fsockopen($url['host'], $port, $errno, $errstr, 4);
 		if (!$fp)
 			return false;
@@ -210,7 +214,8 @@ class MXInfoSearcher implements Iterator {
 		$info['timed_out'] = false;
 		while (!feof($fp) && !$info['timed_out']) {
 			$res .= fread($fp, 512);
-			$info = stream_get_meta_data($fp);
+		//	echo $res;
+      $info = stream_get_meta_data($fp);
 		}
 		fclose($fp);
 

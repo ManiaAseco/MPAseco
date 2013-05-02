@@ -138,7 +138,7 @@ function ldb_connect($aseco) {
               `Login` varchar(50) NOT NULL default '',
               `Game` varchar(3) NOT NULL default '',
               `NickName` varchar(100) NOT NULL default '',
-              `Permissions` mediumint(9) NOT NULL default '',
+              `Permissions` mediumint(9) NOT NULL default 0,
               `Continent` tinyint(3) NOT NULL default 0,
               `Nation` varchar(3) NOT NULL default '', 
               `UpdatedAt` datetime NOT NULL default '0000-00-00 00:00:00',
