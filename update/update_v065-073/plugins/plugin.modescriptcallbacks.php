@@ -217,7 +217,8 @@ function release_modeScriptCallbacks($aseco, $data) {
     break;
     
     case 'MapLoaded': //TimeTrial Mode
-    case 'beginMap':
+    case 'beginMap': 
+      $aseco->beginMap(0);
       $aseco->smrankings = array();
     break;   
     case 'OnShoot': /* Begin JSON Events: */
