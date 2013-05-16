@@ -44,7 +44,7 @@ if (file_exists($message_file)) {
    	  }
   	}
   	if (function_exists('send_window_message')) {
-   	  ${'message'.$i} = $xml['JFREU_MESSAGES']['send_window_message'][0];   	
+   	  ${'message'.$i} = $xml['JFREU_MESSAGES']['SEND_WINDOW_MESSAGE'][0];   	
   	}
   
     $badwordslist = array();

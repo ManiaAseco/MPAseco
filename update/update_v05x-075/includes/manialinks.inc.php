@@ -228,7 +228,7 @@ function display_manialink($login, $header, $icon, $data, $widths, $button) {
   $xml = str_replace('{#black}', $style['WINDOW'][0]['BLACKCOLOR'][0], $xml);
 
 
-  $aseco->client->query('TriggerModeScriptEvent', 'disableAltMenu', $login);  
+  $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_DisableAltMenu', $login);  
 
 
   //$aseco->console_text($xml);
@@ -331,7 +331,7 @@ function display_manialink_map($login, $header, $icon, $links, $data, $widths, $
   $xml = str_replace('{#black}', $style['WINDOW'][0]['BLACKCOLOR'][0], $xml);
 
 
-  $aseco->client->query('TriggerModeScriptEvent', 'disableAltMenu', $login);          
+  $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_DisableAltMenu', $login);          
   //$aseco->console_text($xml);
   $aseco->client->addCall('SendDisplayManialinkPageToLogin', array($login, $aseco->formatColors($xml), 0, true));
 }  // display_manialink_map
@@ -356,7 +356,7 @@ function display_manialink_map($login, $header, $icon, $links, $data, $widths, $
  */
 function display_manialink_multi($player) {
   global $aseco;
-  $aseco->client->query('TriggerModeScriptEvent', 'disableAltMenu', $player->login);  
+  $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_DisableAltMenu', $player->login);  
   // fake current page event
   event_manialink($aseco, array(0, $player->login, 1));
 }  // display_manialink_multi
@@ -381,7 +381,7 @@ function event_manialink($aseco, $answer) {
   switch($action) {
   case  0:
     // close main pop-up window
-    $aseco->client->query('TriggerModeScriptEvent', 'enableAltMenu', $login);  
+    $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_EnableAltMenu', $login);  
     mainwindow_off($aseco, $login);
     return;
 

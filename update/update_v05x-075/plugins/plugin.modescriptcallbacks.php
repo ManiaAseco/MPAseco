@@ -7,6 +7,12 @@
 
 Aseco::registerEvent('onModeScriptCallback', 'release_modeScriptCallbacks');
 Aseco::registerEvent('onModeScriptCallbackArray', 'release_LibXmlRpcCallbacks');
+Aseco::registerEvent('onStartup', 'init_XmlRpcOnStartup');
+
+function init_XmlRpcOnStartup($aseco){
+  $scriptset = array('S_UseScriptCallbacks' => true);  
+  $aseco->client->query('SetModeScriptSettings',  $scriptset);   
+}
 
 function release_LibXmlRpcCallbacks($aseco, $data){
 

@@ -1,7 +1,7 @@
 <?php
 /**
  *   This Plugin handles the Scriptsetttings graphically.
- *   Version: v0.42
+ *   Version: v0.43
  *   Author: Lukas Kremsmayr
  *   Dependencies: none 
  */
@@ -123,12 +123,16 @@ class ScriptSettings extends Plugin {
       foreach($scriptSettings as $key => $value){
          $type = gettype($value);
          $newvalue = $settings['SETTINGS']['SCRIPTSETTINGS'][0][strtoupper($key)][0];
-         if($type == "boolean")
-          $newvalue = text2bool($newvalue);
-         settype($newvalue, $type);
-         $scriptSettings[$key] = $newvalue;
+         if(isset($newvalue)){
+           if($type == "boolean")
+            $newvalue = text2bool($newvalue);
+           settype($newvalue, $type);
+           $scriptSettings[$key] = $newvalue;
+        }
       }
-      
+ 
+      $scriptSettings["S_UseScriptCallbacks"] = true; 
+       
       /* Set Minimum of Matchmaking Sleep Time */
       if(array_key_exists("S_MatchmakingSleep",$scriptSettings) && $scriptSettings["S_MatchmakingSleep"] < 2)
         $scriptSettings["S_MatchmakingSleep"] = 2; 
@@ -349,6 +353,7 @@ class ScriptSettings extends Plugin {
       }  
       $i++;
     }
+
     $this->Aseco->client->query('SetModeScriptSettings', $scriptSettings);
     $this->showPlugin($login);  
    
@@ -373,7 +378,7 @@ class ScriptSettings extends Plugin {
     $close = false;
     $timeout = 0;
    
-    $this->Aseco->client->query('TriggerModeScriptEvent', 'disableAltMenu', $login);                                                                     
+    $this->Aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_DisableAltMenu', $login);                                                                     
     $this->Aseco->client->query('SendDisplayManialinkPageToLogin', $login, $xml, ($timeout * 1000), $close);   
       
     //var_dump($this->Aseco->client->getResponse());

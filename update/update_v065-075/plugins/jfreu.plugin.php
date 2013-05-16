@@ -2,7 +2,7 @@
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
 
 /**
- * Jfreu's plugin 0.20
+ * Jfreu's plugin 0.21
  * http://jfreu.servegame.com
  * Updated by Xymph
  * edited for SM 02.10.2012 by kremsy (www.mania-server.net) 
@@ -178,7 +178,7 @@ function init_jfreu($aseco, $command)
 {
   include_once('includes/jfreu.config.php');
   
-  $version = '0.20';       
+  $version = '0.21';       
   $aseco->server->jfreu = new Jfreu();
   
   $aseco->server->jfreu->version = $version;
@@ -255,7 +255,7 @@ function init_jfreu($aseco, $command)
   $aseco->client->query('ChatSendServerMessage', $message);
 
   // start rank limiting
-  set_ranklimit($aseco, $aseco->server->jfreu->autolimit, text2bool($aseco->server->jfreu->autorank));  
+  set_ranklimit($aseco, $aseco->server->jfreu->autolimit, $aseco->server->jfreu->autorank);
 }  // init_jfreu
 
 function write_lists_xml($aseco)
@@ -992,6 +992,8 @@ function autokick($aseco, $player)  // returns true if no kick, false if kick
 {
   global $rasp, $feature_ranks;
 
+
+  
   $whi = $aseco->server->jfreu->white;
   $yel = $aseco->server->jfreu->yellow;
   $red = $aseco->server->jfreu->red;
@@ -1004,7 +1006,7 @@ function autokick($aseco, $player)  // returns true if no kick, false if kick
   if (strlen($nation) > 14)
     $nation = mapCountry($nation);
 
-  if ($aseco->server->jfreu->autorank)
+  if (!$aseco->server->jfreu->autorank)
   {
     $limit = $aseco->server->jfreu->autolimit;
   }
@@ -1012,6 +1014,8 @@ function autokick($aseco, $player)  // returns true if no kick, false if kick
   {
     $limit = $aseco->server->jfreu->limit;
   }
+  
+  //var_dump($aseco->server->jfreu->autorank);
   // check if hardlimit active and player rank higher than hardlimit
   if ($aseco->server->jfreu->hardlimit != 0 && ($player->ladderrank > $aseco->server->jfreu->hardlimit || $player->ladderrank <= 0))
   {
@@ -1028,6 +1032,7 @@ function autokick($aseco, $player)  // returns true if no kick, false if kick
   // check for high rank or no rank
   if ($player->ladderrank > $limit || $player->ladderrank <= 0)
   {
+  var_dump($aseco->server->jfreu->vip_list);
     // if not spectator, check for no VIP player or VIP_Team member
     if (!$player->isspectator &&
         !in_array($player->login, $aseco->server->jfreu->vip_list) &&
