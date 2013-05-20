@@ -139,6 +139,7 @@ class Player {
   var $panelbg;
   var $speclogin;
   var $dedirank;
+  var $disconnectionreason;
 
   function getWins() {
     return $this->wins + $this->newwins;

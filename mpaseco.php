@@ -1037,8 +1037,8 @@ class Aseco {
             $this->playerConnect($call[1]);
             break;
             
-          case 'ManiaPlanet.PlayerDisconnect':  // [0]=Login              
-            $this->playerDisconnect($call[1]);
+          case 'ManiaPlanet.PlayerDisconnect':  // [0]=Login, [1]=DisconnectionReason              
+            $this->playerDisconnect($call[1], $call[2]);
             break;
 
           case 'ManiaPlanet.PlayerChat':  // [0]=PlayerUid, [1]=Login, [2]=Text, [3]=IsRegistredCmd  
@@ -1837,7 +1837,7 @@ class Aseco {
   /**
    * Handles disconnections of players.
    */
-  function playerDisconnect($player) {
+  function playerDisconnect($player, $disconnectionreason) {
 
     // check for relay server
     if (!$this->server->isrelay && array_key_exists($player[0], $this->server->relayslist)) {
@@ -1854,6 +1854,9 @@ class Aseco {
     // or on relay if player from master server (which wasn't added)
     if (!$player_item = $this->server->players->removePlayer($player[0]))
       return;
+
+    // Add disonnect reason
+    $player_item->disconnectionreason = $disconnectionreason;
 
     // log console message
     $this->console('>> player {1} left the game [{2} : {3} : {4}]',
