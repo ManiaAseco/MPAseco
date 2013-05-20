@@ -1045,6 +1045,10 @@ class Aseco {
             $this->playerChat($call[1]);
             $this->releaseEvent('onChat', $call[1]);
             break;
+
+          case 'ManiaPlanet.EndMatch':  // [0]=Rankings, [1]=winnerTeamOrMap 
+            $this->releaseEvent('onEndMatch', $call[1], $call[2]);
+            break;
           /*
           case 'ManiaPlanet.BeginRound':  // none     new
             $this->beginRound();
