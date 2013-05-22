@@ -49,8 +49,7 @@ if (file_exists($message_file)) {
   
     $badwordslist = array();
    	foreach ($xml['JFREU_MESSAGES']['BADWORDS_LIST'][0]['BADWORD'] as $badword) {
-   	  $badword = $badword['BADWORD']; 
-   	  $badwordslist[] = $badword;
+     	  $badwordslist[] = $badword;
    	}    
      
                 	
