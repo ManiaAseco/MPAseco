@@ -1038,7 +1038,7 @@ class Aseco {
             break;
             
           case 'ManiaPlanet.PlayerDisconnect':  // [0]=Login, [1]=DisconnectionReason              
-            $this->playerDisconnect($call[1], $call[2]);
+            $this->playerDisconnect($call[1]);
             break;
 
           case 'ManiaPlanet.PlayerChat':  // [0]=PlayerUid, [1]=Login, [2]=Text, [3]=IsRegistredCmd  
@@ -1047,7 +1047,7 @@ class Aseco {
             break;
 
           case 'ManiaPlanet.EndMatch':  // [0]=Rankings, [1]=winnerTeamOrMap 
-            $this->releaseEvent('onEndMatch', $call[1], $call[2]);
+            $this->releaseEvent('onEndMatch', $call[1]);
             break;
           /*
           case 'ManiaPlanet.BeginRound':  // none     new
@@ -1837,7 +1837,7 @@ class Aseco {
   /**
    * Handles disconnections of players.
    */
-  function playerDisconnect($player, $disconnectionreason) {
+  function playerDisconnect($player) {
 
     // check for relay server
     if (!$this->server->isrelay && array_key_exists($player[0], $this->server->relayslist)) {
@@ -1856,7 +1856,7 @@ class Aseco {
       return;
 
     // Add disonnect reason
-    $player_item->disconnectionreason = $disconnectionreason;
+    $player_item->disconnectionreason = (count($player >= 2) ? $player[1] : false);
 
     // log console message
     $this->console('>> player {1} left the game [{2} : {3} : {4}]',
