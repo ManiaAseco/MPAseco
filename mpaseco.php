@@ -1031,6 +1031,9 @@ class Aseco {
              //ManiaPlanet.BeginMatch(SMapInfo Map); 
              //ManiaPlanet.EndMatch(SPlayerRanking Rankings[], SMapInfo Map); 
     if (!empty($calls)) {
+      if(in_array("plugin.manialivewrapper.php", $this->plugins)) {
+        $this->releaseEvent('onCallbacksReceived', $calls); // Needed for "some" plugins (like the ManiaLiveWrapper)
+      }
       while ($call = array_shift($calls)) {
         switch ($call[0]) {   
           case 'ManiaPlanet.PlayerConnect':  // [0]=Login, [1]=IsSpectator    
