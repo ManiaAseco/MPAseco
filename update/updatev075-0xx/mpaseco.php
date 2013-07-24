@@ -1703,7 +1703,7 @@ class Aseco {
     
     // check if the player is a bot
     $this->console('{1} connected', $login);
-    if(strpos($login, "*fakeplayer") == true){   
+    if(strpos($login, "*fakeplayer") === true){   
       return;
     }
     
