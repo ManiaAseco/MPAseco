@@ -2077,6 +2077,20 @@ class FufiWidgets extends Plugin {
     }
     return $rankings;
   }
+  
+   function getMostNearMissesList($limit=50){
+    $query='SELECT Login, Nickname, NearMisses FROM players ORDER BY NearMisses DESC LIMIT '.$limit;
+    $res = mysql_query($query);
+    $rankings = array();
+    while ($row = mysql_fetch_object($res)) {
+      $player = new CTUPlayer($row->Nickname, $row->Login);
+      $ranking['player'] = $player;
+      $ranking['score'] = $row->NearMisses;
+      $rankings[] = $ranking;
+    }
+    return $rankings;
+  }
+  
   function getMostSurvivalsList($limit=50){
     $query='SELECT Login, Nickname, Survivals FROM players ORDER BY Survivals DESC LIMIT '.$limit;
     $res = mysql_query($query);
@@ -2389,7 +2403,8 @@ class FufiWidgets extends Plugin {
         $showPoints = true; break;
       case 'MostHits':
       case 'MostCaptures':
-      case 'MostSurvivals':      
+      case 'MostSurvivals':
+	  case 'MostNearMisses':      
       case 'MostDeaths':   
       case 'TopDons':               
       case 'WeeklyPoints':   
