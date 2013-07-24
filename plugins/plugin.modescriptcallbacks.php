@@ -84,7 +84,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break;
 
     case 'LibXmlRpc_OnNearMiss':
-      $aseco->releaseEvent('onNearMiss', $params);
+      $aseco->releaseEvent('onNearMiss', $params[0]);
     break;
                    
     case 'LibXmlRpc_OnCapture': 
