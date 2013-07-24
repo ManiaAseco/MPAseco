@@ -1702,8 +1702,8 @@ class Aseco {
     $login = $player[0];
     
     // check if the player is a bot
-    if(strpos($login, "*fakeplayer*") !== false){
-      $this->console('{1} connected', $player['Login']);
+    if(strpos($login, "*fakeplayer*") == true){
+      $this->console('{1} connected', $login);
       return;
     }
     
