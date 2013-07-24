@@ -506,7 +506,13 @@ class Aseco {
           $this->settings['records_activated'] = false;
           $minrank = $minpoints;        
         }
-                            
+        
+        //Set the specific Records_type, if old config records_type = time as standard 
+        if(isset($records['RECORDS_TYPE'][0])){
+          $this->settings['records_type'] = $records['RECORDS_TYPE'][0];
+        }else{
+          $this->settings['records_type'] = "Time";
+        }                          
         // set minimum number of records to be displayed
         $this->settings['show_min_recs'] = $records['SHOW_MIN_RECS'][0];
         // show records before start of map?

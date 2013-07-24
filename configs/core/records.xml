@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <records>
   <settings>
-    <!-- write true if you want a time-based record system -->
-    <records_activated>False</records_activated>
+    <!-- Write true here if you want a time-Based Record system -->
+    <records_activated>True</records_activated>
+    
+    <!-- Specify the Record Type Time / Points -->  
+    <records_type>Points</records_type>
+    
     <show_min_recs>8</show_min_recs>
     <!-- 2 = full report, 1 = only map record, 0 = none -->
     <!-- add 4 to show the report in the message window -->
