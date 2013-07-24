@@ -327,10 +327,6 @@ class Map {
       $this->author = $rpc_infos['Author'];
       $this->environment = $rpc_infos['Environnement'];
       $this->mood = $rpc_infos['Mood'];
-      $this->bronzetime = $rpc_infos['BronzeTime'];
-      $this->silvertime = $rpc_infos['SilverTime'];
-      $this->goldtime = $rpc_infos['GoldTime'];
-      $this->authortime = $rpc_infos['AuthorTime'];
       $this->copperprice = $rpc_infos['CopperPrice'];
       $this->laprace = $rpc_infos['LapRace'];
       $this->forcedlaps = 0;
@@ -342,6 +338,19 @@ class Map {
       // set defaults
       $this->name = 'undefined';
     }
+	if ($this->bronzetime == -1){
+	return "None";
+	}
+	if ($this->silvertime == -1){
+	return "None";
+	}
+	if ($this->goldtime == -1){
+	return "None";
+	}
+	if ($this->authortime == -1){
+	return "None";
+	}
+	
   }
 }  // class Map
 
