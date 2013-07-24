@@ -1085,6 +1085,7 @@ class Aseco {
             break;
                                                
           case 'ManiaPlanet.EndMap':  // [0]=Challenge
+            $this->beginround = false;
             if(!$this->endmapvar)
               $this->endMap($call[1]);
             break; 
