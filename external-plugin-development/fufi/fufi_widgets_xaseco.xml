@@ -1,0 +1,631 @@
+<widgets>
+
+
+  <!--  Instructions:
+      
+      Every widget can be disabled or enabled with the <enabled> tag.
+      
+      Every widget has multiple states that define the position and in some cases
+      the width and number of entries. The tags for that are <x>, <y>, <width> and <entrycount>.
+      Widgets that have a titlebar have an additional (optional) field called <titleoffsetx> with
+      which you can move the titlebar in the horizontal direction, if you want to.
+      The states mainly stand for the different game modes if not specified otherwise.
+      You can also disable widgets for specific states only.
+      
+      You can specify the displayed title of some widgets within the <title> tag.
+      
+      For the Karma widget you can also define whether the title is shown or not for each state.
+  -->
+
+
+  <challengewidget>
+    <enabled>true</enabled>
+    <states>
+      <state id="0"> <!--Default state-->
+        <x>44.3</x>
+        <y>39.3</y>
+      </state>
+      <state id="1"> <!--Clicked state-->
+        <x>44.3</x>
+        <y>39.3</y>
+      </state>
+      <state id="2"> <!--Clicked state without TMX Info-->
+        <x>44.3</x>
+        <y>39.3</y>
+      </state>
+    </states>
+  </challengewidget>
+
+  
+  <localrecordswidget>
+    <enabled>false</enabled>
+    <title>Local Records</title>
+    <states>
+    
+      <!-- state ids in this case correspond to the game mode ID, making it possible to configure or disactivate the plugin in specific modes -->
+      <!-- 1..Rounds 2..Time Attack, 3..Team, 4..Laps, 6..Stunts, 5..Cup -->
+
+      <state id="0"> <!--Custom script state-->
+        <enabled>true</enabled>
+        <x>49.5</x>
+        <y>20</y>
+        <width>15.5</width>
+        <entrycount>11</entrycount>
+        <topcount>3</topcount>
+        <titleoffsetx>2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+          
+      <state id="1"> <!--Rounds state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>21.5</y>
+        <entrycount>8</entrycount>
+        <topcount>3</topcount> <!--shows the top X players inside the widget-->
+        <width>14.5</width>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="2"> <!--Time Attack state-->
+        <enabled>true</enabled>
+        <x>49.5</x>
+        <y>15</y>
+        <width>15.5</width>
+        <entrycount>11</entrycount>
+        <topcount>3</topcount>
+        <titleoffsetx>2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+
+      <state id="3"> <!--Team Mode state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>21.5</y>
+        <width>14.5</width>
+        <entrycount>14</entrycount>
+        <topcount>5</topcount>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="4"> <!--Laps Mode state-->
+        <enabled>true</enabled>
+        <x>49.5</x>
+        <y>7</y>
+        <width>15.5</width>
+        <entrycount>11</entrycount>
+        <topcount>3</topcount>
+        <titleoffsetx>2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="6"> <!--Stunts Mode state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>21.5</y>
+        <entrycount>11</entrycount>
+        <topcount>3</topcount> <!--shows the top X players inside the widget-->
+        <width>14.5</width>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="5"> <!--Cup Mode state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>21.5</y>
+        <width>14.5</width>
+        <entrycount>14</entrycount>
+        <topcount>5</topcount>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+    </states>
+  </localrecordswidget>
+
+  
+  <liverankingswidget>
+    <enabled>true</enabled>
+    <title>Live Rankings</title>
+    <states>
+    
+      <!-- state ids in this case correspond to the game mode ID, making it possible to configure or disactivate the plugin in specific modes -->
+      <!-- 0..Scripts(SM) 1..Rounds 2..Time Attack, 3..Team, 4..Laps, 6..Stunts, 5..Cup -->
+      
+      <state id="0"> <!--Script state-->
+        <enabled>true</enabled>
+        <x>49.5</x>
+        <y>-11</y>
+        <width>15.5</width>
+        <entrycount>7</entrycount>
+        <topcount>2</topcount>
+        <titleoffsetx>2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="1"> <!--Rounds state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>-12.5</y>
+        <entrycount>5</entrycount>
+        <topcount>2</topcount>
+        <width>14.5</width>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="2"> <!--Time Attack state-->
+        <enabled>true</enabled>
+        <x>49.5</x>
+        <y>-11</y>
+        <width>15.5</width>
+        <entrycount>7</entrycount>
+        <topcount>2</topcount>
+        <titleoffsetx>2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+
+      <state id="3"> <!--Team Mode state (doesn't work in team mode)--> 
+        <enabled>false</enabled>
+      </state>
+      
+      <state id="4"> <!--Laps Mode state (unsupported for now) -->
+        <enabled>false</enabled>
+      </state>
+      
+      <state id="6"> <!--Stunts Mode state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>-4.5</y>
+        <entrycount>8</entrycount>
+        <topcount>3</topcount>
+        <width>14.5</width>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="5"> <!--Cup Mode state, doesn't work yet-->
+        <enabled>false</enabled>
+      </state>
+    </states>
+  </liverankingswidget>
+  
+  
+  <dedimaniawidget>
+    <enabled>false</enabled>
+    <title>Dedimania</title>
+    <states>
+    
+      <!-- state ids in this case correspond to the game mode ID, making it possible to configure or disactivate the plugin in specific modes -->
+      <!-- 1..Rounds 2..Time Attack, 3..Team, 4..Laps, 6..Stunts, 5..Cup -->
+    
+      <state id="1"> <!--Rounds state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>1.5</y>
+        <entrycount>5</entrycount>
+        <topcount>2</topcount>
+        <width>14.5</width>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+
+      <state id="2"> <!--Time Attack state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>21.5</y>
+        <width>14.5</width>
+        <entrycount>12</entrycount>
+        <topcount>3</topcount>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+
+      <state id="3"> <!--Team Mode state--> 
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>-9.5</y>
+        <entrycount>6</entrycount>
+        <topcount>2</topcount>
+        <width>14.5</width>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="4"> <!--Laps Mode state (unsupported for now) -->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>21.5</y>
+        <width>14.5</width>
+        <entrycount>12</entrycount>
+        <topcount>3</topcount>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+      
+      <state id="6"> <!--Stunts Mode state (stunts mode is not supported by Dedimania-->
+        <enabled>false</enabled>
+      </state>
+      
+      <state id="5"> <!--Cup Mode state-->
+        <enabled>true</enabled>
+        <x>-64.7</x>
+        <y>-9.5</y>
+        <entrycount>6</entrycount>
+        <topcount>2</topcount>
+        <width>14.5</width>
+        <titleoffsetx>-2.25</titleoffsetx>
+        <displaytitle>true</displaytitle>
+      </state>
+    </states>
+  </dedimaniawidget>
+
+  
+  <karmawidget>
+    <enabled>false</enabled>
+    <title>Track Karma</title>
+    <states>
+
+      <!-- state ids in this case correspond to the game mode ID, making it possible to configure or disactivate the plugin in specific modes -->
+      <!-- 0..Scripts(SM) 1..Rounds 2..Time Attack, 3..Team, 4..Laps, 6..Stunts, 5..Cup -->
+      <state id="0"> <!-- Script state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>15.7</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+        
+      <state id="1"> <!-- Rounds state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>15.7</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+
+      <state id="2"> <!-- Time Attack state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>30</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+
+      <state id="3"> <!-- Team Mode state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>15.7</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+
+      <state id="4"> <!-- Laps Mode state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>15</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+
+      <state id="6"> <!-- Stunts Mode state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>15</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+
+      <state id="5"> <!-- Cup Mode state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>27.9</y>
+        <displaytitle>false</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+
+      <state id="7"> <!-- Score Panel state -->
+        <enabled>true</enabled>
+        <x>53.5</x>
+        <y>37.5</y>
+        <displaytitle>true</displaytitle>
+        <displayvotecounts>true</displayvotecounts>
+      </state>
+    </states>
+  </karmawidget>
+  
+  <clockwidget>
+    <enabled>true</enabled>
+    <timeformat>H:i</timeformat> <!-- usage as in php date() function (better not use seconds, the server won't like it) -->
+    <states>
+      <state id="0"> <!-- Default state -->
+        <x>44.3</x>
+        <y>39.3</y>
+      </state>
+    </states>
+  </clockwidget>
+
+  <!-- The NextTrackWidget only shows up when the scorepanel is shown and displays information about the next track-->
+  <nexttrackwidget>
+    <enabled>true</enabled>
+    <states>
+      <state id="0"> <!-- Default state -->
+        <x>44.3</x>
+        <y>39.3</y>
+      </state>
+    </states>
+  </nexttrackwidget>
+  
+  
+  
+  <!-- The Scoreboard Lists widget takes care of fancy statistics that are shown in the scoreboard state. 
+    They lists are quite easy to handle. With the help of the <list> tag you specify an empty
+    list container which you can position and size with the help of the tags <x>, <y>, <width>
+    and <entrycount>. You can give your list a title with the help of the <title>-tag and finetune
+    its horizontal position with the help of <titleoffsetx>.
+    Now it's time to fill this empty box with content. At the moment the <content> tag can be
+    one of those:
+    
+     Only for trackmania:
+      - 'DediRecs' : Dedimania records     
+    
+     For Time based Modes in Shootmania / Trackmania:
+      - 'LocalRecs': local records
+      - 'MostRecs'   : players that have the most records on your server
+      
+     Generall Lists:
+      - 'TopRanks' : top ranked players in Time Modes
+      - 'AllPoints' : top ranked players in Point Modes (only shootmania)
+      - 'TopPlaytime': players that spent the most time on your server
+      - 'TopWinners' : most victorius players
+      - 'TopDons' : list the top donators
+            
+     Only for Shootmania:
+      - 'MostHits': players with most hits
+      - 'MostSurvivals': players with most survivals
+      - 'MostCaptures': players with most captures
+      - 'MostRespawns': players with most respawns
+      - 'MostDeaths': players with most deaths
+      - 'MostNearMisses': players with most near misses   
+      - 'WeeklyPoints': Best Players Weekly (Only in Point modes, depency plugin.timedrank.php)           
+      - 'MonthlyPoints': Best Players Monthly (Only in Point modes, depency plugin.timedrank.php)                  
+    If you configured a list right, it will always be shown when the scoreboard pops up -->
+     
+  <scoreboardlists>
+    <enabled>true</enabled>
+    <lists>
+    <!-- Trackmania 
+      <list>
+        <title>Local Records</title>
+        <content>LocalRecs</content>
+        <x>-63</x>
+        <y>31</y>
+        <width>18</width>
+        <entrycount>25</entrycount>
+      </list>
+
+      <list>
+        <title>Dedimania Records</title>
+        <content>DediRecs</content>
+        <x>45</x>
+        <y>15</y>
+        <width>18</width>
+        <entrycount>19</entrycount>
+      </list>
+      
+      <list>
+        <title>Top Ranks</title>
+        <content>TopRanks</content>
+        <x>45</x>
+        <y>29</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Hours Played</title>
+        <content>TopPlaytime</content>
+        <x>45</x>
+        <y>15</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Top Winners</title>
+        <content>TopWinners</content>
+        <x>45</x>
+        <y>1</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Most Records</title>
+        <content>MostRecs</content>
+        <x>45</x>
+        <y>-13</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+      -->
+      <!-- Shootmania -->
+
+     <!-- Right Side -->
+
+      <list>
+        <title>Most Hits</title>
+        <content>MostHits</content>
+        <x>45</x>
+        <y>15</y>   <!-- 15 -->
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+      
+      <list>
+        <title>Most Captures</title>
+        <content>MostCaptures</content>
+        <x>45</x>
+        <y>29</y>  <!-- 29 -->
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Top Ranks</title>
+        <content>AllPoints</content>
+        <x>45</x>
+        <y>1</y>    <!-- 1 -->
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+              
+      <list>
+        <title>Monthly Points</title>
+        <content>MonthlyPoints</content>      
+        <x>45</x>
+        <y>-13</y>     <!-- -13 -->
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+                  
+      <list>
+        <title>Weekly Points</title>
+        <content>WeeklyPoints</content>
+        <x>45</x>
+        <y>-27</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <!-- LEFT SIDE -->
+      <list>
+        <title>Hours Played</title>
+        <content>TopPlaytime</content>
+        <x>-63</x>
+        <y>29</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Top Winners</title>
+        <content>TopWinners</content>
+        <x>-63</x>
+        <y>15</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Most Survivals</title>
+        <content>MostSurvivals</content>
+        <x>-63</x>
+        <y>1</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>
+
+      <list>
+        <title>Top Donators</title>
+        <content>TopDons</content>
+        <x>-63</x>
+        <y>-13</y>
+        <width>18</width>
+        <entrycount>5</entrycount>
+      </list>    
+    </lists>
+  </scoreboardlists>
+  
+  <!--Displays multiple fully customizable widgets all over the hud containing images or bik-videos.
+    This content needs its loading time so please be patient if it doesn't show up immediately.
+    Have a look at the sample ads to see how the widget is used. You can combine the tags in nearly every 
+    possible way, having a manialink on a video that becomes an image on mouseover or something like that.
+    You can add as many <ad>-Blocks as you want but be sure to not overload your HUD for your clients' sake^^.-->
+    
+  <adwidget>
+     <enabled>true</enabled>
+     <ads>
+     
+        <!-- sample advertisement for a picture with a mouseover, without a background window and with a clickable link 
+        <ad>
+          <display>race</display> determines, when an ad is shown: 'always'...Shows up all the time
+                                          'race'.....Shows up only when racing
+                                          'score'....Shows up only in the end of a race when the scoreboard pops up
+          <background>false</background>
+          <image>http://img809.imageshack.us/img809/662/adfocus.png</image> 
+          <imagefocus>http://img809.imageshack.us/img809/662/adfocus.png</imagefocus> changes the image on mouseover (optional, also only works, if there is a link on the advertisement)
+          <url>http://fish.stabb.de</url> clickable link which opens in an external browser
+          <manialink>http://smurf1.free.fr/mle/index.xml</manialink>--> <!-- clickable link which opens a manialink internally, overrides the <url> tag
+          <x>-62.31</x>
+          <y>-8.7</y>
+          <width>9.3</width>
+          <height>2.1</height>
+          <halign>center</halign>--> <!--defines the horizontal align of the text inside the advertisement (default is "center", also possible are "left" and "right")
+          <valign>center</valign>--> <!--defines the vertical align of the text inside the advertisement (default is "center", also possible are "top" and "bottom")
+          <text>fufi rocks</text>--> <!--displays a text in the middle of the advertisement, if there is no image or video in the background, this text will be clickable if a link is specified
+        </ad>
+            -->
+        <ad>
+          <display>score</display>
+          <background>false</background>
+          <image>http://img210.imageshack.us/img210/2557/83431621.png</image>
+          <imagefocus>http://img809.imageshack.us/img809/662/adfocus.png</imagefocus>
+          <url>http://fish.stabb.de</url>
+          <x>-5.96</x>
+          <y>48</y>
+          <width>11.92</width>
+          <height>2.6</height>
+        </ad>
+
+        <!-- sample advertisement for a picture with a window background and without a link -->
+        <!--
+        <ad>
+          <background>true</background>
+          <image>http://img809.imageshack.us/img809/662/adfocus.png</image>
+          <x>0</x>
+          <y>0</y>
+          <width>11.92</width>
+          <height>2.6</height>
+        </ad>
+        -->
+        
+        <!-- sample advertisement for a video -->
+        
+        <!--
+        <ad>
+          <image>http://fish.stabb.de/aseco/SignWrongWay.bik</image>
+          <imagefocus>http://fish.stabb.de/aseco/SignDown.bik</imagefocus>
+          <manialink>http://smurf1.free.fr/mle/index.xml</manialink>
+          <x>-8</x>
+          <y>4.5</y>
+          <width>16</width>
+          <height>9</height>
+        </ad>
+        -->
+        
+        <!--The texts for the karma widget in score mode-->
+        <ad>
+          <display>score</display>
+          <x>47</x>
+          <y>37.3</y>
+          <width>11</width>
+          <height>2.1</height>
+          <halign>right</halign>
+          <text>Please vote for</text>
+        </ad>
+
+        <ad>
+          <display>score</display>
+          <x>47</x>
+          <y>35.5</y>
+          <width>11</width>
+          <height>2.1</height>
+          <halign>right</halign>
+          <text>the last track.</text>
+        </ad>
+        
+     </ads>
+  </adwidget>
+</widgets>
