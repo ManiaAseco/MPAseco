@@ -31,13 +31,10 @@ function clearMapsCache($aseco, $data) {
 
 // called @ onBeginMap2
 function initMapsCache($aseco, $map) {
-  global $mapListCache, $reset_cache_start;
+  global $mapListCache;
 
-  if ($reset_cache_start) {
-    $mapListCache = array();
-    if ($aseco->debug)
-      $aseco->console_text('maps cache reset');
-  }
+  $mapListCache = array();
+  
   getMapsCache($aseco);
   if ($aseco->debug)
     $aseco->console_text('maps cache inited: ' . count($mapListCache));
