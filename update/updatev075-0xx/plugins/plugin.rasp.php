@@ -24,6 +24,15 @@ Aseco::addChatCommand('rank', 'Shows your current server rank');
 Aseco::addChatCommand('top10', 'Displays top 10 best ranked players');
 Aseco::addChatCommand('top100', 'Displays top 100 best ranked players');
 Aseco::addChatCommand('topwins', 'Displays top 100 victorious players');
+Aseco::addChatCommand('topmisses', 'Displays top 100 NearMisses players');
+Aseco::addChatCommand('tophits', 'Displays top 100 Hits players');
+Aseco::addChatCommand('topcaptures', 'Displays top 100 Captures players');
+Aseco::addChatCommand('toprespawns', 'Displays top 100 Respawn players');
+Aseco::addChatCommand('topsurvivals', 'Displays top 100 Survival players');
+Aseco::addChatCommand('topdeaths', 'Displays top 100 Death players');
+Aseco::addChatCommand('topshots', 'Displays top 100 Shots players');
+Aseco::addChatCommand('topattacker', 'Displays top 100 attackerWon players');
+Aseco::addChatCommand('topgothits', 'Displays top 100 GotHits players');
 Aseco::addChatCommand('active', 'Displays top 100 most active players');
 
 class Rasp {
@@ -826,7 +835,7 @@ function chat_topmisses($aseco, $command) {
 	$query = 'SELECT NickName, NearMisses FROM players ORDER BY NearMisses DESC LIMIT ' . $top;
 	$res = mysql_query($query);
 
-	$wins = array();
+	$miss = array();
 	$i = 1;
 	$lines = 0;
 	$player->msgs = array();
@@ -838,26 +847,386 @@ function chat_topmisses($aseco, $command) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
-			$wins[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			$miss[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
 			                $bgn . $nick,
 			                $row->NearMisses);
 			$i++;
 			if (++$lines > 14) {
-				$player->msgs[] = $wins;
+				$player->msgs[] = $miss;
 				$lines = 0;
-				$wins = array();
+				$miss = array();
 			}
 		}
 	}
 	// add if last batch exists
-	if (!empty($wins))
-		$player->msgs[] = $wins;
+	if (!empty($miss))
+		$player->msgs[] = $miss;
 
 	// display ManiaLink message
 	display_manialink_multi($player);
 
 	mysql_free_result($res);
-}  // chat_topwins
+}  // chat_topmisses
+
+
+function chat_tophits($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Hits:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, Hits FROM players ORDER BY Hits DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$hit = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$hit[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->Hits);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $hit;
+				$lines = 0;
+				$hit = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($hit))
+		$player->msgs[] = $hit;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_tophits
+
+
+function chat_topcaptures($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Captures:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, Captures FROM players ORDER BY Captures DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$cap = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$cap[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->Captures);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $cap;
+				$lines = 0;
+				$cap = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($cap))
+		$player->msgs[] = $cap;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_topcaptures
+
+
+
+function chat_toprespawns($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Respawns:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, Respawns FROM players ORDER BY Respawns DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$respawn = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$respawn[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->Respawns);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $respawn;
+				$lines = 0;
+				$respawn = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($respawn))
+		$player->msgs[] = $respawn;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_toprespawns
+
+
+
+function chat_topsurvivals($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Survivals:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, Survivals FROM players ORDER BY Survivals DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$survival = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$survival[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->Survivals);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $survival;
+				$lines = 0;
+				$survival = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($survival))
+		$player->msgs[] = $survival;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_topsurvivals
+
+function chat_topdeaths($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Deaths:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, Deaths FROM players ORDER BY Deaths DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$death = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$death[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->Deaths);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $death;
+				$lines = 0;
+				$death = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($death))
+		$player->msgs[] = $death;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_topdeaths
+
+
+function chat_topshots($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Shots:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, Shots FROM players ORDER BY Shots DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$shot = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$shot[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->Shots);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $shot;
+				$lines = 0;
+				$shot = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($shot))
+		$player->msgs[] = $shot;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_topshots
+
+function chat_topattacker($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Attacker won:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, attackerWon FROM players ORDER BY attackerWon DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$atkw = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$atkw[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->attackerWon);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $atkw;
+				$lines = 0;
+				$atkw = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($atkw))
+		$player->msgs[] = $atkw;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_topattacker
+
+
+function chat_topgothits($aseco, $command) {
+
+	$player = $command['author'];
+
+	$head = 'Current TOP 100 Got Hits:';
+	$top = 100;
+	$bgn = '{#black}';  // nickname begin
+
+	$query = 'SELECT NickName, GotHits FROM players ORDER BY GotHits DESC LIMIT ' . $top;
+	$res = mysql_query($query);
+
+	$Ghit = array();
+	$i = 1;
+	$lines = 0;
+	$player->msgs = array();
+	// reserve extra width for $w tags
+	$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
+	$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
+	if (mysql_num_rows($res) > 0) {
+		while ($row = mysql_fetch_object($res)) {
+			$nick = $row->NickName;
+			if (!$aseco->settings['lists_colornicks'])
+				$nick = stripColors($nick);
+			$Ghit[] = array(str_pad($i, 2, '0', STR_PAD_LEFT) . '.',
+			                $bgn . $nick,
+			                $row->GotHits);
+			$i++;
+			if (++$lines > 14) {
+				$player->msgs[] = $Ghit;
+				$lines = 0;
+				$Ghit = array();
+			}
+		}
+	}
+	// add if last batch exists
+	if (!empty($Ghit))
+		$player->msgs[] = $Ghit;
+
+	// display ManiaLink message
+	display_manialink_multi($player);
+
+	mysql_free_result($res);
+}  // chat_topgothits
 
 function chat_active($aseco, $command) {
 
