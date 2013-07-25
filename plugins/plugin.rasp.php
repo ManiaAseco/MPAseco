@@ -1183,7 +1183,6 @@ function chat_topattacker($aseco, $command) {
 	mysql_free_result($res);
 }  // chat_topattacker
 
-
 function chat_topgothits($aseco, $command) {
 
 	$player = $command['author'];
