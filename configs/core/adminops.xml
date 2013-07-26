@@ -177,7 +177,9 @@
 		<scriptsettings>true</scriptsettings>
  		<scriptset>true</scriptset> 
 		<warmext>true</warmext>
- 		<warmend>true</warmend>       		
+ 		<warmend>true</warmend>
+		<wuend>true</wuend>
+		<wuext>true</wuext>   		
 	</admin_abilities>
 
 	<operator_abilities>
@@ -340,5 +342,7 @@
  		<scriptset>false</scriptset>  
 		<warmext>true</warmext>
  		<warmend>true</warmend>
+		<wuend>true</wuend>
+		<wuext>true</wuext>
 	</operator_abilities>
 </lists>
