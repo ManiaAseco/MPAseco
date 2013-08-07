@@ -182,7 +182,7 @@ class FufiWidgets extends Plugin {
   var $debugVars;
   var $settings;
   var $records_active;
-  var $records_type;
+
 
   /**
    * Initializes the plugin, loads the XML settings
@@ -1279,8 +1279,8 @@ class FufiWidgets extends Plugin {
 
     //the gamemode is needed to get the right configuration and display options
     $gamemode = $this->Aseco->server->gameinfo->mode;
-    $roundsmode = $gamemode==1 || $gamemode==5 || ($gamemode==0 && !$this->records_active)
-                  || ($gamemode==0 && $this->records_active && $this->records_type == "Points");
+    $roundsmode = $gamemode==1 || $gamemode==5 || ($gamemode==0 && !$this->records_active);
+
     
     $showLocalRecs = $this->settings["localrecordswidget"]["enabled"] && $this->settings["localrecordswidget"]["states"][$gamemode]["enabled"];
     if ($hpm) $showLocalRecs = $showLocalRecs && $this->settings['hpm']['widgets']['localrecords'];
@@ -1303,8 +1303,8 @@ class FufiWidgets extends Plugin {
     if ($gamemode==6) $showpointsLocalRecs = true;
     $showpointsLiveRankings = false;
   
-    if ($gamemode==1 || $gamemode==6 || $gamemode==5 || ($gamemode==0 && !$this->records_active)
-        || ($gamemode==0 && $this->records_active && $this->records_type == "Points"))
+    if ($gamemode==1 || $gamemode==6 || $gamemode==5 || ($gamemode==0 && !$this->records_active))
+
       $showpointsLiveRankings = true;
 
     //get the manialink XML template for the widget and separate it to blocks
@@ -2078,7 +2078,7 @@ class FufiWidgets extends Plugin {
     return $rankings;
   }
   
-   function getMostNearMissesList($limit=50){
+    function getMostNearMissesList($limit=50){
     $query='SELECT Login, Nickname, NearMisses FROM players ORDER BY NearMisses DESC LIMIT '.$limit;
     $res = mysql_query($query);
     $rankings = array();
@@ -2310,7 +2310,7 @@ class FufiWidgets extends Plugin {
 
       $rankings = $rankings_;
     } else {
-    if ($this->records_active && $this->records_type != "Points" ) {
+    if ($this->records_active) {
       if (!isset($this->liveRankings)) $this->liveRankings = array();
       
       $keys = array();
@@ -2404,7 +2404,7 @@ class FufiWidgets extends Plugin {
       case 'MostHits':
       case 'MostCaptures':
       case 'MostSurvivals':
-	  case 'MostNearMisses':      
+	  case 'MostNearMisses':	  
       case 'MostDeaths':   
       case 'TopDons':               
       case 'WeeklyPoints':   
@@ -2894,7 +2894,7 @@ if (IN_XASECO){
     }
     if (!$fufiWidgets->records_active){
       $fufiWidgets->records_active = $aseco->settings['records_activated'];
-      $fufiWidgets->records_type = $aseco->settings['records_type'];
+
     } 
     $fufiWidgets->xasecoStartup();
   }
@@ -2941,7 +2941,7 @@ if (IN_XASECO){
     global $fufiWidgets;
    // var_dump($aseco->server->map);
     $fufiWidgets->doPlayerConnect($command);
-       /* if($aseco->isMasterAdmin($command) && $fufiWidgets->settings['checkupdate'] && $message=$fufiWidgets->search_update()) $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $command->login);   */
+        /*if($aseco->isMasterAdmin($command) && $fufiWidgets->settings['checkupdate'] && $message=$fufiWidgets->search_update()) $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $command->login);  */
   }
 
   Aseco::registerEvent('onPlayerDisconnect', 'fufiwidgets_playerDisconnect');
@@ -2968,6 +2968,14 @@ if (IN_XASECO){
   //not needed in XASECO
   //Aseco::registerEvent('onGameModeChange', 'fufiwidgets_gameModeChange');
 
+  Aseco::registerEvent('onRankingUpdated', 'fufi_widgets_ranking');
+    function fufi_widgets_ranking($aseco, $command){
+    global $fufiWidgets;
+    if(IN_MPASECO) $fufiWidgets->smrankings = $command;
+    $fufiWidgets->doEndRound();
+    
+  }
+  
   Aseco::registerEvent('onEndRound', 'fufiwidgets_endRound');
 
   function fufiwidgets_endRound($aseco, $command){
