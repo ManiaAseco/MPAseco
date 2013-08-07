@@ -11,19 +11,19 @@ Aseco::registerEvent('onStartup', 'init_XmlRpcOnStartup');
 
 function init_XmlRpcOnStartup($aseco){
   $scriptset = array('S_UseScriptCallbacks' => true); //Aktivate Script callbacks 
-  $aseco->client->query('SetModeScriptSettings',  $scriptset);   
+  $aseco->client->query('SetModeScriptSettings',  $scriptset);
+  $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_GetRankings', '');
 }
 
 function release_LibXmlRpcCallbacks($aseco, $data){
 
   $name = $data[0];
   $params = isset($data[1]) ? $data[1] : '';
- 
   switch($name) {
+
     case 'LibXmlRpc_Rankings': 
       updateRankings($params[0]);
     break;
-    
     case 'LibXmlRpc_BeginRound':
       $aseco->beginRound($params[0]); //$params[0] = roundsnumber
     break;
@@ -85,6 +85,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
 
     case 'LibXmlRpc_OnNearMiss':
       $aseco->releaseEvent('onNearMiss', $params[0]);
+	  $aseco->releaseEvent('onNearMiss1', array('ShooterLogin' => $params[0], 'VictimLogin' => $params[1], 'NearMissMeter' => $params[3]));
     break;
                    
     case 'LibXmlRpc_OnCapture': 
@@ -92,6 +93,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
       foreach($players as $player){
         $aseco->releaseEvent('onPoleCapture', $player);
       }
+	   $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_GetRankings', ''); //Siege Additions....
     break;
     
     case 'LibXmlRpc_OnArmorEmpty': 
@@ -139,13 +141,12 @@ function release_LibXmlRpcCallbacks($aseco, $data){
 
     case 'Joust_RoundResult':
       $aseco->releaseEvent('onJoustRoundResult', $params); 
-    break; 
+    break;
   }
 }
 function release_modeScriptCallbacks($aseco, $data) {
   $name = $data[0];
   $params = isset($data[1]) ? $data[1] : '';
-
   switch($name) {
     case 'updateRankings':
       updateRankings($params[0]);    
@@ -164,7 +165,13 @@ function release_modeScriptCallbacks($aseco, $data) {
       $points = $players[2];   
       $aseco->releaseEvent('onPlayerHit', array('victim' => $victim, 'shooter' => $shooter, 'points' => $points));
     break;
-    
+    case 'Player.Position':
+	      $players = explode(';', $params);
+		  $Login = str_replace('Login:', '', $players[0]);
+		  $PosX = str_replace('PositionX:', '', $players[1]);
+		  $PosZ = str_replace('PositionZ:', '', $players[2]);
+	$aseco->releaseEvent('Player_Position', array('login' => $Login, 'x' => $PosX, 'z' => $PosZ));
+	break;
     case 'playerSurvival':
       $aseco->releaseEvent('onPlayerSurvival', $params);
     break;
@@ -275,11 +282,13 @@ function updateRankings($data) {
       $aseco->smrankings[$tmp[0]] = $tmp[1];
     }
   }
-  if($aseco->settings['records_activated'])
+  if($aseco->settings['records_activated']){
     array_multisort($aseco->smrankings, SORT_ASC, SORT_NUMERIC);
-  else
+	$aseco->releaseEvent('onRankingUpdated', $aseco->smrankings);
+  }else{
     array_multisort($aseco->smrankings, SORT_DESC, SORT_NUMERIC);  
   $aseco->releaseEvent('onRankingUpdated', $aseco->smrankings);
+  }
 }
 
 ?>
