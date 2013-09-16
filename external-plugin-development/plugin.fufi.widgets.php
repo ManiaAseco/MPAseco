@@ -182,7 +182,7 @@ class FufiWidgets extends Plugin {
   var $debugVars;
   var $settings;
   var $records_active;
-
+  var $records_type;
 
   /**
    * Initializes the plugin, loads the XML settings
@@ -1279,7 +1279,9 @@ class FufiWidgets extends Plugin {
 
     //the gamemode is needed to get the right configuration and display options
     $gamemode = $this->Aseco->server->gameinfo->mode;
-    $roundsmode = $gamemode==1 || $gamemode==5 || ($gamemode==0 && !$this->records_active);
+    $roundsmode = $gamemode==1 || $gamemode==5 || ($gamemode==0 && !$this->records_active)
+                || ($gamemode==0 && $this->records_active && $this->records_type == "Points");
+
 
     
     $showLocalRecs = $this->settings["localrecordswidget"]["enabled"] && $this->settings["localrecordswidget"]["states"][$gamemode]["enabled"];
@@ -1303,8 +1305,8 @@ class FufiWidgets extends Plugin {
     if ($gamemode==6) $showpointsLocalRecs = true;
     $showpointsLiveRankings = false;
   
-    if ($gamemode==1 || $gamemode==6 || $gamemode==5 || ($gamemode==0 && !$this->records_active))
-
+    if ($gamemode==1 || $gamemode==6 || $gamemode==5 || ($gamemode==0 && !$this->records_active)
+        || ($gamemode==0 && $this->records_active && $this->records_type == "Points"))
       $showpointsLiveRankings = true;
 
     //get the manialink XML template for the widget and separate it to blocks
@@ -2310,7 +2312,7 @@ class FufiWidgets extends Plugin {
 
       $rankings = $rankings_;
     } else {
-    if ($this->records_active) {
+    if ($this->records_active && $this->records_type != "Points" ) {
       if (!isset($this->liveRankings)) $this->liveRankings = array();
       
       $keys = array();
