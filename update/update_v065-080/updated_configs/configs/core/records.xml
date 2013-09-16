@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<records>
+  <settings>
+    <!-- Write true here if you want a time-Based Record system -->
+    <records_activated>True</records_activated>
+    
+    <!-- Specify the Record Type Time / Points -->  
+    <records_type>Points</records_type>
+    
+    <show_min_recs>8</show_min_recs>
+    <!-- 2 = full report, 1 = only map record, 0 = none -->
+    <!-- add 4 to show the report in the message window -->
+    <!-- instead of the main chat window                -->
+    <show_recs_before>2</show_recs_before>
+    <!-- 2 = full report, 1 = only top-5, 0 = none      -->
+    <!-- add 4 to show the report in the message window -->
+    <!-- instead of the main chat window                -->
+    <show_recs_after>2</show_recs_after>
+    <show_recs_range>True</show_recs_range>
+    <!-- 2 = in message window, 1 = in chat, 0 = none   -->
+    <show_mxrec>1</show_mxrec>
+	 <!-- True = in message window, False = in chat       -->
+    <recs_in_window>False</recs_in_window>
+ 	
+     <!-- Do you want MPASECO to display newly driven records? -->
+  	<display>true</display>
+  	<!-- Limit the highest record that will be displayed to all? -->
+  	<!-- If lower than $maxrecs, records above this limit will -->
+  	<!-- only be displayed to the pertaining player -->
+  	<limit>50</limit>
+  </settings>
+  
+  <messages>
+    <!-- record messages -->
+    <record_current>{#server}>> {#message}Current record on {#highlite}{1}{#message} is {#highlite}{2}{#message} by {#highlite}{3}</record_current>
+    <record_none>{#server}>> {#message}Currently no record on {#highlite}{1}{#message} ...</record_none>
+    <record_error>{#server}>> {#error}Could not get records from database... No records this round!</record_error>
+  	<record_new>{#server}>> {#highlite}{1}{#record} secured his/her {#rank}{2}{#record}. Local Record!  {3}: {#highlite}{4}{#record} $n({#rank}{5}{#highlite}{6}{#record})</record_new>
+  	<record_equal>{#server}>> {#highlite}{1}{#record} equaled his/her {#rank}{2}{#record}. Local Record!  {3}: {#highlite}{4}</record_equal>
+  	<record_new_rank>{#server}>> {#highlite}{1}{#record} gained the {#rank}{2}{#record}. Local Record!  {3}: {#highlite}{4}{#record} $n({#rank}{5}{#highlite}{6}{#record})</record_new_rank>
+  	<record_first>{#server}>> {#highlite}{1}{#record} claimed the {#rank}{2}{#record}. Local Record!  {3}: {#highlite}{4}</record_first>
+  
+    <!-- ranking messages -->
+    <ranking>{#server}>> {#message}Local Record rankings on {#highlite}{1}{#message} {2} this round:</ranking>
+    <ranking_range>{#server}>> {#message}Local Record rankings on {#highlite}{1}{#message} {2} this round (range {#highlite}{3}{#message}):</ranking_range>
+    <ranking_new>{#server}>> {#message}Local Record rankings on {#highlite}{1}{#message} {2} this round ({#highlite}{3}{#message} new):</ranking_new>
+    <ranking_nonew>{#server}>> {#message}Local Record rankings on {#highlite}{1}{#message} {2} this round: none new so far</ranking_nonew>
+    <ranking_none>{#server}>> {#message}Local Record rankings on {#highlite}{1}{#message} {2} this round: no records!</ranking_none>
+ 
+    <!-- miscellaneous messages -->
+    <mxrec>{#server}>> {#record}MX World Record: {#highlite}{1}{#record} by {#highlite}{2}</mxrec>
+       
+  </messages>  
+</records>

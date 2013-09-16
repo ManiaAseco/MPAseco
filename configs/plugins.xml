@@ -35,6 +35,9 @@
    <!-- Only for Point Gamemodes -->
    <plugin>plugin.timedrank.php</plugin>
    
+   <!-- Autotag Plugin -->
+   <!-- <plugin>plugin.autotag.php</plugin>   -->
+   
    <!-- Only for Royal -->	             
    <!--  <plugin>plugin.linearmode.php</plugin>	 -->
 
