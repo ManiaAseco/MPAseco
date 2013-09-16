@@ -24,15 +24,16 @@ Aseco::addChatCommand('rank', 'Shows your current server rank');
 Aseco::addChatCommand('top10', 'Displays top 10 best ranked players');
 Aseco::addChatCommand('top100', 'Displays top 100 best ranked players');
 Aseco::addChatCommand('topwins', 'Displays top 100 victorious players');
-Aseco::addChatCommand('topmisses', 'Displays top 100 NearMisses players');
-Aseco::addChatCommand('tophits', 'Displays top 100 Hits players');
-Aseco::addChatCommand('topcaptures', 'Displays top 100 Captures players');
-Aseco::addChatCommand('toprespawns', 'Displays top 100 Respawn players');
-Aseco::addChatCommand('topsurvivals', 'Displays top 100 Survival players');
-Aseco::addChatCommand('topdeaths', 'Displays top 100 Death players');
-Aseco::addChatCommand('topshots', 'Displays top 100 Shots players');
-Aseco::addChatCommand('topattacker', 'Displays top 100 attackerWon players');
-Aseco::addChatCommand('topgothits', 'Displays top 100 GotHits players');
+Aseco::addChatCommand('mostwins', 'Displays top 100 victorious players'); //new name
+Aseco::addChatCommand('mostmisses', 'Displays players with most NearMisses');
+Aseco::addChatCommand('mosthits', 'Displays players with most hits');
+Aseco::addChatCommand('mostcaptures', 'Displays players with most captures');
+Aseco::addChatCommand('mostrespawns', 'Displays players with most Respawns');
+Aseco::addChatCommand('mostsurvivals', 'Displays players with most survivals');
+Aseco::addChatCommand('mostdeaths', 'Displays players who died most');
+Aseco::addChatCommand('mostshots', 'Displays players which made the most shots');
+//Aseco::addChatCommand('topattacker', 'Displays top 100 attackerWon players');
+Aseco::addChatCommand('mostgothits', 'Displays players who got the most hits');
 Aseco::addChatCommand('active', 'Displays top 100 most active players');
 
 class Rasp {
@@ -780,6 +781,9 @@ function chat_top100($aseco, $command) {
 	mysql_free_result($res);
 }  // chat_top100
 
+function chat_mostwins($aseco, $command) {
+  chat_topwins($aseco,$command);
+}
 function chat_topwins($aseco, $command) {
 
 	$player = $command['author'];
@@ -824,11 +828,11 @@ function chat_topwins($aseco, $command) {
 	mysql_free_result($res);
 }  // chat_topwins
 
-function chat_topmisses($aseco, $command) {
+function chat_mostmisses($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Misses:';
+	$head = 'Players with the most Near Misses:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -869,11 +873,11 @@ function chat_topmisses($aseco, $command) {
 }  // chat_topmisses
 
 
-function chat_tophits($aseco, $command) {
+function chat_mosthits($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Hits:';
+	$head = 'Current players with most hits:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -914,11 +918,11 @@ function chat_tophits($aseco, $command) {
 }  // chat_tophits
 
 
-function chat_topcaptures($aseco, $command) {
+function chat_mostcaptures($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Captures:';
+	$head = 'Current players with most captures:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -959,12 +963,11 @@ function chat_topcaptures($aseco, $command) {
 }  // chat_topcaptures
 
 
-
-function chat_toprespawns($aseco, $command) {
+function chat_mostrespawns($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Respawns:';
+	$head = 'Current players with most Respawns:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -1005,12 +1008,11 @@ function chat_toprespawns($aseco, $command) {
 }  // chat_toprespawns
 
 
-
-function chat_topsurvivals($aseco, $command) {
+function chat_mostsurvivals($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Survivals:';
+	$head = 'Current players with most survivals:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -1050,11 +1052,12 @@ function chat_topsurvivals($aseco, $command) {
 	mysql_free_result($res);
 }  // chat_topsurvivals
 
-function chat_topdeaths($aseco, $command) {
+
+function chat_mostdeaths($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Deaths:';
+	$head = 'Current players who died most:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -1095,11 +1098,11 @@ function chat_topdeaths($aseco, $command) {
 }  // chat_topdeaths
 
 
-function chat_topshots($aseco, $command) {
+function chat_mostshots($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Shots:';
+	$head = 'Current players which made the most shots:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
@@ -1139,7 +1142,7 @@ function chat_topshots($aseco, $command) {
 	mysql_free_result($res);
 }  // chat_topshots
 
-function chat_topattacker($aseco, $command) {
+function chat_topattacker($aseco, $command) { 
 
 	$player = $command['author'];
 
@@ -1183,11 +1186,12 @@ function chat_topattacker($aseco, $command) {
 	mysql_free_result($res);
 }  // chat_topattacker
 
-function chat_topgothits($aseco, $command) {
+
+function chat_mostgothits($aseco, $command) {
 
 	$player = $command['author'];
 
-	$head = 'Current TOP 100 Got Hits:';
+	$head = 'Current players who got the most hits:';
 	$top = 100;
 	$bgn = '{#black}';  // nickname begin
 
