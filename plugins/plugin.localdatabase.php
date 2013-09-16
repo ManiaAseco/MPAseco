@@ -41,7 +41,7 @@ function ldb_loadSettings($aseco) {
   global $ldb_settings;
   global $argv,$argc;
 
-  if(strpos($argv[$argc-2],".xml") && strpos($argv[$argc-1],".xml"))
+  if(array_key_exists(($argc-1), $argv) && array_key_exists(($argc-1), $argv) && strpos($argv[$argc-2],".xml") && strpos($argv[$argc-1],".xml"))
     $ldbfile='configs/'.$argv[$argc-1];
   else if(file_exists('localdatabase.xml'))
     $ldbfile='localdatabase.xml'; 

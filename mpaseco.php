@@ -2581,9 +2581,9 @@ if (shorthand2bytes($limit) < 128 * 1048576)
 setlocale(LC_NUMERIC, 'C');
 
 
-if(strpos($argv[$argc-2],".xml"))
+if(array_key_exists(($argc-2), $argv) && strpos($argv[$argc-2],".xml"))
  $conffile='configs/'.$argv[$argc-2];
-else if(strpos($argv[$argc-1],".xml")) 
+else if(array_key_exists(($argc-1), $argv) && strpos($argv[$argc-1],".xml")) 
  $conffile='configs/'.$argv[$argc-1];
 else if(file_exists('config.xml'))
  $conffile='config.xml';
