@@ -259,7 +259,13 @@ class MXInfo {
 			else // 'sm' || 'qm'
 				$dir = 'maps';
 
-			$this->id        = ($this->prefix == 'tm') ? $mx->TrackID : $mx->MapID;
+      //temporary fix
+      if($this->prefix == 'tm' || !property_exists($mx, "MapID"))
+        $this->id = $mx->TrackID;
+      else
+        $this->id = $mx->MapID;  
+		//	$this->id        = ($this->prefix == 'tm') ? $mx->TrackID : $mx->MapID;
+		
 			$this->name      = $mx->Name;
 			$this->userid    = $mx->UserID;
 			$this->author    = $mx->Username;
