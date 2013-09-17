@@ -68,7 +68,7 @@ define('XASECO_TMN', 'http://www.gamers.org/tmn/');
 define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
-define('MPASECO', 'http://www.MPAseco.org/');
+define('MPASECO', 'http://www.mpaseco.org/');
 define('IN_MPASECO', true);
 
 // required official dedicated server build
@@ -487,7 +487,7 @@ class Aseco {
       trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_ERROR);
     }
 
-    $this->settings['records_activated'] = false; //standart value (in case records.xml not exists)
+    $this->settings['records_activated'] = false; //standard value (in case records.xml not exists)
     
     $records_config = 'configs/core/records.xml';
     if(file_exists_nocase($records_config)){
@@ -541,10 +541,10 @@ class Aseco {
       }                                                                                                
     } 
     /* Set Points as Ranking value when mode without records */
-    if(!$this->settings['records_activated']){
+    if(!$this->settings['records_activated']) {
       $minrank = $minpoints;
       define('DISABLE_RECCMDS', true);
-    }else{
+    } else {
       define('DISABLE_RECCMDS', false);
     }    
                                                            
