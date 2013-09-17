@@ -17,9 +17,7 @@ function autotag_plugins($aseco) {
     // create list of plugins
     $list = array();
     foreach ($aseco->plugins as $plugin) {
-        $list[] = array($plugin);
-        //$list = array();
-	    //var_dump($plugin);
+        $list[] = $plugin;
     }
 
     $aseco->client->query('SetServerTag','nl.pluginlist', json_encode(array($list)), true);
