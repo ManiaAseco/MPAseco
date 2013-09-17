@@ -14,14 +14,17 @@ Aseco::registerEvent('onSync', 'autotag_plugins');
 Aseco::addChatCommand('autotag', 'Displays autotag'); //debug mode
 
 function autotag_plugins($aseco) {
-  // create list of plugins
-  $list = array();
-  foreach ($aseco->plugins as $plugin) {
-    $list[] = array($plugin);
-	 $list = array();
-	 //var_dump($list);
-	$aseco->client->query('SetServerTag','nl.pluginlist', json_encode(array($list)), true);
-	}
+    // create list of plugins
+    $list = array();
+    foreach ($aseco->plugins as $plugin) {
+        $list[] = array($plugin);
+        //$list = array();
+	    //var_dump($plugin);
+    }
+
+    $aseco->client->query('SetServerTag','nl.pluginlist', json_encode(array($list)), true);
+    $aseco->client->query('SetServerTag', 'nl.controller', 'MPAseco');
+    $aseco->client->query('SetServerTag', 'nl.controller.version', MPASECO_VERSION);
 }  // autotag_plugins
 
 function chat_autotag($aseco, $command){

@@ -194,7 +194,7 @@ class Aseco {
   function Aseco($debug) {
     global $maxrecs;  // from rasp.settings.php
 
-    echo '# initialize MPASECO ###########################################################' . CRLF;
+    echo '# initialize MPASECO ##########################################################' . CRLF;
 
     // log php & mysql version info
     $this->console_text('[MPAseco] PHP Version is ' . phpversion() . ' on ' . PHP_OS);
@@ -829,6 +829,11 @@ class Aseco {
     // only if logins are set
     if ($this->server->ip && $this->server->port && $this->server->login && $this->server->pass) {
       // log console message
+      if($this->server->port == 'XML_PORT') {
+          trigger_error('You have not set up your connection settings yet!', E_USER_WARNING);
+          die();
+          return false;
+      }
       $this->console('Try to connect to MP dedicated server on {1}:{2} timeout {3}s',
                      $this->server->ip, $this->server->port,
                      ($this->server->timeout !== null ? $this->server->timeout : 0));
