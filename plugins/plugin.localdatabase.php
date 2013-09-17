@@ -99,6 +99,11 @@ function ldb_connect($aseco) {
   global $ldb_map;
   $ldb_map = new Map();
 
+  if($ldb_settings['mysql']['database'] == 'MYSQL_DATABASE') {
+      trigger_error('You have not set up your database settings yet!', E_USER_WARNING);
+      die();
+      return false;
+  }
   // log status message
   $aseco->console("[LocalDB] Try to connect to MySQL server on '{1}' with database '{2}'",
                   $ldb_settings['mysql']['host'], $ldb_settings['mysql']['database']);
