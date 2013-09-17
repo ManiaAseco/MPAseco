@@ -5,4 +5,4 @@ For more informations visit the [MPAseco](http://www.mpaseco.org/) website.
 
 Coding and Pull Request Formatting
 ----------------------------------
-TODO: We should work out some coding standarts
+TODO: We should work out some coding standards
