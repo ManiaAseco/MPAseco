@@ -1,0 +1,15 @@
+This document includes the to-do list of the MPAseco team.
+Do not relay on this document for features you can expect for the next release, it's just a document for the devs.
+Items on this list might make it into the program, they also might not.
+
+The initial version of this document was set-up on the 17th of September 2013.
+Be aware that only the to do list from that date (and after) is included in this document.
+
+Current to do list:
+- Automatic update of MPAseco by in-game command [LOW] [LONG WISH]
+- /admin warmend : check if it works and fix it if not [HIGH] [FIX/CHECK]
+- /admin warmext : check if it works and fix it if not [HIGH] [FIX/CHECK]
+- Set teaminformations in the adminpanel [MEDIUM] [ADD]
+
+Things done/removed from the list:
+-
