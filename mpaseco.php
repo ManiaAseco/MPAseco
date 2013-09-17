@@ -1013,7 +1013,7 @@ class Aseco {
     $this->console_text('  Game   : {1} - {2} - {3}', $this->server->game,
                            $titleid['TitleId'], $this->server->gameinfo->getMode());
     $this->console_text('  Version: {1} / {2}', $this->server->version, $this->server->build);
-    $this->console_text('  Author : Lukas Kremsmayr alias kremsy');
+    $this->console_text('  Author : MPAseco team (www.mpaseco.org)');
     $this->console_text('  Previous Authors: Xymph & Flo');   
     $this->console_text('###############################################################################');
 

@@ -6,13 +6,14 @@ The initial version of this document was set-up on the 17th of September 2013.
 Be aware that only the to do list from that date (and after) is included in this document.
 
 Severity of the item can be LOW, MEDIUM or HIGH. No rights can be claimed of this, we'll update as soon as we can.
-Kind of item can be categorized as LONG WISH, FIX/CHECK or ADD.
+Kind of item can be categorized as LONG WISH, FIX/CHECK, FIX, CHECK or ADD.
 
 Current to do list:
 - Automatic update of MPAseco by in-game command [LOW] [LONG WISH]
 - /admin warmend : check if it works and fix it if not [HIGH] [FIX/CHECK]
 - /admin warmext : check if it works and fix it if not [HIGH] [FIX/CHECK]
 - Set teaminformations in the adminpanel [MEDIUM] [ADD]
+- Notice: "Undefined offset: -1 on line 44 in file M:\Servers\ManiaPlanetServer\MPAseco\plugins\plugin.localdatabase.php" [LOW] [FIX]
 
 Things done/removed from the list:
 -
