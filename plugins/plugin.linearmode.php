@@ -25,7 +25,7 @@ class linearmode extends Plugin {
 	$this->Aseco->client->query('GetModeScriptInfo');
 	$ScriptInfo = $this->Aseco->client->getResponse();
 	$TitleId = $ScriptInfo['Name'];
-	if($TitleId == "Royal.Script.txt"){
+	//if($TitleId == "Royal.Script.txt"){
    $conf_file     = 'configs/plugins/linearmode.xml'; 
     if (file_exists($conf_file)) { 
      $this->Aseco->console('Load linearmode config file [' . $conf_file . ']');
@@ -41,7 +41,7 @@ class linearmode extends Plugin {
    } else {
     trigger_error('Could not find jfreu linearmode config file ' . $conf_file . ' !', E_USER_WARNING);
    }
-	}
+	//}
 	else{
 	trigger_error('["plugin.linearmode"] Will not work on this Script! Please use Royal', E_USER_WARNING);
 	}
