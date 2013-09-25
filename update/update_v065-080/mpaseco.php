@@ -59,7 +59,7 @@ define('CONFIG_UTF8ENCODE', false);
 
 // current project version
 
-define('MPASECO_VERSION', '0.80');
+define('MPASECO_VERSION', '0.81');
 
 // A fix for old plugins which checks this constant
 define('XASECO2_VERSION', '5.55');
@@ -68,7 +68,7 @@ define('XASECO_TMN', 'http://www.gamers.org/tmn/');
 define('XASECO_TMF', 'http://www.gamers.org/tmf/');
 define('XASECO_TM2', 'http://www.gamers.org/tm2/');
 define('XASECO_ORG', 'http://www.xaseco.org/');
-define('MPASECO', 'http://www.MPAseco.org/');
+define('MPASECO', 'http://www.mpaseco.org/');
 define('IN_MPASECO', true);
 
 // required official dedicated server build
@@ -194,7 +194,7 @@ class Aseco {
   function Aseco($debug) {
     global $maxrecs;  // from rasp.settings.php
 
-    echo '# initialize MPASECO ###########################################################' . CRLF;
+    echo '# initialize MPASECO ##########################################################' . CRLF;
 
     // log php & mysql version info
     $this->console_text('[MPAseco] PHP Version is ' . phpversion() . ' on ' . PHP_OS);
@@ -487,7 +487,7 @@ class Aseco {
       trigger_error('Could not read/parse config file ' . $config_file . ' !', E_USER_ERROR);
     }
 
-    $this->settings['records_activated'] = false; //standart value (in case records.xml not exists)
+    $this->settings['records_activated'] = false; //standard value (in case records.xml not exists)
     
     $records_config = 'configs/core/records.xml';
     if(file_exists_nocase($records_config)){
@@ -541,10 +541,10 @@ class Aseco {
       }                                                                                                
     } 
     /* Set Points as Ranking value when mode without records */
-    if(!$this->settings['records_activated']){
+    if(!$this->settings['records_activated']) {
       $minrank = $minpoints;
       define('DISABLE_RECCMDS', true);
-    }else{
+    } else {
       define('DISABLE_RECCMDS', false);
     }    
                                                            
@@ -829,6 +829,11 @@ class Aseco {
     // only if logins are set
     if ($this->server->ip && $this->server->port && $this->server->login && $this->server->pass) {
       // log console message
+      if($this->server->port == 'XML_PORT') {
+          trigger_error('You have not set up your connection settings yet!', E_USER_WARNING);
+          die();
+          return false;
+      }
       $this->console('Try to connect to MP dedicated server on {1}:{2} timeout {3}s',
                      $this->server->ip, $this->server->port,
                      ($this->server->timeout !== null ? $this->server->timeout : 0));
@@ -1008,7 +1013,7 @@ class Aseco {
     $this->console_text('  Game   : {1} - {2} - {3}', $this->server->game,
                            $titleid['TitleId'], $this->server->gameinfo->getMode());
     $this->console_text('  Version: {1} / {2}', $this->server->version, $this->server->build);
-    $this->console_text('  Author : Lukas Kremsmayr alias kremsy');
+    $this->console_text('  Author : MPAseco team (www.mpaseco.org)');
     $this->console_text('  Previous Authors: Xymph & Flo');   
     $this->console_text('###############################################################################');
 
