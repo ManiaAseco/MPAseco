@@ -108,7 +108,7 @@ function event_players($aseco, $answer) {
      $command = array();
      $command['author'] = $player;
      $command['params'] = $answer[3][0]["Name"]. " " . $answer[3][0]["Value"];
-     if(function_exists(chat_pm)){
+     if(function_exists("chat_pm")){
        chat_pm($aseco, $command);
        mainwindow_off($aseco, $player->login);
        $aseco->client->query('TriggerModeScriptEvent', 'LibXmlRpc_EnableAltMenu', $player->login); 
