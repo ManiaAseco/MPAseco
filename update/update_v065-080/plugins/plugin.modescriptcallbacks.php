@@ -29,7 +29,7 @@ function release_LibXmlRpcCallbacks($aseco, $data){
     break;
 
     case 'LibXmlRpc_EndRound':  
-      $aseco->beginRound($params[0]); //$params[0] = roundsnumber
+      $aseco->endRound($params[0]); //$params[0] = roundsnumber
     break;
     
     case 'LibXmlRpc_BeginMatch':

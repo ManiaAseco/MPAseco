@@ -85,6 +85,7 @@
  *  "5001"-"5200": Player numbers for /admin listguests, handled in chat.admin.php
  *  "8001"-"8200": Player numbers for /admin force blue, handled in chat.admin.php
  *  "8201"-"8400": Player numbers for /admin force red, handled in chat.admin.php  
+ *  "8401"-"8600": Player numbers for /pm, handled in chat.players.php  
  *  "5201"-"5700": MX numbers for /mxinfo, handled in plugin.rasp_jukebox.php
  *  "5701"-"6200": MX numbers for /add, handled in plugin.rasp_jukebox.php
  *  "6201"-"6700": MX numbers for /admin add, handled in plugin.rasp_jukebox.php

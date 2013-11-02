@@ -12,6 +12,7 @@
 Aseco::addChatCommand('pm', 'Sends a private message to login or Player_ID');
 Aseco::addChatCommand('pma', 'Sends a private message to player & admins');
 Aseco::addChatCommand('pmlog', 'Displays log of your recent private messages');
+Aseco::addChatCommand('pmr', 'Response to a private message.');
 Aseco::addChatCommand('hi', 'Sends a Hi message to everyone');
 Aseco::addChatCommand('bye', 'Sends a Bye message to everyone');
 Aseco::addChatCommand('bb', 'Sends a Bye message to everyone');
@@ -46,6 +47,8 @@ function isinplayerlist($aseco,$login){
 }
 
 function chat_pm($aseco, $command) {
+
+   
   global $muting_available,  // from plugin.muting.php
          $pmlen;  // from chat.admin.php
 
@@ -69,20 +72,24 @@ function chat_pm($aseco, $command) {
     if (count($player->pmbuf) >= $pmlen) {
       array_shift($player->pmbuf);
     }
-    // append timestamp, sender nickname and pm line to sender's history
-    $player->pmbuf[] = array($stamp, $plnick, $command['params'][1]);
+    // append timestamp, sender nickname, pm line and login to sender's history
+    $target->pmbuf[] = array($stamp, $plnick, $command['params'][1], $player->login);
 
     // drop oldest pm line if receiver's buffer full
     if (count($target->pmbuf) >= $pmlen) {
       array_shift($target->pmbuf);
     }
-    // append timestamp, sender nickname and pm line to receiver's history
-    $target->pmbuf[] = array($stamp, $plnick, $command['params'][1]);
+    // append timestamp, sender nickname, pm line and login to sender's history
+    $target->pmbuf[] = array($stamp, $plnick, $command['params'][1], $player->login);
 
     // show chat message to both players
     $msg = '{#error}-pm-$g[' . $plnick . '$z$s$i->' . $tgnick . '$z$s$i]$i {#interact}' . $command['params'][1];
     $msg = $aseco->formatColors($msg);
+    $infomsg =  '$i {#highlite} Type /pmr <message> to respond.';
+    $infomsg = $aseco->formatColors($infomsg);
+    
     $aseco->client->addCall('ChatSendServerMessageToLogin', array($msg, $target->login));
+    $aseco->client->addCall('ChatSendServerMessageToLogin', array($infomsg, $target->login));
     $aseco->client->addCall('ChatSendServerMessageToLogin', array($msg, $player->login));
     if (!$aseco->client->multiquery()) {
       trigger_error('[' . $aseco->client->getErrorCode() . '] ChatSend PM (multi) - ' . $aseco->client->getErrorMessage(), E_USER_WARNING);
@@ -133,8 +140,8 @@ function chat_pma($aseco, $command) {
       if (count($target->pmbuf) >= $pmlen) {
         array_shift($target->pmbuf);
       }
-      // append timestamp, sender nickname and pm line to receiver's history
-      $target->pmbuf[] = array($stamp, $plnick, $command['params'][1]);
+      // append timestamp, sender nickname, pm line and login to sender's history
+      $target->pmbuf[] = array($stamp, $plnick, $command['params'][1], $player->login);
 
       // show chat message to receiver
       $msg = '{#error}-pm-$g[' . $plnick . '$z$s$i->' . $tgnick . '$z$s$i]$i {#interact}' . $command['params'][1];
@@ -159,8 +166,8 @@ function chat_pma($aseco, $command) {
           if (count($admin->pmbuf) >= $pmlen) {
             array_shift($admin->pmbuf);
           }
-          // append timestamp, sender nickname and pm line to admin's history
-          $admin->pmbuf[] = array($stamp, $plnick, $command['params'][1]);
+      // append timestamp, sender nickname, pm line and login to sender's history
+          $target->pmbuf[] = array($stamp, $plnick, $command['params'][1], $player->login);
 
           // CC the message
           $aseco->client->addCall('ChatSendServerMessageToLogin', array($msg, $admin->login));
@@ -188,6 +195,22 @@ function chat_pma($aseco, $command) {
     $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($msg), $player->login);
   }
 }  // chat_pma
+
+//response to a private message
+function chat_pmr($aseco, $command){
+  $player = $command['author'];
+  $message = $command['params'];
+  if(!empty($player->pmbuf)){      
+     $target = end($player->pmbuf)[3];
+     $command = array();
+     $command['author'] = $player;
+     $command['params'] = $target. " " . $message;      
+     chat_pm($aseco, $command);
+  }else{
+      $msg = '{#server}> {#error}No recent private messages!';
+      $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($msg), $player->login);  
+  }
+}   // chat_pmr
 
 function chat_pmlog($aseco, $command) {
   global $lnlen;  // from chat.admin.php

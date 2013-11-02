@@ -1117,7 +1117,7 @@ function chat_admin($aseco, $command) {
                           $chattitle, $admin->nickname);
     $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
 
-    $aseco->client->query('TriggerModeScriptEvent', 'extendWarmup');
+    $aseco->client->query('TriggerModeScriptEvent', 'WarmUp_Extend');
   /**
    * Extends the Warmup.
    */
@@ -1132,7 +1132,7 @@ function chat_admin($aseco, $command) {
                           $chattitle, $admin->nickname);
     $aseco->client->query('ChatSendServerMessage', $aseco->formatColors($message));
 
-    $aseco->client->query('TriggerModeScriptEvent', 'endWarmup');  
+    $aseco->client->query('TriggerModeScriptEvent', 'WarmUp_Stop');
     
   /**
    * Adds current /add-ed map permanently to server's map list
