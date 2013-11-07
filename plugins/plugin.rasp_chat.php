@@ -200,8 +200,9 @@ function chat_pma($aseco, $command) {
 function chat_pmr($aseco, $command){
   $player = $command['author'];
   $message = $command['params'];
-  if(!empty($player->pmbuf)){      
-     $target = end($player->pmbuf)[3];
+  if(!empty($player->pmbuf)){
+     $target = end($player->pmbuf);
+     $target = $target[3];
      $command = array();
      $command['author'] = $player;
      $command['params'] = $target. " " . $message;      
