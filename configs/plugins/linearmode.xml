@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1250"?>
-<!-- 2012 by the MPAseco Team v0.1 -->
+<!-- 2013 by the MPAseco Team v0.2 -->
 <linearmode_settings>
    <!-- Formula: Playercount * factor + offset -->
    <!-- Pointlimit Multiplier -->        
@@ -10,4 +10,6 @@
    <min_value>30</min_value>    
    <!-- Maximal Pointlimit -->   
    <max_value>200</max_value> 
+   <!-- Wait for next round with changing pointlimit -->   
+   <next_round>true</next_round> 
 </linearmode_settings>
