@@ -4561,6 +4561,15 @@ function chat_admin($aseco, $command) {
         showHelp($admin, $settings, 'Scripttsetting', true, true, 0.42);
       }
     }
+    // HIER EDIT LINEARMODE
+  } elseif ($command['params'][0] == 'linearmode') {
+    global $linearmode;
+    if(is_object($linearmode)){
+      $admin = $command['author'];
+      $linearmode->openSettings($admin->login);
+    }
+
+
   } else {  //Unkown Admin Command
     $message = '{#server}> {#error}Unknown admin command or missing parameter(s): {#highlite}$i ' . $arglist[0] . ' ' . $arglist[1];
     $aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);

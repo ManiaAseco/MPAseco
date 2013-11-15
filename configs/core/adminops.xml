@@ -180,6 +180,7 @@
  		<warmend>true</warmend>
 		<wuend>true</wuend>
 		<wuext>true</wuext>   		
+		<linearmode>true</linearmode>
 	</admin_abilities>
 
 	<operator_abilities>
@@ -344,5 +345,6 @@
  		<warmend>true</warmend>
 		<wuend>true</wuend>
 		<wuext>true</wuext>
+		<linearmode>false</linearmode>
 	</operator_abilities>
 </lists>
